@@ -4,3 +4,17 @@
 
 /.vs
 /times/obj
+/BookApp/.vs/BookApp
+/BookApp/BookPro/bin/Debug/net8.0-windows
+/Scheduling/times/bin/Debug/net8.0-windows
+/BookApp/BookApp/obj/Debug/net8.0-windows
+/BookApp/BookApp/obj
+/BookApp/BookPro/obj
+/BookApp/ImageBlur/obj
+/Scheduling/.vs
+/Snowflake/.vs
+/Snowflake/Snowflake/bin/Debug/net8.0
+/Snowflake/Snowflake/obj
+/TaskManager/.vs
+/TaskManager/TaskManager/bin/Debug/net8.0-windows
+/TaskManager/TaskManager/obj
