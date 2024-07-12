@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Management;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using Newtonsoft.Json;
@@ -22,7 +23,8 @@ namespace TaskManager
         ObservableCollection<TaskGroupInfo> taskGroups = new ObservableCollection<TaskGroupInfo>();
         private TaskGroupInfo CurrentGroup = null;
         public event PropertyChangedEventHandler PropertyChanged;
-        public string  ExecutTime = "耗时：0 s";
+        public string ExecutTime = "耗时：0 s";
+        private SynchronizationContext syncContext;
         public MainWindow()
         {
             InitializeComponent();
@@ -31,6 +33,7 @@ namespace TaskManager
             {
                 Directory.CreateDirectory(cacheDirectory);
             }
+            syncContext = SynchronizationContext.Current;
             txtExecutionTime.Text = "耗时：0 s";
             LoadTaskGroupJson();
         }
@@ -96,14 +99,18 @@ namespace TaskManager
         {
             // 显示遮罩和进度条
             // 显示遮罩层，确保在主线程上执行
-            Dispatcher.Invoke(() => ShowMask());
+            await Task.Run(() => ShowMask());
             // 创建 Stopwatch 实例
             Stopwatch stopwatch = new Stopwatch();
 
             // 开始计时
             stopwatch.Start();
             // 执行耗时操作，例如模拟一个耗时的任务
-            await ProcessDotnetProcessesInBatchesAsync(searchName);
+            Dispatcher.Invoke(() => {
+                processInfos.Clear();
+            }) ;
+            await Task.Run(()=> ProcessDotnetProcessesInBatchesAsync(searchName));
+          
             //await Task.Run(() =>
             //{
             //    processInfos = new ObservableCollection<ProcessInfo>();
@@ -136,7 +143,9 @@ namespace TaskManager
             //    Dispatcher.Invoke(() => lvProcesses.ItemsSource = processInfos);
 
             //});
-            Dispatcher.Invoke(() => HideMask());
+            syncContext.Post(_ => lvProcesses.ItemsSource = processInfos, null);
+            //Dispatcher.Invoke(() => HideMask());
+            await Task.Run(() => HideMask());
             // 停止计时
             stopwatch.Stop();
 
@@ -145,64 +154,49 @@ namespace TaskManager
             txtExecutionTime.Text = $@"耗时：{(int)elapsedTime.TotalSeconds} s";
         }
 
-        async Task ProcessDotnetProcessesInBatchesAsync(string searchName)
+        void ProcessDotnetProcessesInBatchesAsync(string searchName)
         {
-            Process[] processes = Process.GetProcesses();
+            //Process[] processes = Process.GetProcesses();
 
             Console.WriteLine("正在运行的 dotnet.exe 进程：");
-
-            // 批处理大小和并行处理数量
-            int batchSize = 20;
-            int parallelism = 5;
-
-            // 分割进程数组为多个批次
-            var batches = Enumerable.Range(0, (processes.Length + batchSize - 1) / batchSize)
-                                    .Select(i => processes.Skip(i * batchSize).Take(batchSize).ToArray())
-                                    .ToArray();
-            // 控制并行处理的线程数为5
-            SemaphoreSlim semaphore = new SemaphoreSlim(5);
-            // 异步并行处理每个批次
-            await Task.WhenAll(batches.Select(async batch =>
+            
+            Process[] processes = Process.GetProcessesByName("dotnet");
+            foreach (var process in processes)
             {
-                await Task.Run(async () =>
+                try
                 {
-                    foreach (var process in batch)
+                    // 检查进程名称是否为 dotnet.exe
+                    if (string.Equals(process.ProcessName, "dotnet", StringComparison.OrdinalIgnoreCase))
                     {
-                        await semaphore.WaitAsync(); // 等待可用的信号量
-                        try
-                        {
-                            // 检查进程名称是否为 dotnet.exe
-                            if (string.Equals(process.ProcessName, "dotnet", StringComparison.OrdinalIgnoreCase))
-                            {
-                                // 异步获取命令行参数
-                                string commandLine = await Task.Run(() => GetCommandLine(process));
+                        // 异步获取命令行参数
+                        string commandLine = GetCommandLine(process);
 
-                                // 检查命令行参数是否包含特定的参数或标识
-                                if (commandLine.IndexOf(searchName, StringComparison.OrdinalIgnoreCase) >= 0)
-                                {
-                                    // 使用线程安全的方式添加到集合中
-                                    lock (processInfos)
-                                    {
-                                        if (processInfos.Where(i => i.ProcessId == process.Id).Count() > 0) { continue; }
-                                        processInfos.Add(new ProcessInfo() { ProcessId = process.Id, TaskGroup = searchName, TaskName = commandLine });
-                                    }
-                                }
+                        // 检查命令行参数是否包含特定的参数或标识
+                        if (commandLine.IndexOf(searchName, StringComparison.OrdinalIgnoreCase) >= 0)
+                        {
+                            // 使用线程安全的方式添加到集合中
+                            lock (processInfos)
+                            {
+                                if (processInfos.Where(i => i.ProcessId == process.Id).Count() > 0) { continue; }
+                                Dispatcher.Invoke(() => {
+                                    processInfos.Add(new ProcessInfo() { ProcessId = process.Id, TaskGroup = searchName, TaskName = commandLine });
+                                });
+                                
                             }
                         }
-                        catch (Exception ex)
-                        {
-                            // 捕获异常，例如访问权限不足或进程已终止
-                            Console.WriteLine($"无法访问进程 {process.ProcessName}: {ex.Message}");
-                        }
-                        finally
-                        {
-                            semaphore.Release(); // 释放信号量
-                        }
                     }
-                });
-            }));
+                }
+                catch (Exception ex)
+                {
+                    // 捕获异常，例如访问权限不足或进程已终止
+                    Console.WriteLine($"无法访问进程 {process.ProcessName}: {ex.Message}");
+                }
+                finally
+                {
+                }
+            }
 
-            Dispatcher.Invoke(() => lvProcesses.ItemsSource = processInfos);
+            //Dispatcher.Invoke(() => lvProcesses.ItemsSource = processInfos);
         }
 
         // 获取进程的命令行参数
@@ -343,13 +337,13 @@ namespace TaskManager
         // 显示遮罩层
         private void ShowMask()
         {
-            maskBorder.Visibility = Visibility.Visible;
+            Dispatcher.Invoke(() => maskBorder.Visibility = Visibility.Visible);
         }
 
         // 隐藏遮罩层
         private void HideMask()
         {
-            maskBorder.Visibility = Visibility.Collapsed;
+            Dispatcher.Invoke(() => maskBorder.Visibility = Visibility.Collapsed);
         }
         private IntPtr FindMainWindowHandle(int processId)
         {
