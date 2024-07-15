@@ -8,6 +8,7 @@ using System.Linq;
 using System.Management;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using Newtonsoft.Json;
@@ -25,6 +26,7 @@ namespace TaskManager
         public event PropertyChangedEventHandler PropertyChanged;
         public string ExecutTime = "耗时：0 s";
         private SynchronizationContext syncContext;
+        private static Dictionary<int, string> CommandLines = new Dictionary<int, string>();
         public MainWindow()
         {
             InitializeComponent();
@@ -35,9 +37,13 @@ namespace TaskManager
             }
             syncContext = SynchronizationContext.Current;
             txtExecutionTime.Text = "耗时：0 s";
+
+        }
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            // 窗口加载完成后的操作
             LoadTaskGroupJson();
         }
-
         //private void LoadProcessNames()
         //{
         //    // 从 JSON 文件加载保存的进程名称集合
@@ -62,8 +68,8 @@ namespace TaskManager
             {
                 lvNames.ItemsSource = taskGroups;
                 // 假设默认选中第一行
-                lvNames.SelectedIndex = 0;
-                GetProcess(taskGroups.First().TaskGroup);
+                //lvNames.SelectedIndex = 0;
+                //GetProcess(taskGroups.First().TaskGroup);
             }
         }
 
@@ -106,43 +112,12 @@ namespace TaskManager
             // 开始计时
             stopwatch.Start();
             // 执行耗时操作，例如模拟一个耗时的任务
-            Dispatcher.Invoke(() => {
+            Dispatcher.Invoke(() =>
+            {
                 processInfos.Clear();
-            }) ;
-            await Task.Run(()=> ProcessDotnetProcessesInBatchesAsync(searchName));
-          
-            //await Task.Run(() =>
-            //{
-            //    processInfos = new ObservableCollection<ProcessInfo>();
-            //    Process[] processes = Process.GetProcesses();
+            });
+            await Task.Run(() => ProcessDotnetProcessesInBatchesAsync(searchName));
 
-            //    Console.WriteLine("正在运行的 dotnet.exe 进程：");
-            //    foreach (Process process in processes)
-            //    {
-            //        try
-            //        {
-            //            // 检查进程名称是否为 dotnet.exe
-            //            if (string.Equals(process.ProcessName, "dotnet", StringComparison.OrdinalIgnoreCase))
-            //            {
-            //                // 获取命令行参数
-            //                string commandLine = GetCommandLine(process);
-
-            //                // 检查命令行参数是否包含特定的参数或标识
-            //                if (commandLine.IndexOf(searchName, StringComparison.OrdinalIgnoreCase) >= 0)
-            //                {
-            //                    processInfos.Add(new ProcessInfo() { ProcessId = process.Id, TaskGroup = searchName, TaskName = commandLine });
-            //                }
-            //            }
-            //        }
-            //        catch (Exception ex)
-            //        {
-            //            // 捕获异常，例如访问权限不足或进程已终止
-            //            Console.WriteLine($"无法访问进程 {process.ProcessName}: {ex.Message}");
-            //        }
-            //    }
-            //    Dispatcher.Invoke(() => lvProcesses.ItemsSource = processInfos);
-
-            //});
             syncContext.Post(_ => lvProcesses.ItemsSource = processInfos, null);
             //Dispatcher.Invoke(() => HideMask());
             await Task.Run(() => HideMask());
@@ -154,13 +129,44 @@ namespace TaskManager
             txtExecutionTime.Text = $@"耗时：{(int)elapsedTime.TotalSeconds} s";
         }
 
-        void ProcessDotnetProcessesInBatchesAsync(string searchName)
+        async Task ProcessDotnetProcessesInBatchesAsync(string searchName)
         {
             //Process[] processes = Process.GetProcesses();
 
             Console.WriteLine("正在运行的 dotnet.exe 进程：");
-            
+
             Process[] processes = Process.GetProcessesByName("dotnet");
+            if (processes.Length > 0)
+            {
+                GetCommandLines();
+            }
+            // 拆分成多个批次
+            var batches = SplitListIntoBatches(processes.ToList(), 5);
+
+            // 使用多个线程处理每个批次
+            //Parallel.ForEach(batches, batch =>
+            //{
+            //    Excute(batch, searchName);
+            //});
+            // 异步处理每个批次
+            int i = 0;
+            int size = 10;
+            bool isRun = true;
+            do
+            {
+                var tasks = batches.Skip(i * size).Take(size).Select(batch => Task.Run(() => Excute(batch, searchName)));
+                if (tasks.Count() <= 0)
+                {
+                    isRun = false; break;
+                }
+                await Task.WhenAll(tasks);
+                i++;
+            } while (isRun);
+
+            //Dispatcher.Invoke(() => lvProcesses.ItemsSource = processInfos);
+        }
+        void Excute(List<Process> processes, string searchName)
+        {
             foreach (var process in processes)
             {
                 try
@@ -178,10 +184,11 @@ namespace TaskManager
                             lock (processInfos)
                             {
                                 if (processInfos.Where(i => i.ProcessId == process.Id).Count() > 0) { continue; }
-                                Dispatcher.Invoke(() => {
+                                Dispatcher.Invoke(() =>
+                                {
                                     processInfos.Add(new ProcessInfo() { ProcessId = process.Id, TaskGroup = searchName, TaskName = commandLine });
                                 });
-                                
+
                             }
                         }
                     }
@@ -195,13 +202,27 @@ namespace TaskManager
                 {
                 }
             }
-
-            //Dispatcher.Invoke(() => lvProcesses.ItemsSource = processInfos);
         }
-
+        // 拆分列表的方法
+        static List<List<T>> SplitListIntoBatches<T>(List<T> source, int batchSize)
+        {
+            var batches = new List<List<T>>();
+            for (int i = 0; i < source.Count; i += batchSize)
+            {
+                batches.Add(source.Skip(i).Take(batchSize).ToList());
+            }
+            return batches;
+        }
         // 获取进程的命令行参数
         private static string GetCommandLine(Process process)
         {
+            if (CommandLines.Count > 0)
+            {
+                if (CommandLines.TryGetValue(process.Id, out string? commandline))
+                {
+                    return commandline;
+                }
+            }
             using (ManagementObjectSearcher searcher = new ManagementObjectSearcher($"SELECT CommandLine FROM Win32_Process WHERE ProcessId = {process.Id}"))
             {
                 using (ManagementObjectCollection objects = searcher.Get())
@@ -213,6 +234,19 @@ namespace TaskManager
                 }
             }
             return string.Empty;
+        }
+        private static void GetCommandLines()
+        {
+            // 一次性查询所有进程的命令行参数
+            using (ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT ProcessId, CommandLine FROM Win32_Process"))
+            {
+                foreach (ManagementObject obj in searcher.Get())
+                {
+                    int processId = Convert.ToInt32(obj["ProcessId"]);
+                    string commandLine = obj["CommandLine"]?.ToString();
+                    CommandLines[processId] = commandLine;
+                }
+            }
         }
         private void btnCloseProcess_Click(object sender, RoutedEventArgs e)
         {
