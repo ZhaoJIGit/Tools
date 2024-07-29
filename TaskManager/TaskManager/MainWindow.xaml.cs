@@ -7,11 +7,13 @@ using System.IO;
 using System.Linq;
 using System.Management;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using Newtonsoft.Json;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace TaskManager
 {
@@ -72,7 +74,12 @@ namespace TaskManager
                 //GetProcess(taskGroups.First().TaskGroup);
             }
         }
-
+        private async void btnTest_Click(object sender, RoutedEventArgs e) {
+            await Excute();
+        }
+        private async Task Excute() {
+            await Task.Delay(5000);
+        }
         private void btnFindProcesses_Click(object sender, RoutedEventArgs e)
         {
             string searchName = txtSearch.Text.Trim();
@@ -171,6 +178,7 @@ namespace TaskManager
             {
                 try
                 {
+                   
                     // 检查进程名称是否为 dotnet.exe
                     if (string.Equals(process.ProcessName, "dotnet", StringComparison.OrdinalIgnoreCase))
                     {
@@ -310,22 +318,74 @@ namespace TaskManager
                 item.IsSelected = false;
             }
         }
+ 
         private void lvProcesses_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             // 获取选中的项
             var selectedProcess = lvProcesses.SelectedItem as ProcessInfo;
             if (selectedProcess != null)
             {
+                using (Process process = Process.GetProcessById(selectedProcess.ProcessId))
+                {
+                    // 获取标准输出流（如果进程已重定向）
+                    StreamReader outputReader = process.StandardOutput;
+                    StreamReader errorReader = process.StandardError;
+
+                    // 读取输出流
+                    string output = outputReader.ReadToEnd();
+                    Console.WriteLine("标准输出:");
+                    Console.WriteLine(output);
+
+                    // 读取错误流
+                    string error = errorReader.ReadToEnd();
+                    if (!string.IsNullOrEmpty(error))
+                    {
+                        Console.WriteLine("标准错误:");
+                        Console.WriteLine(error);
+                    }
+                }
+                //Process process = Process.GetProcessById(selectedProcess.ProcessId);
+                //// 获取进程的命令行参数
+                //string commandLine = process.MainModule.FileName;
+                //string arguments = process.StartInfo.Arguments;
+                //// 检查进程是否已经启动，并重定向输出
+                //if (!process.StartInfo.RedirectStandardOutput || !process.StartInfo.RedirectStandardError)
+                //{
+                //    Console.WriteLine("进程没有重定向输出。");
+                //    return;
+                //}
+
+                //// 获取标准输出和标准错误
+                //process.OutputDataReceived += new DataReceivedEventHandler((sender, e) => {
+                //    if (!string.IsNullOrEmpty(e.Data))
+                //    {
+                //        MessageBox.Show($"标准输出：{e.Data}");
+                //    }
+                //});
+
+                //process.ErrorDataReceived += new DataReceivedEventHandler((sender, e) => {
+                //    if (!string.IsNullOrEmpty(e.Data))
+                //    {
+                //        MessageBox.Show($"错误输出：{e.Data}");
+                //    }
+                //});
+
+                //// 启动异步读取
+                //process.BeginOutputReadLine();
+                //process.BeginErrorReadLine();
+
+                //// 等待进程退出
+                //process.WaitForExit();
                 // 打开选中项对应的进程窗口
-                IntPtr mainWindowHandle = FindMainWindowHandle(selectedProcess.ProcessId);
-                if (mainWindowHandle != IntPtr.Zero)
-                {
-                    SetForegroundWindow(mainWindowHandle);
-                }
-                else
-                {
-                    MessageBox.Show($"进程 {selectedProcess.TaskName} 的主窗口未找到。");
-                }
+                //IntPtr mainWindowHandle = FindMainWindowHandle(selectedProcess.ProcessId);
+                //if (mainWindowHandle != IntPtr.Zero)
+                //{
+                //    SetForegroundWindow(mainWindowHandle);
+                //}
+                //else
+                //{
+                //    //MessageBox.Show($"{output}{error}");
+                //}
             }
         }
         private void lvProcesses_SelectionChanged(object sender, SelectionChangedEventArgs e)

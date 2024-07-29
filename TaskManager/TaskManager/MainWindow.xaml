@@ -27,6 +27,7 @@
         <StackPanel Grid.Row="0" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="10">
             <TextBox x:Name="txtSearch" Width="200" Margin="0,0,10,0" VerticalAlignment="Center"  />
             <Button Content="查找进程" Width="103" Click="btnFindProcesses_Click" RenderTransformOrigin="0.5,0.5"/>
+            <Button Content="Test" Width="103" Click="btnTest_Click" RenderTransformOrigin="0.5,0.5"/>
         </StackPanel>
         <!-- 左侧 ListView -->
         <ListView x:Name="lvNames" Margin="10"  Grid.Row="1"  Grid.Column="0"  ScrollViewer.CanContentScroll="True" ScrollViewer.HorizontalScrollBarVisibility="Auto"   SelectionChanged="lvNames_SelectionChanged" MouseDoubleClick="lvNames_MouseDoubleClick">
