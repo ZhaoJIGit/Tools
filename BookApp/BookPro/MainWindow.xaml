@@ -5,8 +5,41 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BookPro"
         mc:Ignorable="d"
-        Title="MainWindow" Height="174" Width="389">
+        Title="阅读" Height="174" Width="389"
+        Loaded="Window_Loaded"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent">
+    <Window.Resources>
+        <!-- 背景颜色资源 -->
+        <SolidColorBrush x:Key="TitleBackgroundBrush" Color="Red" />
+        <!-- Define a style for the title bar -->
+        <Style x:Key="TitleBarStyle" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource TitleBackgroundBrush}"/>
+            <!-- Default color -->
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="VerticalAlignment" Value="Top"/>
+        </Style>
+    </Window.Resources>
+    <Window.Template>
+        <ControlTemplate TargetType="Window">
+            <Border Background="Transparent"   BorderThickness="1">
+                <DockPanel>
+                    <Border x:Name="TitleStyle"  VerticalAlignment="Top" DockPanel.Dock="Top">
+                        <DockPanel>
+                            <Button x:Name="btnClose" Content="X" DockPanel.Dock="Right" Width="30" Height="30" Background="White" Foreground="Black" Click="CloseButton_Click"/>
+                            <!-- 最大化按钮 -->
+                            <Button x:Name="btnFD" Content="[ ]" DockPanel.Dock="Right" Width="30" Height="30" Background="White" Foreground="Black" Click="MaximizeButton_Click"/>
+
+                            <!-- 最小化按钮 -->
+                            <Button x:Name="btnSX" Content="—" DockPanel.Dock="Right" Width="30" Height="30" Background="White" Foreground="Black" Click="MinimizeButton_Click"/>
+                            <TextBlock x:Name="title" Background="White"   MouseLeftButtonDown="TitleBar_MouseLeftButtonDown" Foreground="White" />
+                        </DockPanel>
+                    </Border>
+                    <ContentPresenter ContentSource="Content" />
+                </DockPanel>
+            </Border>
+        </ControlTemplate>
+    </Window.Template>
     <Grid>
-        <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden"/>
+        <Frame x:Name="MainFrame"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" NavigationUIVisibility="Hidden"/>
     </Grid>
 </Window>

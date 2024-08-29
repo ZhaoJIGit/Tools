@@ -5,7 +5,8 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:BookPro"
       mc:Ignorable="d"
-      Title="ChapterPage" Height="170" Width="351">
+      Loaded="Page_Loaded"
+      Title="ChapterPage">
 
     <Grid>
         <ListBox x:Name="LineListBox" SelectionChanged="LineListBox_SelectionChanged" Margin="0,30,0,0"/>

@@ -5,8 +5,9 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:BookPro"
       mc:Ignorable="d" 
+      Loaded="Page_Loaded"
       SizeChanged="Window_SizeChanged"
-      Title="ContentPage" Height="129" Width="385">
+      Title="ContentPage" >
 
     <Grid Margin="0,0,0,10">
         <Grid.ColumnDefinitions>
@@ -24,7 +25,7 @@
             <Button Name="btnIncreaseFont" Content="放大字体" Click="btnIncreaseFont_Click" Margin="5" IsEnabled="False" Width="Auto"/>
             <Button Name="btnDecreaseFont" Content="缩小字体" Click="btnDecreaseFont_Click" Margin="5" IsEnabled="False" Width="Auto"/>
             <Button Name="btnBack" Content="返回" Click="btnBack_Click" Margin="5"  Width="Auto"/>
-
+            <Button Name="btnYinNi" Content="隐匿" Margin="5"  Width="Auto"  Click="YinNi_Click" />
         </StackPanel>
     </Grid>
 </Page>
