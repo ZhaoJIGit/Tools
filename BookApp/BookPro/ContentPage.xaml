@@ -7,6 +7,9 @@
       mc:Ignorable="d" 
       Loaded="Page_Loaded"
       SizeChanged="Window_SizeChanged"
+      PreviewKeyDown="Window_KeyDown"
+      Focusable="True"
+      Height="50" Width="400"
       Title="ContentPage" >
 
     <Grid Margin="0,0,0,10">
@@ -16,16 +19,16 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition/>
-            <RowDefinition Height="50"  />
+            <RowDefinition />
         </Grid.RowDefinitions>
-        <TextBox Name="txtContent" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" FontSize="12" Margin="10,0,10,35" IsReadOnly="True" Grid.ColumnSpan="2" Grid.RowSpan="2"/>
+        <TextBox Name="txtContent"  BorderThickness="0"   BorderBrush="Transparent" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" FontSize="15"  IsReadOnly="True" Grid.ColumnSpan="2" Grid.RowSpan="2"/>
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Left" Margin="62,20,0,0" Grid.ColumnSpan="2" Width="Auto">
-            <Button Name="btnPreviousPage" Content="上一页" Click="btnPreviousPage_Click" Margin="5" IsEnabled="False" Width="Auto"/>
-            <Button Name="btnNextPage" Content="下一页" Click="btnNextPage_Click" Margin="5" IsEnabled="False" Width="Auto"/>
-            <Button Name="btnIncreaseFont" Content="放大字体" Click="btnIncreaseFont_Click" Margin="5" IsEnabled="False" Width="Auto"/>
-            <Button Name="btnDecreaseFont" Content="缩小字体" Click="btnDecreaseFont_Click" Margin="5" IsEnabled="False" Width="Auto"/>
-            <Button Name="btnBack" Content="返回" Click="btnBack_Click" Margin="5"  Width="Auto"/>
-            <Button Name="btnYinNi" Content="隐匿" Margin="5"  Width="Auto"  Click="YinNi_Click" />
+            <Button Visibility="Hidden" Name="btnPreviousPage" Content="上一页" Click="btnPreviousPage_Click" Margin="5" IsEnabled="False" Width="Auto"/>
+            <Button  Visibility="Hidden" Name="btnNextPage" Content="下一页" Click="btnNextPage_Click" Margin="5" IsEnabled="False" Width="Auto"/>
+            <Button  Visibility="Hidden" Name="btnIncreaseFont" Content="放大字体" Click="btnIncreaseFont_Click" Margin="5" IsEnabled="False" Width="Auto"/>
+            <Button  Visibility="Hidden" Name="btnDecreaseFont" Content="缩小字体" Click="btnDecreaseFont_Click" Margin="5" IsEnabled="False" Width="Auto"/>
+            <Button  Visibility="Hidden" Name="btnBack" Content="返回" Click="btnBack_Click" Margin="5"  Width="Auto"/>
+            <Button  Visibility="Hidden" Name="btnYinNi" Content="隐匿" Margin="5"  Width="Auto"  Click="YinNi_Click" />
         </StackPanel>
     </Grid>
 </Page>

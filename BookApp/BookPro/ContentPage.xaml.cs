@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 
@@ -37,6 +38,7 @@ namespace BookPro
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             SetColor();
+            this.Focus();  // 在页面加载时手动设置焦点
         }
         //private void LoadPositionFromJson()
         //{
@@ -97,7 +99,8 @@ namespace BookPro
         {
             SetColor();
         }
-        private void SetColor() {
+        private void SetColor()
+        {
             // 获取屏幕上指定位置的颜色
             //System.Windows.Point screenLocation = new System.Windows.Point(100, 100); // 可以根据需要修改位置
             //System.Drawing.Color screenColor = GetScreenColorAt(screenLocation);
@@ -124,7 +127,7 @@ namespace BookPro
             // 将System.Drawing.Color转换为WPF的Color
             System.Windows.Media.Color wpfColor = System.Windows.Media.Color.FromArgb(screenColor.A, screenColor.R, screenColor.G, screenColor.B);
 
-           
+
 
             // 将窗口背景色设置为获取到的颜色
             this.Background = new SolidColorBrush(wpfColor);
@@ -201,7 +204,7 @@ namespace BookPro
             {
                 using (Graphics g = Graphics.FromImage(screenshot))
                 {
-                    g.CopyFromScreen((int)location.X, (int)location.Y, 0, 0, new System.Drawing.Size(1, 1));
+                    g.CopyFromScreen((int)location.X-30, (int)location.Y-30, 0, 0, new System.Drawing.Size(1, 1));
                 }
                 return screenshot.GetPixel(0, 0);
             }
@@ -257,13 +260,42 @@ namespace BookPro
                 DisplayPage(currentPage);
             }
         }
+        //取出40个字
+        int pageSize = 50;
+        int pageIndex = 0;
+        bool isCurrentPage = false;
+        string currentContent = "";
         private void DisplayPage(int pageNumber)
         {
             if (pages != null && pageNumber >= 0 && pageNumber < pages.Length)
             {
-                txtContent.Text = pages[pageNumber];
+                if (!isCurrentPage)
+                {
+                    pageIndex = 0;
+                    currentContent = pages[pageNumber];
+                }
+                else {
+                    pageIndex++;
+                }
+                var length = currentContent.Length;
+                if (currentContent.Length > pageSize)
+                {
+                    isCurrentPage = true;
+                    length = pageSize;
+                }
+                var ss = currentContent.Length - (pageIndex * pageSize);
+                if (ss > pageSize)
+                {
+                    length = pageSize;
+                }
+                else {
+                    length = ss;
+                    isCurrentPage = false;
+                }
+                txtContent.Text = currentContent.Substring(pageIndex * pageSize, length);
                 filePositions[Path.GetFileName(fileName)] = pageNumber;
                 SavePositionsToJson();
+                
             }
         }
         private void SavePositionsToJson()
@@ -283,6 +315,8 @@ namespace BookPro
         {
             if (currentPage > 0)
             {
+                //回看需要重新计算
+                isCurrentPage = false;
                 currentPage--;
                 DisplayPage(currentPage);
             }
@@ -325,7 +359,57 @@ namespace BookPro
                 ReloadContent();
             }
         }
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            switch (e.Key)
+            {
+                case Key.Add:
+                    // 处理向上键
+                    txtContent.FontSize += 1;
+                    AdjustLinesPerPage();
+                    ReloadContent();
+                    break;
+                case Key.Subtract:
+                    // 处理向下键
+                    if (txtContent.FontSize > 1)
+                    {
+                        txtContent.FontSize -= 1;
+                        AdjustLinesPerPage();
+                        ReloadContent();
+                    }
+                    break;
+                case Key.Left:
+                    // 处理向左键
+                    if (currentPage > 0)
+                    {
+                        currentPage--;
+                        DisplayPage(currentPage);
+                    }
+                    break;
+                case Key.Right:
+                    // 处理向右键
+                    if (currentPage < pages.Length - 1)
+                    {
+                        currentPage++;
+                        DisplayPage(currentPage);
+                    }
+                    break;
+                case Key.Enter:
+                    // 处理向右键
+                    SetColor();
+                    break;
+                case Key.Down:
+                    Window.GetWindow(this).WindowState = WindowState.Minimized;
+                    break;
+                case Key.Up:
+                    Window.GetWindow(this).WindowState = WindowState.Normal;
+                    break;
+                case Key.Escape:
+                    Window.GetWindow(this).Close();
+                    break;
+            }
 
+        }
 
     }
 }

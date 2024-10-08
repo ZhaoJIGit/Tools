@@ -5,6 +5,10 @@ VisualStudioVersion = 17.8.34511.84
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TaskManager", "TaskManager\TaskManager.csproj", "{8B520190-BAB1-484C-9716-2CD92F3AF6B6}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TaskMGPro", "TaskMGPro\TaskMGPro.csproj", "{4B77E840-C7B4-49A8-BB70-EDD6BE258D76}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp1", "ConsoleApp1\ConsoleApp1.csproj", "{8B8D844A-B786-4807-98D0-08ABF8DA4E38}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{8B520190-BAB1-484C-9716-2CD92F3AF6B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8B520190-BAB1-484C-9716-2CD92F3AF6B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8B520190-BAB1-484C-9716-2CD92F3AF6B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4B77E840-C7B4-49A8-BB70-EDD6BE258D76}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4B77E840-C7B4-49A8-BB70-EDD6BE258D76}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4B77E840-C7B4-49A8-BB70-EDD6BE258D76}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4B77E840-C7B4-49A8-BB70-EDD6BE258D76}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B8D844A-B786-4807-98D0-08ABF8DA4E38}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B8D844A-B786-4807-98D0-08ABF8DA4E38}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B8D844A-B786-4807-98D0-08ABF8DA4E38}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B8D844A-B786-4807-98D0-08ABF8DA4E38}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

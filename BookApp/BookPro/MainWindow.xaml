@@ -5,8 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BookPro"
         mc:Ignorable="d"
-        Title="阅读" Height="174" Width="389"
+        Title="阅读" 
+        SizeToContent="WidthAndHeight"
         Loaded="Window_Loaded"
+        PreviewKeyDown="Window_PreviewKeyDown"
+        MouseLeftButtonDown="TitleBar_MouseLeftButtonDown"
         WindowStyle="None" AllowsTransparency="True" Background="Transparent">
     <Window.Resources>
         <!-- 背景颜色资源 -->
@@ -24,22 +27,41 @@
             <Border Background="Transparent"   BorderThickness="1">
                 <DockPanel>
                     <Border x:Name="TitleStyle"  VerticalAlignment="Top" DockPanel.Dock="Top">
-                        <DockPanel>
-                            <Button x:Name="btnClose" Content="X" DockPanel.Dock="Right" Width="30" Height="30" Background="White" Foreground="Black" Click="CloseButton_Click"/>
-                            <!-- 最大化按钮 -->
-                            <Button x:Name="btnFD" Content="[ ]" DockPanel.Dock="Right" Width="30" Height="30" Background="White" Foreground="Black" Click="MaximizeButton_Click"/>
+                        <Grid>
+                            <TextBlock x:Name="title"  Background="Transparent"    Foreground="White" />
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right"  VerticalAlignment="Top">
+                                <Button BorderBrush="Transparent" x:Name="btnSX" Content="—" Visibility="Collapsed" 
+       Width="30" Height="30" Background="White" Foreground="Black" 
+       Click="MinimizeButton_Click"/>
+                                <Button BorderBrush="Transparent" x:Name="btnFD" Content="[ ]" Visibility="Collapsed" 
+                                    Width="30" Height="30" Background="White" Foreground="Black" 
+                                    Click="MaximizeButton_Click"/>
 
-                            <!-- 最小化按钮 -->
-                            <Button x:Name="btnSX" Content="—" DockPanel.Dock="Right" Width="30" Height="30" Background="White" Foreground="Black" Click="MinimizeButton_Click"/>
-                            <TextBlock x:Name="title" Background="White"   MouseLeftButtonDown="TitleBar_MouseLeftButtonDown" Foreground="White" />
-                        </DockPanel>
+                                <Button BorderBrush="Transparent" x:Name="btnClose" Content="X"  Visibility="Collapsed" 
+     Width="30" Height="30" Background="Transparent" Foreground="Black" 
+     Click="CloseButton_Click"/>
+                            </StackPanel>
+                        </Grid>
+                        <!--<DockPanel>
+                            <Button x:Name="btnClose" Content="X" Visibility="Hidden" DockPanel.Dock="Right" Width="30" Height="30" Background="White" Foreground="Black" Click="CloseButton_Click"/>
+                            -->
+                        <!-- 最大化按钮 -->
+                        <!--
+                            <Button x:Name="btnFD" Content="[ ]" Visibility="Hidden" DockPanel.Dock="Right" Width="30" Height="30" Background="White" Foreground="Black" Click="MaximizeButton_Click"/>
+
+                            -->
+                        <!-- 最小化按钮 -->
+                        <!--
+                            <Button x:Name="btnSX" Content="—" Visibility="Hidden" DockPanel.Dock="Right" Width="30" Height="30" Background="White" Foreground="Black" Click="MinimizeButton_Click"/>
+                            <TextBlock x:Name="title"  Background="Transparent"   MouseLeftButtonDown="TitleBar_MouseLeftButtonDown" Foreground="White" />
+                        </DockPanel>-->
                     </Border>
                     <ContentPresenter ContentSource="Content" />
                 </DockPanel>
             </Border>
         </ControlTemplate>
     </Window.Template>
-    <Grid>
-        <Frame x:Name="MainFrame"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" NavigationUIVisibility="Hidden"/>
+    <Grid >
+        <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden"/>
     </Grid>
 </Window>
