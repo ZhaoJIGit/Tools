@@ -10,7 +10,7 @@
       PreviewKeyDown="Window_KeyDown"
       Focusable="True"
         MouseLeftButtonDown="TitleBar_MouseLeftButtonDown"
-      Height="30" Width="430"
+      Height="20" Width="430"
       Title="ContentPage" >
 
     <Grid >
