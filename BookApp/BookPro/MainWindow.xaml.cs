@@ -76,19 +76,19 @@ namespace BookPro
 
         private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            switch (e.Key)
-            {
-                case Key.Enter:
-                    // 处理向右键
-                    SetColor();
-                    break;
-                case Key.Down:
-                    Window.GetWindow(this).WindowState = WindowState.Minimized;
-                    break;
-                case Key.Escape:
-                    Window.GetWindow(this).Close();
-                    break;
-            }
+            //switch (e.Key)
+            //{
+            //    case Key.Enter:
+            //        // 处理向右键
+            //        SetColor();
+            //        break;
+            //    case Key.Down:
+            //        Window.GetWindow(this).WindowState = WindowState.Minimized;
+            //        break;
+            //    case Key.Escape:
+            //        Window.GetWindow(this).Close();
+            //        break;
+            //}
         }
         private void SetColor()
         {

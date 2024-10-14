@@ -9,10 +9,11 @@
       SizeChanged="Window_SizeChanged"
       PreviewKeyDown="Window_KeyDown"
       Focusable="True"
-      Height="50" Width="400"
+        MouseLeftButtonDown="TitleBar_MouseLeftButtonDown"
+      Height="30" Width="430"
       Title="ContentPage" >
 
-    <Grid Margin="0,0,0,10">
+    <Grid >
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="33*"/>
             <ColumnDefinition Width="47*"/>
@@ -21,14 +22,14 @@
             <RowDefinition/>
             <RowDefinition />
         </Grid.RowDefinitions>
-        <TextBox Name="txtContent"  BorderThickness="0"   BorderBrush="Transparent" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" FontSize="15"  IsReadOnly="True" Grid.ColumnSpan="2" Grid.RowSpan="2"/>
-        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Left" Margin="62,20,0,0" Grid.ColumnSpan="2" Width="Auto">
-            <Button Visibility="Hidden" Name="btnPreviousPage" Content="上一页" Click="btnPreviousPage_Click" Margin="5" IsEnabled="False" Width="Auto"/>
-            <Button  Visibility="Hidden" Name="btnNextPage" Content="下一页" Click="btnNextPage_Click" Margin="5" IsEnabled="False" Width="Auto"/>
-            <Button  Visibility="Hidden" Name="btnIncreaseFont" Content="放大字体" Click="btnIncreaseFont_Click" Margin="5" IsEnabled="False" Width="Auto"/>
-            <Button  Visibility="Hidden" Name="btnDecreaseFont" Content="缩小字体" Click="btnDecreaseFont_Click" Margin="5" IsEnabled="False" Width="Auto"/>
-            <Button  Visibility="Hidden" Name="btnBack" Content="返回" Click="btnBack_Click" Margin="5"  Width="Auto"/>
-            <Button  Visibility="Hidden" Name="btnYinNi" Content="隐匿" Margin="5"  Width="Auto"  Click="YinNi_Click" />
+        <TextBox Name="txtContent" PreviewMouseLeftButtonDown ="TitleBar_MouseLeftButtonDown"  BorderThickness="0"   BorderBrush="Transparent" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" FontSize="15"  IsReadOnly="True" Grid.ColumnSpan="2" Grid.RowSpan="2"/>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Left"  Grid.ColumnSpan="2" Width="Auto">
+            <Button Visibility="Hidden" Name="btnPreviousPage" Content="上一页" Click="btnPreviousPage_Click"   IsEnabled="False" Width="Auto"/>
+            <Button  Visibility="Hidden" Name="btnNextPage" Content="下一页" Click="btnNextPage_Click"   IsEnabled="False" Width="Auto"/>
+            <Button  Visibility="Hidden" Name="btnIncreaseFont" Content="放大字体" Click="btnIncreaseFont_Click"   IsEnabled="False" Width="Auto"/>
+            <Button  Visibility="Hidden" Name="btnDecreaseFont" Content="缩小字体" Click="btnDecreaseFont_Click"   IsEnabled="False" Width="Auto"/>
+            <Button  Visibility="Hidden" Name="btnBack" Content="返回" Click="btnBack_Click"   Width="Auto"/>
+            <Button  Visibility="Hidden" Name="btnYinNi" Content="隐匿"   Width="Auto"  Click="YinNi_Click" />
         </StackPanel>
     </Grid>
 </Page>

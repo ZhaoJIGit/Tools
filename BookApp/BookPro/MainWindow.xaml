@@ -8,7 +8,7 @@
         Title="阅读" 
         SizeToContent="WidthAndHeight"
         Loaded="Window_Loaded"
-        PreviewKeyDown="Window_PreviewKeyDown"
+        
         MouseLeftButtonDown="TitleBar_MouseLeftButtonDown"
         WindowStyle="None" AllowsTransparency="True" Background="Transparent">
     <Window.Resources>
@@ -18,7 +18,7 @@
         <Style x:Key="TitleBarStyle" TargetType="Border">
             <Setter Property="Background" Value="{StaticResource TitleBackgroundBrush}"/>
             <!-- Default color -->
-            <Setter Property="Height" Value="30"/>
+            <Setter Property="Height" Value="20"/>
             <Setter Property="VerticalAlignment" Value="Top"/>
         </Style>
     </Window.Resources>

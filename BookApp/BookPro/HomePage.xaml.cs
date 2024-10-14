@@ -4,6 +4,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Navigation;
@@ -38,6 +39,7 @@ namespace BookPro
         }
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
+            this.Focus();
             SetColor();
         }
         private void LoadPositionsFromJson()
@@ -223,5 +225,27 @@ namespace BookPro
                 return screenshot.GetPixel(0, 0);
             }
         }
+
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            switch (e.Key)
+            {
+                case Key.Enter:
+                    // 处理向右键
+                    SetColor();
+                    break;
+                case Key.Down:
+                    Window.GetWindow(this).WindowState = WindowState.Minimized;
+                    break;
+                case Key.Up:
+                    Window.GetWindow(this).WindowState = WindowState.Normal;
+                    break;
+                case Key.Escape:
+                    Window.GetWindow(this).Close();
+                    break;
+            }
+            this.Focus();
+        }
+
     }
 }

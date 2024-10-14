@@ -115,7 +115,7 @@ namespace BookPro
             GetWindowRect(hwnd, out rect);
 
             // 计算下方位置（假设向下20像素的位置）
-            System.Windows.Point screenLocation = new System.Windows.Point(rect.Right, rect.Bottom + 20);
+            System.Windows.Point screenLocation = new System.Windows.Point(rect.Right, rect.Bottom -10);
 
             // 获取下方位置的颜色
             System.Drawing.Color screenColor = GetScreenColorAt(screenLocation);
@@ -204,7 +204,7 @@ namespace BookPro
             {
                 using (Graphics g = Graphics.FromImage(screenshot))
                 {
-                    g.CopyFromScreen((int)location.X-30, (int)location.Y-30, 0, 0, new System.Drawing.Size(1, 1));
+                    g.CopyFromScreen((int)location.X, (int)location.Y, 0, 0, new System.Drawing.Size(1, 1));
                 }
                 return screenshot.GetPixel(0, 0);
             }
@@ -261,7 +261,7 @@ namespace BookPro
             }
         }
         //取出40个字
-        int pageSize = 50;
+        int pageSize = 25;
         int pageIndex = 0;
         bool isCurrentPage = false;
         string currentContent = "";
@@ -271,12 +271,10 @@ namespace BookPro
             {
                 if (!isCurrentPage)
                 {
-                    pageIndex = 0;
+                    //pageIndex = 0;
                     currentContent = pages[pageNumber];
                 }
-                else {
-                    pageIndex++;
-                }
+               
                 var length = currentContent.Length;
                 if (currentContent.Length > pageSize)
                 {
@@ -288,14 +286,15 @@ namespace BookPro
                 {
                     length = pageSize;
                 }
-                else {
+                else
+                {
                     length = ss;
                     isCurrentPage = false;
                 }
-                txtContent.Text = currentContent.Substring(pageIndex * pageSize, length);
+                txtContent.Text = currentContent.Substring(pageIndex * pageSize, length).TrimStart();
                 filePositions[Path.GetFileName(fileName)] = pageNumber;
                 SavePositionsToJson();
-                
+
             }
         }
         private void SavePositionsToJson()
@@ -316,8 +315,15 @@ namespace BookPro
             if (currentPage > 0)
             {
                 //回看需要重新计算
-                isCurrentPage = false;
-                currentPage--;
+                if (pageIndex == 0)
+                {
+                    isCurrentPage = false;
+                    currentPage--;
+                }
+                else {
+                    pageIndex--;
+                }
+               
                 DisplayPage(currentPage);
             }
         }
@@ -326,7 +332,10 @@ namespace BookPro
         {
             if (currentPage < pages.Length - 1)
             {
-                currentPage++;
+                if (!isCurrentPage)
+                {
+                    currentPage++;
+                }
                 DisplayPage(currentPage);
             }
         }
@@ -382,7 +391,18 @@ namespace BookPro
                     // 处理向左键
                     if (currentPage > 0)
                     {
-                        currentPage--;
+                        //回看需要重新计算
+                        if (pageIndex == 0)
+                        {
+                            isCurrentPage = false;
+                            currentPage--;
+                        }
+                        else
+                        {
+                            pageIndex--;
+                            isCurrentPage = true;
+                        }
+
                         DisplayPage(currentPage);
                     }
                     break;
@@ -390,7 +410,14 @@ namespace BookPro
                     // 处理向右键
                     if (currentPage < pages.Length - 1)
                     {
-                        currentPage++;
+                        if (!isCurrentPage)
+                        {
+                            pageIndex = 0;
+                            currentPage++;
+                        }
+                        else {
+                            pageIndex++;
+                        }
                         DisplayPage(currentPage);
                     }
                     break;
@@ -407,9 +434,20 @@ namespace BookPro
                 case Key.Escape:
                     Window.GetWindow(this).Close();
                     break;
+                case Key.Back:
+                    NavigationService.Navigate(new ChapterPage(fileName));
+                    break;
             }
+            this.Focus();
 
         }
-
+        private void TitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            // Initiates dragging of the window
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                Window.GetWindow(this).DragMove();
+            }
+        }
     }
 }

@@ -47,6 +47,7 @@ namespace BookPro
         }
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
+            this.Focus();
             SetColor();
         }
         private void SetColor()
@@ -206,6 +207,30 @@ namespace BookPro
             catch (Exception)
             {
             }
+        }
+
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            switch (e.Key)
+            {
+                case Key.Enter:
+                    // 处理向右键
+                    SetColor();
+                    break;
+                case Key.Down:
+                    Window.GetWindow(this).WindowState = WindowState.Minimized;
+                    break;
+                case Key.Up:
+                    Window.GetWindow(this).WindowState = WindowState.Normal;
+                    break;
+                case Key.Escape:
+                    Window.GetWindow(this).Close();
+                    break;
+                case Key.Back:
+                    NavigationService.Navigate(new HomePage());
+                    break;
+            }
+            this.Focus();
         }
     }
 }

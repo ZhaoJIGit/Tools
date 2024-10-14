@@ -5,13 +5,15 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:BookPro"
       mc:Ignorable="d"
-      Height="100" Width="300"
+      Height="50" Width="300"
       Loaded="Page_Loaded"
+      PreviewKeyDown="Window_KeyDown"
+       Focusable="True"
       Title="ChapterPage">
 
-    <Grid>
-        <ListBox BorderBrush="Transparent" x:Name="LineListBox" SelectionChanged="LineListBox_SelectionChanged" Margin="0,30,0,0"/>
-        <Button Content="返回" Click="Button_Click" HorizontalAlignment="Left" Margin="10,6,0,0" VerticalAlignment="Top"/>
+    <Grid >
+        <ListBox BorderBrush="Transparent" x:Name="LineListBox" SelectionChanged="LineListBox_SelectionChanged" />
+        <Button Content="返回" Visibility="Collapsed" Click="Button_Click" HorizontalAlignment="Left" Margin="10,6,0,0" VerticalAlignment="Top"/>
         <TextBox HorizontalAlignment="Left" Visibility="Hidden" x:Name="txt" Margin="56,7,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Width="120"/>
         <Button Content="跳转" Visibility="Hidden" Click="Jump_Click" HorizontalAlignment="Left" Margin="190,6,0,0" VerticalAlignment="Top"/>
     </Grid>
