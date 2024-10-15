@@ -22,17 +22,25 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="40"/>
             <RowDefinition Height="40*"/>
+            <RowDefinition Height="40*"/>
+            <RowDefinition Height="40*"/>
         </Grid.RowDefinitions>
         <Button Content=" 群组管理" x:Name="BtnGroup" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0" Click="BtnGroup_Click"   />
-        <ListView Grid.Row="1" x:Name="listGroupData" d:ItemsSource="{d:SampleData ItemCount=5}">
+        <ListView Grid.Row="1" Grid.RowSpan="3" x:Name="listGroupData" d:ItemsSource="{d:SampleData ItemCount=5}">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="群组名称" DisplayMemberBinding="{Binding Title}" Width="280"  />
                 </GridView>
             </ListView.View>
         </ListView>
-        <Grid Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3">
+        <Grid Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Margin="10">
             <oxy:PlotView  x:Name="PlotView" Model="{Binding PlotModel}"/>
+        </Grid>
+        <Grid Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Margin="10">
+            <oxy:PlotView  x:Name="PlotView2" Model="{Binding PlotModel1}"/>
+        </Grid>
+        <Grid Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" Margin="10">
+            <oxy:PlotView  x:Name="PlotView3" Model="{Binding PlotModel2}"/>
         </Grid>
     </Grid>
 </local:BasePage>
