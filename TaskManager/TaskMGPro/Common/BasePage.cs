@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using TaskMGPro.Models;
 
 namespace TaskMGPro.Common
 {
@@ -17,9 +18,16 @@ namespace TaskMGPro.Common
         public string MyName="zs";
         public string BackgroundColor = "#ffffff";
         public string ForegroundColor = "#000000";
+        // 定义事件，用于通知父窗口
+        public event EventHandler<PupupWindowEventArgs<bool>>? PageClosed;
         public BasePage()
         {
             MyName = "zj";
+        }
+        // 关闭页面的方法
+        protected void OnPageClosed(bool result)
+        {
+            PageClosed?.Invoke(this, new PupupWindowEventArgs<bool>(result));
         }
     }
 }

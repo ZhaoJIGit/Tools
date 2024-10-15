@@ -3,15 +3,16 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:TaskMGPro.Common"
+      xmlns:local="clr-namespace:TaskMGPro.Common" 
+      xmlns:oxy="http://oxyplot.org/wpf"
       xmlns:hc="https://handyorg.github.io/handycontrol" x:Class="TaskMGPro.Pages.HomePage"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="801"
+      Height="600" Width="1200"
       Loaded="Page_Loaded"
       Margin="0"
     Background="White"
       Title="HomePage">
-    <Grid>
+    <Grid Margin="5">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="50*"/>
             <ColumnDefinition Width="50*"/>
@@ -19,9 +20,19 @@
             <ColumnDefinition Width="50*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="7*"/>
-            <RowDefinition Height="43*"/>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="40*"/>
         </Grid.RowDefinitions>
-        <Button Content="Button" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <Button Content=" 群组管理" x:Name="BtnGroup" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0" Click="BtnGroup_Click"   />
+        <ListView Grid.Row="1" x:Name="listGroupData" d:ItemsSource="{d:SampleData ItemCount=5}">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="群组名称" DisplayMemberBinding="{Binding Title}" Width="280"  />
+                </GridView>
+            </ListView.View>
+        </ListView>
+        <Grid Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3">
+            <oxy:PlotView  x:Name="PlotView" Model="{Binding PlotModel}"/>
+        </Grid>
     </Grid>
 </local:BasePage>

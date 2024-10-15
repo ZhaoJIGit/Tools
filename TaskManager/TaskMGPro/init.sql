@@ -1,0 +1,9 @@
+CREATE TABLE IF NOT EXISTS GroupInfo (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    Title TEXT NOT NULL,
+    Address TEXT NOT NULL,
+    Type TEXT NOT NULL,
+    LogAddress TEXT NOT NULL
+);
+
+
