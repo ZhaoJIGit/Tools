@@ -439,18 +439,7 @@ namespace TaskManager
         {
             Dispatcher.Invoke(() => maskBorder.Visibility = Visibility.Collapsed);
         }
-        private IntPtr FindMainWindowHandle(int processId)
-        {
-            Process[] processes = Process.GetProcessesByName("dotnet");
-            foreach (Process proc in processes)
-            {
-                if (proc.Id == processId)
-                {
-                    return proc.MainWindowHandle;
-                }
-            }
-            return IntPtr.Zero;
-        }
+    
         #region Windows API 调用
 
         [DllImport("user32.dll")]
@@ -470,12 +459,8 @@ namespace TaskManager
 
         [DllImport("user32.dll", SetLastError = true)]
         private static extern IntPtr GetWindow(IntPtr hWnd, uint uCmd);
-        private const int SW_RESTORE = 9;
-        private IntPtr GetProcessMainWindowHandle(int processId)
-        {
-            Process process = Process.GetProcessById(processId);
-            return process.MainWindowHandle;
-        }
+ 
+      
 
         #endregion
 

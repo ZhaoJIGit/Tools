@@ -10,7 +10,7 @@ namespace TaskMGPro.Models
     {
         public long Id { get; set; }
         public string Title { get; set; }
-        public string Type { get; set; }
+        public string Type { get; set; } = "dotnet";
         public string LogAddress { get; set; }
         public string Address { get; set; }
     }

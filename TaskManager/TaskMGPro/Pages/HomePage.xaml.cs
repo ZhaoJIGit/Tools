@@ -293,9 +293,18 @@ namespace TaskMGPro.Pages
             listGroupData.ItemsSource = groupList;
         }
 
-
-
-
+        private void listGroupData_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            // 创建弹出框
+            PopupWindow popup = new PopupWindow(new BaseWindow() { Height = this.Height, Width = this.Width });
+            // 创建MyPage实例并传递参数
+            TaskPage page = new TaskPage(listGroupData.SelectedItem as GroupInfo);
+            page.PageClosed += MyPage_PageClosed;
+            // 在弹窗中加载指定的Page
+            popup.LoadPageWithParameters(page);
+            // 显示弹出框
+            var result = popup.ShowDialog();
+        }
     }
 
 

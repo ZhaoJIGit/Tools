@@ -10,7 +10,7 @@
     <Compile Update="Pages\AddGroupPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Pages\AddTaskPage.xaml.cs">
+    <Compile Update="Pages\TaskPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Pages\GroupPage.xaml.cs">
@@ -30,7 +30,7 @@
     <Page Update="Pages\AddGroupPage.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="Pages\AddTaskPage.xaml">
+    <Page Update="Pages\TaskPage.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Pages\GroupPage.xaml">

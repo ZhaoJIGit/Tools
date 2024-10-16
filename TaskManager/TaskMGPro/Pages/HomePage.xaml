@@ -7,40 +7,51 @@
       xmlns:oxy="http://oxyplot.org/wpf"
       xmlns:hc="https://handyorg.github.io/handycontrol" x:Class="TaskMGPro.Pages.HomePage"
       mc:Ignorable="d" 
-      Height="600" Width="1200"
+      d:DesignHeight="600"  d:DesignWidth="1200"
       Loaded="Page_Loaded"
       Margin="0"
     Background="White"
       Title="HomePage">
     <Grid Margin="5">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="50*"/>
-            <ColumnDefinition Width="50*"/>
-            <ColumnDefinition Width="50*"/>
-            <ColumnDefinition Width="50*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="40"/>
-            <RowDefinition Height="40*"/>
-            <RowDefinition Height="40*"/>
-            <RowDefinition Height="40*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Button Content=" 群组管理" x:Name="BtnGroup" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0" Click="BtnGroup_Click"   />
-        <ListView Grid.Row="1" Grid.RowSpan="3" x:Name="listGroupData" d:ItemsSource="{d:SampleData ItemCount=5}">
+
+        <!-- 将按钮居中显示 -->
+        <Button Content="群组管理" x:Name="BtnGroup" HorizontalAlignment="Center" VerticalAlignment="Center" Click="BtnGroup_Click" />
+
+        <!-- ListView 占据一列并自适应大小 -->
+        <ListView Margin="5" MouseDoubleClick="listGroupData_MouseDoubleClick" Grid.Row="1" Grid.RowSpan="3" x:Name="listGroupData" d:ItemsSource="{d:SampleData ItemCount=5}">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="群组名称" DisplayMemberBinding="{Binding Title}" Width="280"  />
+                    <GridViewColumn Header="群组名称"  DisplayMemberBinding="{Binding Title}" Width="280" />
                 </GridView>
             </ListView.View>
         </ListView>
-        <Grid Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Margin="10">
-            <oxy:PlotView  x:Name="PlotView" Model="{Binding PlotModel}"/>
+
+        <!-- 第一个 PlotView 自适应大小 -->
+        <Grid Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Margin="5">
+            <oxy:PlotView x:Name="PlotView" Model="{Binding PlotModel}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
         </Grid>
-        <Grid Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Margin="10">
-            <oxy:PlotView  x:Name="PlotView2" Model="{Binding PlotModel1}"/>
+
+        <!-- 第二个 PlotView 自适应大小 -->
+        <Grid Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Margin="5">
+            <oxy:PlotView x:Name="PlotView2" Model="{Binding PlotModel1}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
         </Grid>
-        <Grid Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" Margin="10">
-            <oxy:PlotView  x:Name="PlotView3" Model="{Binding PlotModel2}"/>
+
+        <!-- 第三个 PlotView 自适应大小 -->
+        <Grid Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" Margin="5">
+            <oxy:PlotView x:Name="PlotView3" Model="{Binding PlotModel2}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
         </Grid>
     </Grid>
+
 </local:BasePage>
