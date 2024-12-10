@@ -49,7 +49,9 @@ namespace TaskMGPro.Pages
         public string ExecutTime = "耗时：0 s";
         private SynchronizationContext syncContext;
         private static Dictionary<int, string> CommandLines = new Dictionary<int, string>();
+        CancellationTokenSource cts = new CancellationTokenSource();
 
+        private Task task;
         public TaskPage(GroupInfo currentGroup)
         {
             CurrentGroup = currentGroup;
@@ -57,7 +59,7 @@ namespace TaskMGPro.Pages
             syncContext = SynchronizationContext.Current;
             RefreshData();
             InitProcess(currentGroup.Title, 0);
-            
+
         }
         private void InitProcess(string title, int processId)
         {
@@ -105,17 +107,21 @@ namespace TaskMGPro.Pages
             }
 
             DataContext = this;
+            // 如果已有任务在运行，则取消它
+            if (cts != null && !cts.IsCancellationRequested)
+            {
+                cts.Cancel();
+                Console.WriteLine($"Process ID: {processId} 之前的任务已取消");
+            }
+
+            // 为新任务创建新的CancellationTokenSource
+            cts = new CancellationTokenSource();
+
             if (processId > 0)
             {
-                Task.Run(() => GetProcessData(processId));
+                // 创建CancellationTokenSource
+                task = Task.Run(() => GetProcessData(processId, cts.Token));
             }
-            //_timer = new DispatcherTimer
-            //{
-            //    Interval = TimeSpan.FromSeconds(1)
-            //};
-            //_timer.Tick += UpdateData;
-            //_timer.Start();
-
         }
 
         public PlotModel PlotModel { get; set; }
@@ -183,7 +189,7 @@ namespace TaskMGPro.Pages
         private void listGroupData_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             var process = lvProcesses.SelectedItem as ProcessInfo;
-            if (process==null) { return; }
+            if (process == null) { return; }
             InitProcess(process.TaskName, process.ProcessId);
             Logs.Clear();
             txtLog.Text = "";
@@ -195,6 +201,7 @@ namespace TaskMGPro.Pages
 
             var files = Directory.GetFiles(CurrentGroup.LogAddress, "*.*", SearchOption.AllDirectories);
             ObservableCollection<LogInfo> result = new ObservableCollection<LogInfo>();
+            List< LogInfo > fileList=new List<LogInfo>();
             foreach (var file in files)
             {
                 // 获取文件名
@@ -207,56 +214,84 @@ namespace TaskMGPro.Pages
                     if (fileName.Contains(item, StringComparison.OrdinalIgnoreCase)) // 忽略大小写
                     {
                         var fileInfo = new FileInfo(file);
-                        result.Add(new LogInfo() { Name = fileName, Path = file , UpdatedTime= fileInfo .LastWriteTime});
+                        fileList.Add(new LogInfo() { Name = fileName, Path = file, UpdatedTime = fileInfo.LastWriteTime.ToString("yyyy/MM/dd HH:mm") });
                     }
                     //result.Add(new LogInfo() { Name = fileName, Path = file });
                 }
             }
-            return result;
-        }
-        private void GetProcessData(int id)
-        {
-            // 查找指定名称的进程
-            Process process = Process.GetProcessById(id);
-
-            if (process == null)
-            {
-                Console.WriteLine($@"未找到【{id}】进程。");
-                return;
+            foreach (var file in fileList.OrderByDescending(i => i.UpdatedTime)) {
+                result.Add(file);
             }
-
-            // 打印进程基本信息
-            Console.WriteLine("进程名称: " + process.ProcessName);
-            Console.WriteLine("进程ID: " + process.Id);
-
-            // CPU 时间
-            TimeSpan cpuTime = process.TotalProcessorTime;
-            Console.WriteLine("CPU 使用时间: " + cpuTime.TotalMilliseconds + " 毫秒");
-
-            // 工作集（内存占用）
-            long memoryUsage = process.WorkingSet64;
-            Console.WriteLine("内存使用: " + memoryUsage / 1024 / 1024 + " MB");
-
-            // 虚拟内存大小
-            long virtualMemory = process.VirtualMemorySize64;
-            Console.WriteLine("虚拟内存使用: " + virtualMemory / 1024 / 1024 + " MB");
-
-            // 句柄数
-            Console.WriteLine("句柄数: " + process.HandleCount);
-
-            // 线程数
-            Console.WriteLine("线程数: " + process.Threads.Count);
-
-            // 优先级
-            Console.WriteLine("优先级: " + process.BasePriority);
-
-            // 持续监控，每秒刷新一次
-            while (!process.HasExited)
+            return result ;
+        }
+        private void GetProcessData(int id, CancellationToken token)
+        {
+            try
             {
-                Console.WriteLine("CPU 使用时间: " + process.TotalProcessorTime.TotalMilliseconds + " 毫秒");
-                Console.WriteLine("内存使用: " + process.WorkingSet64 / 1024 / 1024 + " MB");
-                UpdateMemory(process.WorkingSet64 / 1024 / 1024);
-                System.Threading.Thread.Sleep(1000);  // 每秒刷新一次
+
+
+                token.ThrowIfCancellationRequested();
+                // 查找指定名称的进程
+                Process process = Process.GetProcessById(id);
+
+                if (process == null)
+                {
+                    Console.WriteLine($@"未找到【{id}】进程。");
+                    return;
+                }
+
+                // 打印进程基本信息
+                Console.WriteLine("进程名称: " + process.ProcessName);
+                Console.WriteLine("进程ID: " + process.Id);
+
+                // CPU 时间
+                TimeSpan cpuTime = process.TotalProcessorTime;
+                Console.WriteLine("CPU 使用时间: " + cpuTime.TotalMilliseconds + " 毫秒");
+
+                // 工作集（内存占用）
+                long memoryUsage = process.WorkingSet64;
+                Console.WriteLine("内存使用: " + memoryUsage / 1024 / 1024 + " MB");
+
+                // 虚拟内存大小
+                long virtualMemory = process.VirtualMemorySize64;
+                Console.WriteLine("虚拟内存使用: " + virtualMemory / 1024 / 1024 + " MB");
+
+                // 句柄数
+                Console.WriteLine("句柄数: " + process.HandleCount);
+
+                // 线程数
+                Console.WriteLine("线程数: " + process.Threads.Count);
+
+                // 优先级
+                Console.WriteLine("优先级: " + process.BasePriority);
+
+                PerformanceCounter cpuCounter = new PerformanceCounter("Process", "% Processor Time", process.ProcessName, true);
+
+                // 让计数器运行一会儿，以便获取稳定的值
+                cpuCounter.NextValue();
+
+                // 获取 CPU 使用率
+
+
+
+                // 持续监控，每秒刷新一次
+                while (!process.HasExited && !token.IsCancellationRequested)
+                {
+                    System.Threading.Thread.Sleep(1000);  // 每秒刷新一次
+
+                    Console.WriteLine("CPU 使用时间: " + process.TotalProcessorTime.TotalMilliseconds + " 毫秒");
+                    Console.WriteLine("内存使用: " + process.WorkingSet64 / 1024 / 1024 + " MB");
+                    UpdateMemory(process.WorkingSet64 / 1024 / 1024);
+                    
+                    //更新Cpu
+                    float cpuUsage = cpuCounter.NextValue() / Environment.ProcessorCount;
+                   // UpdateMemory(cpuUsage);
+
+                }
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("切换任务");
             }
         }
         private void listGroupData_SelectionChanged(object sender, SelectionChangedEventArgs e)
