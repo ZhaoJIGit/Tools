@@ -1,7 +1,13 @@
 {
+  //******************
+  //******************  部署Linux，需要consul  节点名配置为ip，或者主机名做dns解析
+  //******************
+  //******************
+
+
 
   "Consul": {
-    "Address": "http://127.0.0.1:8500"
+    "Address": "http://192.168.10.33:8500"
   },
   "Routes": [
     {
@@ -17,7 +23,7 @@
       "DownstreamScheme": "http", // 下游服务协议
       //"DownstreamHostAndPorts": [
       //  {
-      //    "Host": "127.0.0.1", // 直接指定 IP 地址
+      //    "Host": "192.168.10.33", // 直接指定 IP 地址
       //    "Port": 5001
       //  }
       //],
@@ -36,7 +42,7 @@
       "DownstreamScheme": "http", // 下游服务协议
       //"DownstreamHostAndPorts": [
       //  {
-      //    "Host": "127.0.0.1", // 直接指定 IP 地址
+      //    "Host": "192.168.10.33", // 直接指定 IP 地址
       //    "Port": 5001
       //  }
       //],
@@ -49,9 +55,9 @@
     "DurationOfBreak": 3000
   },
   "GlobalConfiguration": {
-    "BaseUrl": "http://127.0.0.1:5000", // Ocelot 网关的基本 URL
+    "BaseUrl": "http://192.168.10.30:5000", // Ocelot 网关的基本 URL
     "ServiceDiscoveryProvider": {
-      "Host": "127.0.0.1", // Consul 的主机地址
+      "Host": "192.168.10.33", // Consul 的主机地址
       "Port": 8500, // Consul 的端口
       "Type": "Consul" // 服务发现类型
     },

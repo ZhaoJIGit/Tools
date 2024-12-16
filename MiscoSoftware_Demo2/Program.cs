@@ -17,7 +17,7 @@ namespace MicroSoftware_Demo2
             // 注册 Consul 客户端
             builder.Services.AddSingleton<IConsulClient>(sp => new ConsulClient(config =>
             {
-                config.Address = new Uri(consulConfig["Address"] ?? "http://127.0.0.1:8500");
+                config.Address = new Uri(consulConfig["Address"] ?? "http://192.168.10.33:8500");
             }));
 
             // 注册服务与 Consul 的集成
@@ -89,12 +89,12 @@ namespace MicroSoftware_Demo2
             {
                 ID = $"demo2",
                 Name = "demo2",
-                Address = "127.0.0.1",  // 服务实例的地址
+                Address = "192.168.10.33",  // 服务实例的地址
                 Port = 5002,            // 服务实例的端口
                 Tags = new[] { "api" }, // 标签
                 Check = new AgentServiceCheck
                 {
-                    HTTP = "http://127.0.0.1:5002/health", // 健康检查的 URL
+                    HTTP = "http://192.168.10.33:5002/health", // 健康检查的 URL
                     Interval = TimeSpan.FromSeconds(3)    // 检查频率
                 }
             };
