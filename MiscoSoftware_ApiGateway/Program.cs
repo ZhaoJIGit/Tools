@@ -1,8 +1,10 @@
 using Consul;
 using Microsoft.OpenApi.Models;
 using Ocelot.DependencyInjection;
+using Ocelot.Logging;
 using Ocelot.Middleware;
 using Ocelot.Provider.Consul;
+using Ocelot.Provider.Consul.Interfaces;
 
 namespace MiscoSoftware_ApiGateway
 {
@@ -16,7 +18,7 @@ namespace MiscoSoftware_ApiGateway
             builder.Configuration.AddJsonFile("ocelot.json", optional: false, reloadOnChange: true);
 
             // 添加 Ocelot 配置
-            builder.Services.AddOcelot(builder.Configuration).AddConsul();
+            builder.Services.AddOcelot(builder.Configuration).AddConsul<MyConsulServiceBuilder>();
             // 添加 Swagger 服务
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(options =>
@@ -64,5 +66,17 @@ namespace MiscoSoftware_ApiGateway
             app.Run();
         }
 
+    }
+    /// <summary>
+    /// 服务发现自定义转发地址
+    /// </summary>
+    public class MyConsulServiceBuilder : DefaultConsulServiceBuilder
+    {
+        public MyConsulServiceBuilder(IHttpContextAccessor contextAccessor, IConsulClientFactory clientFactory, IOcelotLoggerFactory loggerFactory)
+            : base(contextAccessor, clientFactory, loggerFactory) { }
+
+        // I want to use the agent service IP address as the downstream hostname
+        protected override string GetDownstreamHost(ServiceEntry entry, Node node)
+            => entry.Service.Address;
     }
 }
