@@ -10,8 +10,8 @@ namespace DocuEncoding
             // 注册 CodePagesEncodingProvider 来支持更多编码，包括 GB2312
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             // 输入文件路径和输出文件路径
-            string inputFilePath =Path.Combine(Directory.GetCurrentDirectory(), "223456.txt");
-            string outputFilePath = Path.Combine(Directory.GetCurrentDirectory(), "无限回档.txt");
+            string inputFilePath =Path.Combine(Directory.GetCurrentDirectory(), "间客.txt");
+            string outputFilePath = Path.Combine(Directory.GetCurrentDirectory(), "间客2.txt");
 
             // 指定源文件的编码为 GB2312，并将其转换为目标编码 UTF-8
             ConvertFileEncoding(inputFilePath, outputFilePath,Encoding.GetEncoding("GB2312"), Encoding.UTF8,ChineseConversionDirection.TraditionalToSimplified);

@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
+using System.Windows.Threading;
 
 
 namespace BookPro
@@ -22,8 +23,9 @@ namespace BookPro
         private int linesPerPage = 1;
         private bool isContentRendered = false;
         private bool isPageCalculationPending = false;
-
+        private bool isAutoPage = false;
         private string fileName;
+        private int suDu = 1000;
         private string positionsFilePath = Path.Combine(Path.GetTempPath(), "BookPro", "Cache", "positions.json");
         private Dictionary<string, long> filePositions = new Dictionary<string, long>();
         public ContentPage(string fileName, string chapter, long position)
@@ -37,9 +39,12 @@ namespace BookPro
         }
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
+
             SetColor();
             this.Focus();  // 在页面加载时手动设置焦点
         }
+        // 定时事件
+
         //private void LoadPositionFromJson()
         //{
         //    if (File.Exists(positionsFilePath))
@@ -115,7 +120,7 @@ namespace BookPro
             GetWindowRect(hwnd, out rect);
 
             // 计算下方位置（假设向下20像素的位置）
-            System.Windows.Point screenLocation = new System.Windows.Point(rect.Right, rect.Bottom -10);
+            System.Windows.Point screenLocation = new System.Windows.Point(rect.Right, rect.Bottom - 10);
 
             // 获取下方位置的颜色
             System.Drawing.Color screenColor = GetScreenColorAt(screenLocation);
@@ -274,7 +279,7 @@ namespace BookPro
                     //pageIndex = 0;
                     currentContent = pages[pageNumber];
                 }
-               
+
                 var length = currentContent.Length;
                 if (currentContent.Length > pageSize)
                 {
@@ -320,10 +325,11 @@ namespace BookPro
                     isCurrentPage = false;
                     currentPage--;
                 }
-                else {
+                else
+                {
                     pageIndex--;
                 }
-               
+
                 DisplayPage(currentPage);
             }
         }
@@ -415,7 +421,8 @@ namespace BookPro
                             pageIndex = 0;
                             currentPage++;
                         }
-                        else {
+                        else
+                        {
                             pageIndex++;
                         }
                         DisplayPage(currentPage);
@@ -437,6 +444,19 @@ namespace BookPro
                 case Key.Back:
                     NavigationService.Navigate(new ChapterPage(fileName));
                     break;
+                case Key.Multiply:
+                    suDu = suDu * 2;
+                    break;
+                case Key.Divide:
+                    suDu = suDu / 2;
+                    break;
+                case Key.A:
+                    isAutoPage = true;
+                    AutoPage();
+                    break;
+                case Key.S:
+                    isAutoPage = false;
+                    break;
             }
             this.Focus();
 
@@ -444,9 +464,42 @@ namespace BookPro
         private void TitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             // Initiates dragging of the window
-            if (e.LeftButton == MouseButtonState.Pressed)
+            //if (e.LeftButton == MouseButtonState.Pressed)
+            //{
+            //    Window.GetWindow(this).DragMove();
+            //}
+        }
+
+        private async void txtContent_MouseEnter(object sender, MouseEventArgs e)
+        {
+
+            //isAutoPage = true;
+            // AutoPage();
+        }
+
+        private void txtContent_MouseLeave(object sender, MouseEventArgs e)
+        {
+            isAutoPage = false;
+        }
+        private async void AutoPage() {
+            while (isAutoPage)
             {
-                Window.GetWindow(this).DragMove();
+                // 处理向右键
+                if (currentPage < pages.Length - 1)
+                {
+                    if (!isCurrentPage)
+                    {
+                        pageIndex = 0;
+                        currentPage++;
+                    }
+                    else
+                    {
+                        pageIndex++;
+                    }
+                    DisplayPage(currentPage);
+                }
+                // 延迟翻页
+                await Task.Delay(suDu);
             }
         }
     }

@@ -22,7 +22,7 @@
             <RowDefinition/>
             <RowDefinition />
         </Grid.RowDefinitions>
-        <TextBox Name="txtContent" PreviewMouseLeftButtonDown ="TitleBar_MouseLeftButtonDown"  BorderThickness="0"   BorderBrush="Transparent" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" FontSize="15"  IsReadOnly="True" Grid.ColumnSpan="2" Grid.RowSpan="2"/>
+        <TextBox Name="txtContent"  PreviewMouseLeftButtonDown ="TitleBar_MouseLeftButtonDown"  BorderThickness="0"   BorderBrush="Transparent" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" FontSize="15"  IsReadOnly="True" Grid.ColumnSpan="2" Grid.RowSpan="2"/>
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Left"  Grid.ColumnSpan="2" Width="Auto">
             <Button Visibility="Hidden" Name="btnPreviousPage" Content="上一页" Click="btnPreviousPage_Click"   IsEnabled="False" Width="Auto"/>
             <Button  Visibility="Hidden" Name="btnNextPage" Content="下一页" Click="btnNextPage_Click"   IsEnabled="False" Width="Auto"/>
