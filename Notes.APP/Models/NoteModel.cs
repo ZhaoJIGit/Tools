@@ -1,4 +1,5 @@
 ﻿using Notes.APP.Common;
+using Notes.APP.Services;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -17,7 +18,7 @@ namespace Notes.APP.Models
         /// <summary>
         /// 便签标识
         /// </summary>
-        public int NoteId { get; set; }
+        public long NoteId { get; set; }
         /// <summary>
         /// 便签标题
         /// </summary>
@@ -42,6 +43,7 @@ namespace Notes.APP.Models
         /// 更新时间
         /// </summary>
         public DateTime UpdateTime { get; set; } = DateTime.Now;
+        public bool IsDeleted { get; set; }
         public static NoteModel CreateNote()
         {
             var note = new NoteModel();
@@ -50,6 +52,7 @@ namespace Notes.APP.Models
             note.CreateTime = DateTime.Now;
             note.UpdateTime = DateTime.Now;
             note.NoteName = "";
+            note.IsDeleted = false;
             note.PageBackgroundColor= ColorHelper.MakeColorTransparent(note.BackgroundColor.ToColor(),0.8).ToHexColor();
             note.Color = ColorHelper.GetColorByBackground(note.BackgroundColor);
             note.Content = "";
@@ -75,7 +78,6 @@ namespace Notes.APP.Models
                 }
             }
         }
-
         /// <summary>
         /// 背景色
         /// </summary>
@@ -111,7 +113,6 @@ namespace Notes.APP.Models
                 }
             }
         }
-
         /// <summary>
         /// 透明度
         /// </summary>
@@ -129,12 +130,16 @@ namespace Notes.APP.Models
             }
         }
         public event PropertyChangedEventHandler? PropertyChanged;
-
         protected void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
         public event Action<string> BackgroundColorChanged;
+
+        public double XAxis { get; set; }
+        public double YAxis { get; set; }
+
+
     }
 
 }

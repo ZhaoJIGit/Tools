@@ -1,6 +1,7 @@
 ﻿using Notes.APP.Common;
 using Notes.APP.Models;
 using Notes.APP.Pages;
+using Notes.APP.Services;
 using System.ComponentModel;
 using System.Printing;
 using System.Runtime.CompilerServices;
@@ -31,7 +32,12 @@ namespace Notes.APP
         {
             InitializeComponent();
             // 设置 DataContext
-            _noteModel = NoteModel.CreateNote();
+            var service = new NoteService();
+            _noteModel = service.SelectNote(1);
+            if (_noteModel==null) {
+                _noteModel = NoteModel.CreateNote();
+                service.AddNote(_noteModel);
+            }
             this.DataContext = _noteModel;
             pageBorder.Background = _noteModel.PageBackgroundColor.ToSolidColorBrush(); 
             MyColorPicker.SelectedColor = _noteModel.BackgroundColor.ToColor();
@@ -128,9 +134,16 @@ namespace Notes.APP
             if (_noteModel != null)
             {
                 _noteModel.Opacity = e.NewValue;
+                SaveNote();
             }
         }
-
+        private void SaveNote() {
+            var service = new NoteService();
+            if (service.UpdateNote(_noteModel))
+            {
+                Console.WriteLine("保存成功");
+            }
+        }
         private void ResizeHandle_DragDelta(object sender, DragDeltaEventArgs e)
         {
             // 获取当前窗口
@@ -159,6 +172,7 @@ namespace Notes.APP
                 _noteModel.PageBackgroundColor = colorWithOpacity.ToHexColor();
                 _noteModel.BackgroundColor = e.NewValue.Value.ToHexColor();
                 _noteModel.Color= ColorHelper.GetColorByBackground(_noteModel.BackgroundColor);
+                SaveNote();
             }
         }
 
