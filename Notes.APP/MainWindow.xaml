@@ -50,31 +50,62 @@
                         <ColumnDefinition Width="100"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
                     <!-- 左侧标题 -->
-                    <TextBlock Text="新建"  
+                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE948;"  
            VerticalAlignment="Center" 
            Margin="10" 
            MouseLeftButtonDown="TextButton_Click"
            Foreground="{Binding Color, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-           FontSize="14"  />
+           FontSize="16"  />
                     <!-- 右侧按钮 -->
                     <StackPanel Grid.Column="2" Orientation="Horizontal" 
                             HorizontalAlignment="Right" 
                             VerticalAlignment="Center" 
                             Margin="0,0,10,0">
-                        <Button Content="···" Width="30" Height="30" 
-             Click="More_Click" 
-             Background="Transparent" 
-             BorderThickness="0" 
-             Foreground="{Binding Color}"
-             FontWeight="Bold"
-             FontSize="10" />
-                        <!-- 关闭按钮 -->
-                        <Button Content="×" Width="30" Height="30" 
-                            Click="CloseButton_Click" 
-                            Background="Transparent" 
-                            BorderThickness="0" 
-                            Foreground="{Binding Color, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                            FontSize="20" />
+                            <Grid Height="30">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="30"></ColumnDefinition>
+                                    <ColumnDefinition Width="30"></ColumnDefinition>
+                                    <ColumnDefinition Width="30"></ColumnDefinition>
+                                    <ColumnDefinition Width="30"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+                                <Button Grid.Column="0"  Width="30" Height="30" 
+                                    Click="More_Click" 
+                                    Content="&#xE840;"
+                                    Background="Transparent" 
+                                    BorderThickness="0" 
+                                    FontFamily="Segoe MDL2 Assets" 
+                                    Foreground="{Binding Color}"/>
+
+                                <Button Grid.Column="1"  Width="30" Height="30" 
+                          Click="More_Click"  FontFamily="Segoe MDL2 Assets" Content="&#xEA55;" FontSize="18"
+                          Background="Transparent" 
+                          BorderThickness="0" 
+                          Foreground="{Binding Color}"
+                           />
+                                <!-- 最小化按钮 -->
+                                <Button  Grid.Column="2"   Width="30" Height="30" 
+                                        Click="MinimizeButton_Click" 
+                                         FontFamily="Segoe MDL2 Assets"
+                                        Background="Transparent" 
+                                        BorderThickness="0" 
+                                        Content="&#xE921;" 
+                                        Foreground="{Binding Color, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         HorizontalAlignment="Center" VerticalAlignment="Center" >
+                                    <!--<fa:FontAwesome Icon="Minus" Foreground="{Binding Color, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontSize="15" />-->
+                                </Button>
+                                <!-- 关闭按钮 -->
+                                <Button  Grid.Column="3"  Width="30" Height="30"  
+                         Click="CloseButton_Click"  FontFamily="Segoe MDL2 Assets" Content="&#xE8BB;"
+                         Background="Transparent" 
+                         BorderThickness="0" 
+                         Foreground="{Binding Color, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         >
+                                    <!--<fa:FontAwesome Icon="Times" Foreground="{Binding Color, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontSize="15" />-->
+                                </Button>
+
+
+                            </Grid>
+                           
                     </StackPanel>
                 </Grid>
             </Border>

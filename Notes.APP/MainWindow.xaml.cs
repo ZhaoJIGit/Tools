@@ -49,7 +49,8 @@ namespace Notes.APP
         // 最小化窗口
         private void MinimizeButton_Click(object sender, RoutedEventArgs e)
         {
-            this.WindowState = WindowState.Minimized;
+            this.Hide(); // 隐藏窗口
+            //this.WindowState = WindowState.Minimized;
         }
 
         // 最大化或还原窗口
@@ -70,8 +71,8 @@ namespace Notes.APP
         // 关闭窗口
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
-            this.Hide(); // 隐藏窗口
-            //this.Close();
+            //this.Hide(); // 隐藏窗口
+            this.Close();
         }
 
         // 实现窗口拖动
