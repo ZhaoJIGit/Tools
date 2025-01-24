@@ -195,5 +195,23 @@ namespace Notes.APP
             this.WindowState = WindowState.Normal;
             this.Activate();
         }
+        /// <summary>
+        /// 删除
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void StackPanel_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+
+        }
+        /// <summary>
+        /// 查看列表
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void StackPanel_MouseLeftButtonDown_1(object sender, MouseButtonEventArgs e)
+        {
+
+        }
     }
 }
