@@ -105,7 +105,7 @@ namespace Notes.APP.Pages
         private void SaveText(string text)
         {
             var service = new NoteService();
-            if (service.UpdateNote(pageModel))
+            if (service.SaveNote(pageModel))
             {
                 myMessage.ShowSuccess("自动保存成功！");
             }

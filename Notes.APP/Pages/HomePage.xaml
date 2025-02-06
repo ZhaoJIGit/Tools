@@ -10,17 +10,17 @@
       Loaded="Page_Loaded"
       Title="HomePage">
 
-    <Grid Name="pageConent" >
-        <TextBox Text="page"  
+    <Grid Name="pageConent" > 
+            <TextBox Text="page"  
                  Name="txtConent"
                  TextWrapping="Wrap"   
                  Background="Transparent"
                  AcceptsReturn="True"
                  TextChanged="txtConent_TextChanged"
-                 VerticalScrollBarVisibility="Auto"
-                 HorizontalScrollBarVisibility="Disabled"  
+                 VerticalScrollBarVisibility="Hidden"
+                 HorizontalScrollBarVisibility="Hidden"  
                  HorizontalAlignment="Stretch"
                  VerticalAlignment="Stretch" >
-             </TextBox>
+            </TextBox> 
     </Grid>
 </Page>

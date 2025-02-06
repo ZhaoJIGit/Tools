@@ -10,7 +10,13 @@
     <Compile Update="CustomCtrls\MessagePopup.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="ListWindow.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Pages\HomePage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Pages\ListPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
@@ -18,10 +24,16 @@
     <Page Update="CustomCtrls\MessagePopup.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Update="ListWindow.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="MainWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Pages\HomePage.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Pages\ListPage.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>

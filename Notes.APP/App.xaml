@@ -2,21 +2,83 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:Notes.APP"
-             StartupUri="MainWindow.xaml">
-    <Application.Resources>
-        <!-- 自定义 ScrollBar 样式，隐藏滚动条 -->
+             StartupUri="ListWindow.xaml">
+
+    <!--<Application.Resources>
+        --><!-- 定义Thumb的样式 --><!--
+        <Style x:Key="ScrollBarThumb" TargetType="Thumb">
+            <Setter Property="Background" Value="DarkBlue"/>
+            <Setter Property="BorderBrush" Value="Black"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Thumb">
+                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        --><!-- 定义RepeatButton的样式 --><!--
+        <Style x:Key="ScrollBarButton" TargetType="RepeatButton">
+            <Setter Property="Background" Value="LightGray"/>
+            <Setter Property="Foreground" Value="DarkBlue"/>
+            <Setter Property="BorderBrush" Value="Black"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="2"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RepeatButton">
+                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        --><!-- 定义ScrollBar的样式 --><!--
         <Style TargetType="ScrollBar">
-            <Setter Property="Width" Value="0" />
+            <Setter Property="Background" Value="LightGray"/>
+            <Setter Property="Foreground" Value="DarkBlue"/>
+            <Setter Property="Width" Value="5"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ScrollBar">
+                        <Grid>
+                            <Track x:Name="PART_Track" IsDirectionReversed="False">
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton Style="{StaticResource ScrollBarButton}" Command="ScrollBar.LineUpCommand" Content="▲"/>
+                                </Track.DecreaseRepeatButton>
+                                <Track.Thumb>
+                                    <Thumb Style="{StaticResource ScrollBarThumb}"/>
+                                </Track.Thumb>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton Style="{StaticResource ScrollBarButton}" Command="ScrollBar.LineDownCommand" Content="▼"/>
+                                </Track.IncreaseRepeatButton>
+                            </Track>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+       
+    </Application.Resources>-->
+
+    <!--<Application.Resources>
+        --><!-- 自定义 ScrollBar 样式，隐藏滚动条 --><!--
+        <Style TargetType="ScrollBar">
+            <Setter Property="Width" Value="5" />
             <Setter Property="Height" Value="0" />
             <Setter Property="Visibility" Value="Collapsed" />
         </Style>
-        <!-- 自定义 TextBox 样式 -->
+        --><!-- 自定义 TextBox 样式 --><!--
         <Style TargetType="TextBox">
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="TextBox">
                         <Border Background="{TemplateBinding Background}" BorderThickness="1" CornerRadius="0,0,10,10" >
-                            <!-- 必须包含 PART_ContentHost，以保留输入和滚动功能 -->
+                            --><!-- 必须包含 PART_ContentHost，以保留输入和滚动功能 --><!--
                             <ScrollViewer x:Name="PART_ContentHost" 
                                   VerticalScrollBarVisibility="Hidden" 
                                   HorizontalScrollBarVisibility="Hidden" />
@@ -25,5 +87,5 @@
                 </Setter.Value>
             </Setter>
         </Style>
-    </Application.Resources>
+    </Application.Resources>-->
 </Application>

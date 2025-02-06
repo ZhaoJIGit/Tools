@@ -50,7 +50,7 @@ namespace Notes.APP.Common
                     // 创建一个表
                     var createTableQuery = @"
                             CREATE TABLE IF NOT EXISTS NoteInfo (
-                                NoteId INTEGER PRIMARY KEY AUTOINCREMENT,
+                                NoteId TEXT PRIMARY KEY,
                                 NoteName TEXT NOT NULL,
                                 Content TEXT NOT NULL,
                                 CreateTime date Not NULL,
@@ -61,6 +61,9 @@ namespace Notes.APP.Common
                                 Opacity REAL NOT NULL,
                                 XAxis REAL NOT NULL,
                                 YAxis REAL NOT NULL,
+                                Height REAL NOT NULL,
+                                Width REAL NOT NULL,
+                                Fixed INTEGER NOT NULL,
                                 IsDeleted INTEGER NOT NULL
                             );
                         ";
@@ -134,7 +137,7 @@ namespace Notes.APP.Common
                     AddParameters(command, parameters);
                     using (var reader = command.ExecuteReader())
                     {
-                        reader.ToObjectList<T>();
+                        result= reader.ToObjectList<T>();
                     }
                 }
             }

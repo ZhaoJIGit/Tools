@@ -6,7 +6,7 @@ using System.ComponentModel;
 using System.Printing;
 using System.Runtime.CompilerServices;
 using System.Text;
-using System.Windows; 
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
@@ -29,28 +29,39 @@ namespace Notes.APP
         private NoteModel _noteModel;
         private MyMessage myMessage;
 
-        public MainWindow()
+        public MainWindow(NoteModel noteModel)
         {
             InitializeComponent();
+            _noteModel = noteModel;
+            this.DataContext = _noteModel;
             // 创建并初始化 MessagePopupHelper
             MessagePopupHelper popupHelper = new MessagePopupHelper(this);
 
             // 创建 MyMessage 实例并传入 MessagePopupHelper
             myMessage = new MyMessage(popupHelper);
-            // 设置 DataContext
-            var service = new NoteService();
-            _noteModel = service.SelectNote(1);
-            if (_noteModel==null) {
-                _noteModel = NoteModel.CreateNote();
-                service.AddNote(_noteModel);
-            }
-            this.DataContext = _noteModel;
-            pageBorder.Background = _noteModel.PageBackgroundColor.ToSolidColorBrush(); 
-            MyColorPicker.SelectedColor = _noteModel.BackgroundColor.ToColor();
+
             // 默认显示 Page1
             MainFrame.Navigate(new HomePage());
-             
-
+        }
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            // 设置 DataContext
+            var service = new NoteService();
+            //_noteModel = service.SelectNote("b2a642c94a654175b455cb2337b1012d");
+            if (_noteModel == null)
+            {
+                MessageBox.Show("便签不存在！");
+                return;
+            }
+            pageBorder.Background = _noteModel.PageBackgroundColor.ToSolidColorBrush();
+            MyColorPicker.SelectedColor = _noteModel.BackgroundColor.ToColor();
+            this.Width = _noteModel.Width;
+            this.Height = _noteModel.Height;
+            if (_noteModel.XAxis > 0 || _noteModel.YAxis > 0)
+            {
+                this.Left = _noteModel.XAxis;
+                this.Top = _noteModel.YAxis;
+            }
         }
         // INotifyPropertyChanged 实现
         public event PropertyChangedEventHandler PropertyChanged;
@@ -92,14 +103,17 @@ namespace Notes.APP
         {
             base.OnMouseLeftButtonDown(e);
             if (e.ChangedButton == MouseButton.Left)
+            {
                 this.DragMove(); // 拖动窗口
+            }
         }
 
         private void TextButton_Click(object sender, MouseButtonEventArgs e)
         {
             // 创建便签窗口实例
-            MainWindow stickyNoteWindow = new MainWindow();
-
+            var note = NoteModel.CreateNote();
+            MainWindow stickyNoteWindow = new MainWindow(note);
+            stickyNoteWindow.Tag = note.NoteId;
             // 打开便签窗口
             stickyNoteWindow.Show();
         }
@@ -143,9 +157,10 @@ namespace Notes.APP
                 SaveNote();
             }
         }
-        private void SaveNote() {
+        private void SaveNote()
+        {
             var service = new NoteService();
-            if (service.UpdateNote(_noteModel))
+            if (service.SaveNote(_noteModel))
             {
                 Console.WriteLine("保存成功");
             }
@@ -158,8 +173,17 @@ namespace Notes.APP
             // 调整窗口的宽度和高度
             window.Width = Math.Max(window.MinWidth, window.Width + e.HorizontalChange);
             window.Height = Math.Max(window.MinHeight, window.Height + e.VerticalChange);
+            _noteModel.Height = window.Height;
+            _noteModel.Width = window.Width;
+            SaveNote();
         }
-
+        private void Window_MouseMove(object sender, MouseEventArgs e)
+        {
+            // 获取当前窗口位置
+            _noteModel.XAxis = this.Left;
+            _noteModel.YAxis = this.Top;
+            SaveNote();
+        }
         private void Grid_MouseEnter(object sender, MouseEventArgs e)
         {
             this.Cursor = Cursors.Hand; // 设置鼠标指针为十字箭头
@@ -177,7 +201,7 @@ namespace Notes.APP
                 Color colorWithOpacity = ColorHelper.MakeColorTransparent(e.NewValue.Value, 0.7);
                 _noteModel.PageBackgroundColor = colorWithOpacity.ToHexColor();
                 _noteModel.BackgroundColor = e.NewValue.Value.ToHexColor();
-                _noteModel.Color= ColorHelper.GetColorByBackground(_noteModel.BackgroundColor);
+                _noteModel.Color = ColorHelper.GetColorByBackground(_noteModel.BackgroundColor);
                 SaveNote();
             }
         }
@@ -205,7 +229,7 @@ namespace Notes.APP
 
         protected override void OnClosed(EventArgs e)
         {
-            TrayIcon.Dispose(); // 清理托盘图标资源
+            //TrayIcon.Dispose(); // 清理托盘图标资源
             base.OnClosed(e);
         }
 
@@ -232,6 +256,19 @@ namespace Notes.APP
         private void StackPanel_MouseLeftButtonDown_1(object sender, MouseButtonEventArgs e)
         {
 
+        }
+
+        private void Fix_Click(object sender, RoutedEventArgs e)
+        {
+            _noteModel.Fixed = !_noteModel.Fixed;
+            if (_noteModel.Fixed)
+            {
+                btnFixed.Content = "\uE840";
+            }
+            else { 
+                btnFixed.Content = "\uE718";
+            }
+            SaveNote();
         }
     }
 }

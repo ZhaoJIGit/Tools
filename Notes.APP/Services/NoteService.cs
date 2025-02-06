@@ -15,8 +15,9 @@ namespace Notes.APP.Services
         {
             dBHelper = new DBHelper();
         }
-        public bool AddNote(NoteModel model) {
-            var sql = $@" INSERT INTO NoteInfo (NoteName,
+        public bool AddNote(NoteModel model)
+        {
+            var sql = $@" INSERT INTO NoteInfo (NoteId,NoteName,
                                 Content,
                                 CreateTime,
                                 UpdateTime,
@@ -26,8 +27,11 @@ namespace Notes.APP.Services
                                 Opacity, 
                                 XAxis,
                                 YAxis,
+                                Height,
+                                Width,
+                                Fixed,
                                 IsDeleted) 
-                          Values(@NoteName,
+                          Values(@NoteId,@NoteName,
                                 @Content,
                                 @CreateTime,
                                 @UpdateTime,
@@ -37,21 +41,42 @@ namespace Notes.APP.Services
                                 @Opacity, 
                                 @XAxis,
                                 @YAxis,
+                                @Height,
+                                @Width,
+                                @Fixed,
                                 @IsDeleted)";
-            var result= dBHelper.ExecuteNonQuery(sql,model);
+            var result = dBHelper.ExecuteNonQuery(sql, model);
             return result > 0;
         }
         public bool UpdateNote(NoteModel model)
         {
-            var sql = $@" Update NoteInfo set Content =@Content,UpdateTime=@UpdateTime ,BackgroundColor=@BackgroundColor ,Color =@Color,Opacity=@Opacity,XAxis=@XAxis,YAxis=@YAxis where NoteId =@NoteId";
+            var sql = $@" Update NoteInfo set Fixed=@Fixed,Height=@Height,Width=@Width, Content =@Content,UpdateTime=@UpdateTime ,BackgroundColor=@BackgroundColor ,Color =@Color,Opacity=@Opacity,XAxis=@XAxis,YAxis=@YAxis where NoteId =@NoteId";
             var result = dBHelper.ExecuteNonQuery(sql, model);
             return result > 0;
         }
-
-        public NoteModel SelectNote(long id)
+        public bool SaveNote(NoteModel model)
         {
-            var sql = $@" SELECT * FROM NoteInfo WHERE NoteId = {id}";
+            var note = GetNote(model.NoteId);
+            if (note != null)
+            {
+               return UpdateNote(model);
+            }
+            else
+            {
+               return AddNote(model);
+            }
+        }
+
+        public NoteModel GetNote(string id)
+        {
+            var sql = $@" SELECT * FROM NoteInfo WHERE NoteId = '{id}'";
             var result = dBHelper.ExecuteReaderToModel<NoteModel>(sql);
+            return result;
+        }
+        public List<NoteModel> GetNotes()
+        {
+            var sql = $@" SELECT * FROM NoteInfo WHERE IsDeleted = 0";
+            var result = dBHelper.ExecuteReader<NoteModel>(sql);
             return result;
         }
     }

@@ -1,0 +1,162 @@
+﻿<Window x:Class="Notes.APP.ListWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:tb="http://www.hardcodet.net/taskbar" 
+        xmlns:local="clr-namespace:Notes.APP"
+        mc:Ignorable="d"
+        Loaded="Window_Loaded"
+        MouseLeftButtonDown="OnMouseLeftButtonDown"
+        MouseMove="Window_MouseMove"
+        WindowStyle="None"
+           Background="Transparent"
+        AllowsTransparency="True"
+         WindowStartupLocation="Manual"
+        Title="便利贴" Height="300" Width="400" MinHeight="300" MinWidth="400">
+    <Window.Resources>
+        <!-- 定义动画 -->
+        <Storyboard x:Key="OpenDrawer">
+            <DoubleAnimation Storyboard.TargetName="DrawerPanel" Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
+                             From="300" To="0" Duration="0:0:0.3" AutoReverse="False"/>
+        </Storyboard>
+
+        <Storyboard x:Key="CloseDrawer">
+            <DoubleAnimation Storyboard.TargetName="DrawerPanel" Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
+                             From="0" To="300" Duration="0:0:0.3" AutoReverse="False"/>
+        </Storyboard>
+    </Window.Resources>
+    <Grid>
+        <Border BorderBrush="Transparent" BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+
+            <Grid Margin="3" MouseEnter="Grid_MouseEnter" MouseLeave="Grid_MouseLeave">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="40"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                </Grid.RowDefinitions>
+                <!-- 自定义标题栏 -->
+                <Border  BorderBrush="#bfc1be" Background="#e6edee"  Grid.Row="0"  Height="40" VerticalAlignment="Top">
+                    <Border.CornerRadius>
+                        <CornerRadius TopLeft="15" TopRight="15" BottomLeft="0" BottomRight="0"/>
+                    </Border.CornerRadius>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="50"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                            <ColumnDefinition Width="140"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <!-- 左侧标题 -->
+                      
+                        <Button  Grid.Column="0"   Width="30" Height="30" 
+             Click="AddButton_Click" FontSize="16"
+              FontFamily="Segoe MDL2 Assets"
+             Background="Transparent" 
+             BorderThickness="0" 
+             Content="&#xE948;" 
+              HorizontalAlignment="Center" VerticalAlignment="Center" >
+                            <!--<fa:FontAwesome Icon="Minus" Foreground="{Binding Color, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontSize="15" />-->
+                        </Button>
+                        <!-- 右侧按钮 -->
+                        <StackPanel Grid.Column="2" Orientation="Horizontal" 
+                           HorizontalAlignment="Right" 
+                           VerticalAlignment="Center" 
+                           Margin="0,0,10,0">
+                            <Grid Height="30">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="30"></ColumnDefinition>
+                                    <ColumnDefinition Width="30"></ColumnDefinition>
+                                    <ColumnDefinition Width="30"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+                                <!-- 最小化按钮 -->
+                                <Button  Grid.Column="0"   Width="30" Height="30" 
+         Click="SettingButton_Click" 
+          FontFamily="Segoe MDL2 Assets" FontSize="16"
+         Background="Transparent" 
+         BorderThickness="0" 
+         Content="&#xE713;" 
+          HorizontalAlignment="Center" VerticalAlignment="Center" >
+                                    <!--<fa:FontAwesome Icon="Minus" Foreground="{Binding Color, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontSize="15" />-->
+                                </Button>
+                                <!-- 最小化按钮 -->
+                                <Button  Grid.Column="1"   Width="30" Height="30" 
+                                       Click="MinimizeButton_Click" 
+                                        FontFamily="Segoe MDL2 Assets"
+                                       Background="Transparent" 
+                                       BorderThickness="0" 
+                                       Content="&#xE921;" 
+                                        HorizontalAlignment="Center" VerticalAlignment="Center" >
+                                    <!--<fa:FontAwesome Icon="Minus" Foreground="{Binding Color, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontSize="15" />-->
+                                </Button>
+                                <!-- 关闭按钮 -->
+                                <Button  Grid.Column="2"  Width="30" Height="30"  
+                        Click="CloseButton_Click"  FontFamily="Segoe MDL2 Assets" Content="&#xE8BB;"
+                        Background="Transparent" 
+                        BorderThickness="0" 
+                        >
+                                    <!--<fa:FontAwesome Icon="Times" Foreground="{Binding Color, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontSize="15" />-->
+                                </Button>
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!-- 主内容 -->
+                <Border Grid.Row="1" 
+                   Name="pageBorder"  Background="White"
+                   >
+                    <Border.CornerRadius>
+                        <CornerRadius TopLeft="0"    TopRight="0" BottomLeft="15" BottomRight="15"/>
+                    </Border.CornerRadius>
+                    <Grid Margin="0,0,0,20" >
+                        <Border CornerRadius="20"  ClipToBounds="True">
+                            <Frame x:Name="ListFrame" NavigationUIVisibility="Hidden" 
+                      HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                        </Border>
+                    </Grid>
+
+                </Border>
+                <TextBlock Grid.Row="1" Margin="10,3" Foreground="{Binding Color, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Text="{Binding CreateTimeStr}"></TextBlock>
+                <!-- 透明遮罩区域，用于关闭抽屉 -->
+                <Grid Grid.Row="1" x:Name="CloseArea" Background="Transparent" Visibility="Collapsed" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+             MouseLeftButtonDown="CloseArea_MouseLeftButtonDown"/>
+                <!-- 抽屉页 -->
+                <!-- 抽屉页  -->
+                <Border Grid.Row="1" Opacity="0.8" Visibility="Collapsed" x:Name="DrawerPanel" Background="#f8f8f8" BorderThickness="1" 
+               HorizontalAlignment="Right" VerticalAlignment="Top" 
+               Width="150" Height="200">
+                    <Border.CornerRadius>
+                        <CornerRadius TopLeft="5"    TopRight="0" BottomLeft="5" BottomRight="0"/>
+                    </Border.CornerRadius>
+                    <Grid>
+                        
+                        
+                    </Grid>
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- 右下角拖拽 -->
+        <Thumb Name="ResizeHandle" HorizontalAlignment="Right" VerticalAlignment="Bottom"
+        Width="16" Height="16" Background="Transparent" Margin="0,0,5,5"
+        Cursor="SizeNWSE" DragDelta="ResizeHandle_DragDelta" >
+            <Thumb.Template>
+                <ControlTemplate TargetType="Thumb">
+                    <Border Background="{TemplateBinding Background}" Opacity="1" Width="16" Height="16" CornerRadius="8">
+                        <Border.RenderTransform>
+                            <TranslateTransform X="0" Y="0"/>
+                        </Border.RenderTransform>
+                    </Border>
+                </ControlTemplate>
+            </Thumb.Template>
+        </Thumb>
+        <!-- 定义托盘图标 -->
+        <tb:TaskbarIcon x:Name="TrayIcon" IconSource="/Icons/64.ico" ToolTipText="便利贴" TrayLeftMouseUp="TrayIcon_TrayLeftMouseUp">
+            <tb:TaskbarIcon.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="打开" Click="OnTrayOpenClick" />
+                    <MenuItem Header="退出" Click="OnTrayExitClick" />
+                </ContextMenu>
+            </tb:TaskbarIcon.ContextMenu>
+        </tb:TaskbarIcon>
+    </Grid>
+</Window>

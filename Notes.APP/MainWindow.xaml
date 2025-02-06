@@ -8,6 +8,7 @@
         AllowsTransparency="True"
         Background="Transparent"
         MouseLeftButtonDown="OnMouseLeftButtonDown"
+         MouseMove="Window_MouseMove"
         WindowStartupLocation="CenterScreen"
         ShowInTaskbar="False"
         Title="便利贴" 
@@ -15,6 +16,8 @@
         MinHeight="280"
         Width="250"
         MinWidth="250" 
+        Loaded="Window_Loaded"
+       
         Opacity="{Binding Opacity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
         >
     <Window.Resources>
@@ -46,7 +49,7 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="50"></ColumnDefinition>
                             <ColumnDefinition Width="*"></ColumnDefinition>
-                            <ColumnDefinition Width="100"></ColumnDefinition>
+                            <ColumnDefinition Width="140"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
                         <!-- 左侧标题 -->
                         <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE948;"  
@@ -67,13 +70,12 @@
                                     <ColumnDefinition Width="30"></ColumnDefinition>
                                     <ColumnDefinition Width="30"></ColumnDefinition>
                                 </Grid.ColumnDefinitions>
-                                <Button Grid.Column="0"  Width="30" Height="30" 
-                                    Click="More_Click" 
-                                    Content="&#xE840;"
-                                    Background="Transparent" 
-                                    BorderThickness="0" 
-                                    FontFamily="Segoe MDL2 Assets" 
-                                    Foreground="{Binding Color}"/>
+                                <Button x:Name="btnFixed" Grid.Column="0"  Width="30" Height="30" 
+                        Click="Fix_Click"  FontFamily="Segoe MDL2 Assets" Content="&#xE840;" FontSize="18"
+                        Background="Transparent" 
+                        BorderThickness="0" 
+                        Foreground="{Binding Color}"
+ />
 
                                 <Button Grid.Column="1"  Width="30" Height="30" 
                           Click="More_Click"  FontFamily="Segoe MDL2 Assets" Content="&#xEA55;" FontSize="18"
@@ -214,14 +216,14 @@
             </Thumb.Template>
         </Thumb>
         <!-- 定义托盘图标 -->
-        <tb:TaskbarIcon x:Name="TrayIcon" IconSource="/Icons/16.ico" ToolTipText="便利贴" TrayLeftMouseUp="TrayIcon_TrayLeftMouseUp">
+        <!--<tb:TaskbarIcon x:Name="TrayIcon" IconSource="/Icons/16.ico" ToolTipText="便利贴" TrayLeftMouseUp="TrayIcon_TrayLeftMouseUp">
             <tb:TaskbarIcon.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="打开" Click="OnTrayOpenClick" />
                     <MenuItem Header="退出" Click="OnTrayExitClick" />
                 </ContextMenu>
             </tb:TaskbarIcon.ContextMenu>
-        </tb:TaskbarIcon>
+        </tb:TaskbarIcon>-->
 
         <!-- 公共提示框 -->
         <!--<local:MessagePopup x:Name="NotificationPopup"/>-->
