@@ -1,4 +1,5 @@
-﻿using Notes.APP.Models;
+﻿using Notes.APP.Common;
+using Notes.APP.Models;
 using Notes.APP.Pages;
 using Notes.APP.Services;
 using System;
@@ -26,25 +27,35 @@ namespace Notes.APP
     public partial class ListWindow : Window
     {
         private bool _isDrawerOpen = false;
-
+        private bool isLoad = false;
         public ListWindow()
         {
             InitializeComponent();
             // 默认显示 Page1
             ListFrame.Navigate(new ListPage());
-        }
 
+        }
+        private void MainWindow_ReloadWindow(object sender, EventArgs e)
+        {
+            ReloadPage();
+        }
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            MainWindow.ReloadWindow += MainWindow_ReloadWindow;
+
+            // 绑定数据源
+            isLoad = true;
+            isOpenRunBox.IsChecked= StartupManager.IsAutoStartupEnabled();
             var noteService = new NoteService();
             var list = noteService.GetNotes();
-            foreach (var item in list)
+            foreach (var item in list.Where(i => i.Fixed))
             {
                 MainWindow mainWindow = new MainWindow(item);
-                mainWindow.Tag= item.NoteId;
+                mainWindow.Tag = item.NoteId;
                 mainWindow.Show();
             }
-           
+            isLoad = false;
+
         }
         private void AddButton_Click(object sender, RoutedEventArgs e)
         {
@@ -52,30 +63,14 @@ namespace Notes.APP
             MainWindow mainWindow = new MainWindow(note);
             mainWindow.Tag = note.NoteId;
             mainWindow.Show();
+            ReloadPage();
+
         }
         private void TrayIcon_TrayLeftMouseUp(object sender, RoutedEventArgs e)
         {
             this.Show();
             this.WindowState = WindowState.Normal;
             this.Activate();
-        }
-        /// <summary>
-        /// 删除
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void StackPanel_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-
-        }
-        /// <summary>
-        /// 查看列表
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void StackPanel_MouseLeftButtonDown_1(object sender, MouseButtonEventArgs e)
-        {
-
         }
 
         private void SettingButton_Click(object sender, RoutedEventArgs e)
@@ -170,6 +165,37 @@ namespace Notes.APP
             window.Height = Math.Max(window.MinHeight, window.Height + e.VerticalChange);
         }
 
-      
+        private void RefreshButton_Click(object sender, RoutedEventArgs e)
+        {
+            ReloadPage();
+        }
+        private void ReloadPage()
+        {
+            // 获取当前的 Frame
+            ListFrame.Navigate(null); // 先清空 Frame 内容
+            ListFrame.Navigate(new ListPage()); // 再重新加载页面
+        }
+        private void TextBlock_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            isOpenRunBox.IsChecked = !isOpenRunBox.IsChecked;
+        }
+
+        private void CheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            if (isOpenRunBox.IsChecked.Value && !isLoad)
+            {
+                // 当勾选框被选中时触发
+                StartupManager.EnableAutoStartup();
+            }
+        }
+
+        private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            if (!isOpenRunBox.IsChecked.Value && !isLoad)
+            {
+                // 当勾选框被取消选中时触发
+                StartupManager.DisableAutoStartup();
+            }
+        }
     }
 }

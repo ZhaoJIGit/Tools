@@ -29,7 +29,15 @@
                             <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE8FD;" FontSize="16" Margin="0,0,10,0" />
                             <TextBlock Text="{Binding NoteName}" FontSize="14" VerticalAlignment="Center" />
                             <TextBlock Text="{Binding UpdateTimeStr}" FontSize="14" VerticalAlignment="Center" />
-                        </StackPanel>
+                        <!-- 右键菜单 -->
+                        <StackPanel.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="打开" Click="EditMenuItem_Click"/>
+                                <MenuItem Header="删除" Click="DeleteMenuItem_Click"/>
+                            </ContextMenu>
+                        </StackPanel.ContextMenu>
+                    </StackPanel>
+                        
                     </DataTemplate>
                 </ListView.Resources>
 

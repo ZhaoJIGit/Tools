@@ -66,10 +66,15 @@ namespace Notes.APP.Services
                return AddNote(model);
             }
         }
-
+        public bool DeleteNote(string id)
+        {
+            var sql = $@"Update NoteInfo set IsDeleted=1 WHERE NoteId = '{id}'";
+            var result = dBHelper.ExecuteNonQuery(sql);
+            return result>0;
+        }
         public NoteModel GetNote(string id)
         {
-            var sql = $@" SELECT * FROM NoteInfo WHERE NoteId = '{id}'";
+            var sql = $@" SELECT * FROM NoteInfo WHERE NoteId = '{id}' and IsDeleted=0";
             var result = dBHelper.ExecuteReaderToModel<NoteModel>(sql);
             return result;
         }

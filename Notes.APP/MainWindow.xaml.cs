@@ -25,6 +25,9 @@ namespace Notes.APP
     /// </summary>
     public partial class MainWindow : Window
     {
+        // 定义静态事件
+        public static event EventHandler ReloadWindow;
+
         private bool _isDrawerOpen = false;
         private NoteModel _noteModel;
         private MyMessage myMessage;
@@ -52,6 +55,14 @@ namespace Notes.APP
             {
                 MessageBox.Show("便签不存在！");
                 return;
+            }
+            if (_noteModel.Fixed)
+            {
+                btnFixed.Content = "\uE840";
+            }
+            else
+            {
+                btnFixed.Content = "\uE718";
             }
             pageBorder.Background = _noteModel.PageBackgroundColor.ToSolidColorBrush();
             MyColorPicker.SelectedColor = _noteModel.BackgroundColor.ToColor();
@@ -116,6 +127,9 @@ namespace Notes.APP
             stickyNoteWindow.Tag = note.NoteId;
             // 打开便签窗口
             stickyNoteWindow.Show();
+
+            // 触发事件，通知 Window A
+            ReloadWindow?.Invoke(this, EventArgs.Empty);
         }
 
         private void More_Click(object sender, RoutedEventArgs e)
@@ -246,7 +260,11 @@ namespace Notes.APP
         /// <param name="e"></param>
         private void StackPanel_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-
+            var service = new NoteService();
+            service.DeleteNote(_noteModel!.NoteId);
+            this.Close();
+            // 触发事件，通知 Window A
+            ReloadWindow?.Invoke(this, EventArgs.Empty);
         }
         /// <summary>
         /// 查看列表
@@ -255,7 +273,13 @@ namespace Notes.APP
         /// <param name="e"></param>
         private void StackPanel_MouseLeftButtonDown_1(object sender, MouseButtonEventArgs e)
         {
-
+            var windows = Application.Current.Windows.OfType<Window>().FirstOrDefault(i => i.Name == "listWindow");
+            if (windows!=null)
+            {
+                windows.Show();
+                windows.WindowState= WindowState.Normal;
+                windows.Activate();
+            }
         }
 
         private void Fix_Click(object sender, RoutedEventArgs e)

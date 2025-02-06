@@ -57,11 +57,12 @@ namespace Notes.APP.Pages
                 OpenNote(clickedItem);
             }
         }
-        private void OpenNote(NoteModel note) {
-            var windows = Application.Current.Windows.OfType<Window>();
-            if (windows.Any(i => i.Tag == note.NoteId))
+        private void OpenNote(NoteModel note)
+        {
+            var windows = Application.Current.Windows.OfType<Window>().Where(i => i.Tag != null);
+            if (windows.Any(i => i.Tag.Equals(note.NoteId)))
             {
-                windows.First(i => i.Tag == note.NoteId).Activate();
+                windows.First(i => i.Tag.Equals(note.NoteId)).Activate();
             }
             else
             {
@@ -69,7 +70,40 @@ namespace Notes.APP.Pages
                 mainWindow.Tag = note.NoteId;
                 mainWindow.Show();
             }
+        }
+        private void CloseNote(NoteModel note)
+        {
+            var windows = Application.Current.Windows.OfType<Window>().Where(i => i.Tag != null);
+            if (windows.Any(i => i.Tag.Equals(note.NoteId)))
+            {
+                windows.First(i => i.Tag.Equals(note.NoteId)).Close();
+            }
+        }
+        private void DeleteMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            // 删除逻辑
+            var selectedItem = notesList.SelectedItem;
+            if (selectedItem != null)
+            {
+                // 删除选中的项
+                var note = selectedItem as NoteModel;
+                notes.Remove(note);
+                var service = new NoteService();
+                service.DeleteNote(note!.NoteId);
+                CloseNote(note);
+            }
 
+        }
+
+        private void EditMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            // 编辑逻辑
+            var selectedItem = notesList.SelectedItem;
+            if (selectedItem != null)
+            {
+                var note = selectedItem as NoteModel;
+                OpenNote(note);
+            }
         }
     }
 }
