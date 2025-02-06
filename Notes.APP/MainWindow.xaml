@@ -2,8 +2,8 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:xc="http://schemas.xceed.com/wpf/xaml/toolkit"
-        xmlns:tb="http://www.hardcodet.net/taskbar"
-        xmlns:local="clr-namespace:Notes.APP.Models"  
+        xmlns:tb="http://www.hardcodet.net/taskbar" 
+        xmlns:local="clr-namespace:Notes.APP.CustomCtrls"
         WindowStyle="None"
         AllowsTransparency="True"
         Background="Transparent"
@@ -21,14 +21,13 @@
         <!-- 定义动画 -->
         <Storyboard x:Key="OpenDrawer">
             <DoubleAnimation Storyboard.TargetName="DrawerPanel" Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
-                             From="300" To="0" Duration="0:0:0.5" AutoReverse="False"/>
+                             From="300" To="0" Duration="0:0:0.3" AutoReverse="False"/>
         </Storyboard>
 
         <Storyboard x:Key="CloseDrawer">
             <DoubleAnimation Storyboard.TargetName="DrawerPanel" Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
-                             From="0" To="300" Duration="0:0:0.5" AutoReverse="False"/>
+                             From="0" To="300" Duration="0:0:0.3" AutoReverse="False"/>
         </Storyboard>
-
     </Window.Resources>
     <Grid>
         <Border BorderBrush="Transparent" BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
@@ -151,7 +150,29 @@
                         <xc:ColorPicker Grid.Row="1" Name="MyColorPicker" DisplayColorAndName="True"   SelectedColorChanged="ColorCanvas_SelectedColorChanged" Width="150" />
                         <TextBlock Grid.Row="2" Text="透明度" Margin="2" Foreground="#000"></TextBlock>
                         <Slider ValueChanged="Slider_ValueChanged" Grid.Row="3"  HorizontalAlignment="Center" VerticalAlignment="Center" 
-                        Width="130"  Minimum="0.1" Maximum="1" Value="{Binding Opacity }" />
+                        Width="130"  Minimum="0.1" Maximum="1" Value="{Binding Opacity }" >
+                            <Slider.Template>
+                                <ControlTemplate TargetType="Slider">
+                                    <Grid>
+                                        <!-- Track -->
+                                        <Track Name="PART_Track" IsDirectionReversed="False" >
+                                            <Track.DecreaseRepeatButton>
+                                                <RepeatButton Command="Slider.DecreaseLarge" />
+                                            </Track.DecreaseRepeatButton>
+                                            <Track.IncreaseRepeatButton>
+                                                <RepeatButton Command="Slider.IncreaseLarge" />
+                                            </Track.IncreaseRepeatButton>
+                                            <Track.Thumb>
+                                                <Thumb Background="#4A4343" Width="10" Height="8" >
+                                                   
+                                                </Thumb>
+                                            </Track.Thumb>
+                                        </Track>
+                                    </Grid>
+                                </ControlTemplate>
+                            </Slider.Template>
+
+                        </Slider>
 
                         <ListView Grid.Row="4" VerticalAlignment="Bottom"  BorderBrush="Transparent" BorderThickness="0">
                             <!-- 其他项 -->
@@ -201,5 +222,8 @@
                 </ContextMenu>
             </tb:TaskbarIcon.ContextMenu>
         </tb:TaskbarIcon>
+
+        <!-- 公共提示框 -->
+        <!--<local:MessagePopup x:Name="NotificationPopup"/>-->
     </Grid>
 </Window>

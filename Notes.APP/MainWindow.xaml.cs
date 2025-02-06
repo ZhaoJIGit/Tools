@@ -26,11 +26,17 @@ namespace Notes.APP
     public partial class MainWindow : Window
     {
         private bool _isDrawerOpen = false;
-        private NoteModel _noteModel; 
-       
+        private NoteModel _noteModel;
+        private MyMessage myMessage;
+
         public MainWindow()
         {
             InitializeComponent();
+            // 创建并初始化 MessagePopupHelper
+            MessagePopupHelper popupHelper = new MessagePopupHelper(this);
+
+            // 创建 MyMessage 实例并传入 MessagePopupHelper
+            myMessage = new MyMessage(popupHelper);
             // 设置 DataContext
             var service = new NoteService();
             _noteModel = service.SelectNote(1);

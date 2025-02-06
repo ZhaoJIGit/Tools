@@ -26,11 +26,14 @@ namespace Notes.APP.Pages
     {
         private NoteModel? pageModel;
         private DispatcherTimer _timer;
+        private MyMessage myMessage;
+        private bool isUpdate = false;
         private string _lastText;
         public HomePage()
         {
             InitializeComponent();
-            
+     
+
         }
         private void InitializeTimer()
         {
@@ -50,7 +53,11 @@ namespace Notes.APP.Pages
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             InitializeTimer();
+            isUpdate = false;
             var parentWindow = Window.GetWindow(this);
+            MessagePopupHelper popupHelper = new MessagePopupHelper(parentWindow);
+            // 创建 MyMessage 实例并传入 MessagePopupHelper
+            myMessage = new MyMessage(popupHelper);
             pageModel = parentWindow.DataContext as NoteModel;
             txtConent.Text = pageModel.Content;
             _lastText = pageModel.Content;
@@ -59,6 +66,7 @@ namespace Notes.APP.Pages
             {
                 pageModel.BackgroundColorChanged += OnBackgroundColorChanged; // 订阅事件
             }
+            isUpdate = true;
         }
         private void OnBackgroundColorChanged(string newColor)
         {
@@ -76,8 +84,9 @@ namespace Notes.APP.Pages
         {
             // 获取当前文本框内容
             _lastText = ((TextBox)sender).Text;
-           
-            if (_timer == null || pageModel==null) {
+
+            if (_timer == null || pageModel == null)
+            {
                 return;
             }
             pageModel.Content = _lastText;
@@ -87,8 +96,10 @@ namespace Notes.APP.Pages
             {
                 _timer.Stop();
             }
-
-            _timer.Start(); // 启动计时器
+            if (isUpdate)
+            {
+                _timer.Start(); // 启动计时器
+            }
         }
         // 保存文本的操作
         private void SaveText(string text)
@@ -96,7 +107,11 @@ namespace Notes.APP.Pages
             var service = new NoteService();
             if (service.UpdateNote(pageModel))
             {
-                Console.WriteLine("保存成功");
+                myMessage.ShowSuccess("自动保存成功！");
+            }
+            else
+            {
+                myMessage.ShowError();
             }
         }
     }
