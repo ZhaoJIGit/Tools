@@ -26,6 +26,7 @@ namespace Notes.APP
     /// </summary>
     public partial class ListWindow : Window
     {
+        private Point _mouseDownPosition;
         private bool _isDrawerOpen = false;
         private bool isLoad = false;
         public ListWindow()
@@ -45,7 +46,7 @@ namespace Notes.APP
 
             // 绑定数据源
             isLoad = true;
-            isOpenRunBox.IsChecked= StartupManager.IsAutoStartupEnabled();
+            isOpenRunBox.IsChecked = StartupManager.IsAutoStartupEnabled();
             var noteService = new NoteService();
             var list = noteService.GetNotes();
             foreach (var item in list.Where(i => i.Fixed))
@@ -117,8 +118,13 @@ namespace Notes.APP
             base.OnMouseLeftButtonDown(e);
             if (e.ChangedButton == MouseButton.Left)
             {
-                this.DragMove(); // 拖动窗口
+                if (this.WindowState == WindowState.Maximized)
+                {
+                    _mouseDownPosition = e.GetPosition(this);
+                }
+                //this.DragMove(); // 拖动窗口
             }
+            e.Handled = true;
         }
         private void OnTrayOpenClick(object sender, RoutedEventArgs e)
         {
@@ -152,7 +158,35 @@ namespace Notes.APP
 
         private void Window_MouseMove(object sender, MouseEventArgs e)
         {
+            if (Mouse.LeftButton == MouseButtonState.Pressed)
+            {
+                if (this.WindowState == WindowState.Maximized)
+                {
+                    // 获取当前鼠标位置
+                    Point currentPosition = e.GetPosition(this);
+                    // 判断鼠标移动距离（避免误触）
+                    if (Math.Abs(currentPosition.X - _mouseDownPosition.X) > 10 ||
+                        Math.Abs(currentPosition.Y - _mouseDownPosition.Y) > 10)
+                    {
+                        // 退出全屏，并调整窗口位置
+                        if (this.WindowState == WindowState.Maximized)
+                        {
+                            this.WindowState = WindowState.Normal;
 
+                            // 计算鼠标相对位置，保持窗口位置不跳变
+                            this.Top = Math.Max(0, currentPosition.Y - 25);
+                            this.Left = Math.Max(0, currentPosition.X - (this.Width / 2));
+                        }
+                        // 执行拖拽
+                        this.DragMove();
+                    }
+                }
+                else
+                {
+                    // 执行拖拽
+                    this.DragMove();
+                }
+            }
         }
 
         private void ResizeHandle_DragDelta(object sender, DragDeltaEventArgs e)

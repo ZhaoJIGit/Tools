@@ -27,7 +27,7 @@ namespace Notes.APP
     {
         // 定义静态事件
         public static event EventHandler ReloadWindow;
-
+        private Point _mouseDownPosition;
         private bool _isDrawerOpen = false;
         private NoteModel _noteModel;
         private MyMessage myMessage;
@@ -115,10 +115,24 @@ namespace Notes.APP
             base.OnMouseLeftButtonDown(e);
             if (e.ChangedButton == MouseButton.Left)
             {
-                this.DragMove(); // 拖动窗口
+                if (this.WindowState == WindowState.Maximized)
+                {
+                    _mouseDownPosition = e.GetPosition(this);
+                    //    // 切换为 Normal 模式，避免最大化状态无法拖拽
+                    //    this.WindowState = WindowState.Normal;
+                    //    // 计算鼠标位置，保持窗口位置不跳变
+                    //    this.Top = Math.Max(0, e.GetPosition(this).Y - 10);
+                    //    this.Left = Math.Max(0, e.GetPosition(this).X - (this.Width / 2));
+                    //}
+                    //this.DragMove(); // 拖动窗口
+                }
             }
+            e.Handled = true;
         }
-
+        //private void TitleBar_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        //{
+        //    this.MouseLeftButtonUp -= TitleBar_MouseLeftButtonUp;
+        //}
         private void TextButton_Click(object sender, MouseButtonEventArgs e)
         {
             // 创建便签窗口实例
@@ -193,10 +207,39 @@ namespace Notes.APP
         }
         private void Window_MouseMove(object sender, MouseEventArgs e)
         {
-            // 获取当前窗口位置
-            _noteModel.XAxis = this.Left;
-            _noteModel.YAxis = this.Top;
-            SaveNote();
+            if (Mouse.LeftButton == MouseButtonState.Pressed)
+            {
+                if (this.WindowState == WindowState.Maximized)
+                {
+                    // 获取当前鼠标位置
+                    Point currentPosition = e.GetPosition(this);
+
+                    // 判断鼠标移动距离（避免误触）
+                    if (Math.Abs(currentPosition.X - _mouseDownPosition.X) > 10 ||
+                        Math.Abs(currentPosition.Y - _mouseDownPosition.Y) > 10)
+                    {
+                        // 退出全屏，并调整窗口位置
+                        if (this.WindowState == WindowState.Maximized)
+                        {
+                            this.WindowState = WindowState.Normal;
+
+                            // 计算鼠标相对位置，保持窗口位置不跳变
+                            this.Top = Math.Max(0, currentPosition.Y - 25);
+                            this.Left = Math.Max(0, currentPosition.X - (this.Width / 2));
+                        }
+                        // 执行拖拽
+                        this.DragMove();
+                    }
+                }
+                else {
+                    // 执行拖拽
+                    this.DragMove();
+                }
+                // 获取当前窗口位置
+                _noteModel.XAxis = this.Left;
+                _noteModel.YAxis = this.Top;
+                SaveNote();
+            }
         }
         private void Grid_MouseEnter(object sender, MouseEventArgs e)
         {
@@ -274,10 +317,10 @@ namespace Notes.APP
         private void StackPanel_MouseLeftButtonDown_1(object sender, MouseButtonEventArgs e)
         {
             var windows = Application.Current.Windows.OfType<Window>().FirstOrDefault(i => i.Name == "listWindow");
-            if (windows!=null)
+            if (windows != null)
             {
                 windows.Show();
-                windows.WindowState= WindowState.Normal;
+                windows.WindowState = WindowState.Normal;
                 windows.Activate();
             }
         }
@@ -289,7 +332,8 @@ namespace Notes.APP
             {
                 btnFixed.Content = "\uE840";
             }
-            else { 
+            else
+            {
                 btnFixed.Content = "\uE718";
             }
             SaveNote();

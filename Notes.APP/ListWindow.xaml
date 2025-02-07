@@ -15,8 +15,6 @@
     AllowsTransparency="True"
     Background="Transparent"
     Loaded="Window_Loaded"
-    MouseLeftButtonDown="OnMouseLeftButtonDown"
-    MouseMove="Window_MouseMove"
     WindowStartupLocation="Manual"
     WindowStyle="None"
     mc:Ignorable="d">
@@ -72,7 +70,9 @@
                     Height="40"
                     VerticalAlignment="Top"
                     Background="#e6edee"
-                    BorderBrush="#bfc1be">
+                    BorderBrush="#bfc1be"
+                    MouseLeftButtonDown="OnMouseLeftButtonDown"
+                    MouseMove="Window_MouseMove">
                     <Border.CornerRadius>
                         <CornerRadius
                             BottomLeft="0"
@@ -272,7 +272,7 @@
             Margin="0,0,5,5"
             HorizontalAlignment="Right"
             VerticalAlignment="Bottom"
-            Background="Transparent"
+            Background="Gray"
             Cursor="SizeNWSE"
             DragDelta="ResizeHandle_DragDelta">
             <Thumb.Template>
@@ -282,7 +282,7 @@
                         Height="16"
                         Background="{TemplateBinding Background}"
                         CornerRadius="8"
-                        Opacity="1">
+                        Opacity="0.2">
                         <Border.RenderTransform>
                             <TranslateTransform X="0" Y="0" />
                         </Border.RenderTransform>
