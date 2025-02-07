@@ -28,6 +28,20 @@ namespace Notes.APP.Models
         /// 便签内容
         /// </summary>
         public string? Content { get; set; }
+        public string ContentShort
+        {
+            get
+            {
+                //if (string.IsNullOrWhiteSpace(Content)) {
+                //    return "未命名";
+                //}
+                //if (Content.Length > 30)
+                //{
+                //    return Content.Substring(0,30);
+                //}
+                return Content;
+            }
+        }
 
         /// <summary>
         /// 创建时间
@@ -203,7 +217,8 @@ namespace Notes.APP.Models
             }
         }
         private bool _fixed;
-       public bool Fixed {
+        public bool Fixed
+        {
             get => _fixed;
             set
             {

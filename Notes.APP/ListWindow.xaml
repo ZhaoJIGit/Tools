@@ -218,7 +218,7 @@
                     Background="#f8f8f8"
                     BorderThickness="1"
                     Opacity="1"
-                    Visibility="Visible">
+                    Visibility="Collapsed">
                     <Border.CornerRadius>
                         <CornerRadius
                             BottomLeft="15"

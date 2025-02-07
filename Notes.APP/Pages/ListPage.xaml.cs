@@ -62,13 +62,17 @@ namespace Notes.APP.Pages
             var windows = Application.Current.Windows.OfType<Window>().Where(i => i.Tag != null);
             if (windows.Any(i => i.Tag.Equals(note.NoteId)))
             {
-                windows.First(i => i.Tag.Equals(note.NoteId)).Activate();
+                var win = windows.First(i => i.Tag.Equals(note.NoteId));
+                win.Activate();
+                win.WindowState = WindowState.Normal;
+                win.Show();
             }
             else
             {
                 MainWindow mainWindow = new MainWindow(note);
                 mainWindow.Tag = note.NoteId;
                 mainWindow.Show();
+               
             }
         }
         private void CloseNote(NoteModel note)
