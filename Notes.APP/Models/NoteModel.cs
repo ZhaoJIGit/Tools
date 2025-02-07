@@ -23,7 +23,6 @@ namespace Notes.APP.Models
         /// 便签标题
         /// </summary>
         public string? NoteName { get; set; }
-
         /// <summary>
         /// 便签内容
         /// </summary>
@@ -32,17 +31,17 @@ namespace Notes.APP.Models
         {
             get
             {
-                //if (string.IsNullOrWhiteSpace(Content)) {
-                //    return "未命名";
-                //}
-                //if (Content.Length > 30)
-                //{
-                //    return Content.Substring(0,30);
-                //}
+                if (string.IsNullOrWhiteSpace(Content))
+                {
+                    return "随便写写";
+                }
+                if (Content.Length > 50)
+                {
+                    return Content.Substring(0, 50);
+                }
                 return Content;
             }
         }
-
         /// <summary>
         /// 创建时间
         /// </summary>
@@ -75,7 +74,7 @@ namespace Notes.APP.Models
             note.NoteId = Guid.NewGuid().ToString("n");
             note.BackgroundColor = ColorHelper.GenerateRandomColor();
             note.Opacity = 50;
-            note.Fixed = true;
+            note.Fixed = false;
             note.CreateTime = DateTime.Now;
             note.UpdateTime = DateTime.Now;
             note.NoteName = "";
@@ -229,7 +228,19 @@ namespace Notes.APP.Models
                 }
             }
         }
-
+        //private bool _isTopUp;
+        //public bool IsTopUp
+        //{
+        //    get => _isTopUp;
+        //    set
+        //    {
+        //        if (_isTopUp != value)
+        //        {
+        //            _isTopUp = value;
+        //            OnPropertyChanged(nameof(IsTopUp));
+        //        }
+        //    }
+        //}
     }
 
 }

@@ -31,7 +31,8 @@ namespace Notes.APP.Common
                 HorizontalOffset = 10,
                 AllowsTransparency= true,
                 PopupAnimation = PopupAnimation.Fade,
-                Margin = new Thickness(100)
+                Margin = new Thickness(100),
+                Opacity = 0.8,
             };
 
             // 创建 Border
@@ -42,7 +43,7 @@ namespace Notes.APP.Common
                 BorderBrush = new SolidColorBrush(Colors.Transparent),
                 Padding = new Thickness(5),
                 CornerRadius = new CornerRadius(10),
-                Opacity = 0.9
+                Opacity = 0.8
             };
 
             // 创建 StackPanel 用于容纳 TextBlock

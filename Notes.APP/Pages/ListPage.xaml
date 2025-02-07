@@ -42,6 +42,7 @@
                 <DataTemplate>
                     <Border
                         Height="100"
+                        Margin="0,0,0,10"
                         Background="#c5ebf7"
                         BorderBrush="LightGray"
                         BorderThickness="1"

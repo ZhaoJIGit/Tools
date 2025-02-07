@@ -58,12 +58,16 @@ namespace Notes.APP
             }
             if (_noteModel.Fixed)
             {
+                
                 btnFixed.Content = "\uE840";
             }
             else
             {
                 btnFixed.Content = "\uE718";
             }
+            this.Topmost = _noteModel.Fixed;
+            //isTopUpBox.IsChecked = _noteModel.IsTopUp;
+
             pageBorder.Background = _noteModel.PageBackgroundColor.ToSolidColorBrush();
             MyColorPicker.SelectedColor = _noteModel.BackgroundColor.ToColor();
             this.Width = _noteModel.Width;
@@ -118,21 +122,11 @@ namespace Notes.APP
                 if (this.WindowState == WindowState.Maximized)
                 {
                     _mouseDownPosition = e.GetPosition(this);
-                    //    // 切换为 Normal 模式，避免最大化状态无法拖拽
-                    //    this.WindowState = WindowState.Normal;
-                    //    // 计算鼠标位置，保持窗口位置不跳变
-                    //    this.Top = Math.Max(0, e.GetPosition(this).Y - 10);
-                    //    this.Left = Math.Max(0, e.GetPosition(this).X - (this.Width / 2));
-                    //}
-                    //this.DragMove(); // 拖动窗口
                 }
             }
             e.Handled = true;
         }
-        //private void TitleBar_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        //{
-        //    this.MouseLeftButtonUp -= TitleBar_MouseLeftButtonUp;
-        //}
+     
         private void TextButton_Click(object sender, MouseButtonEventArgs e)
         {
             // 创建便签窗口实例
@@ -169,8 +163,6 @@ namespace Notes.APP
         private void CloseArea_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             // 关闭抽屉
-            //Storyboard closeStoryboard = (Storyboard)FindResource("CloseDrawer");
-            //closeStoryboard.Begin();
             CloseArea.Visibility = Visibility.Collapsed;  // 隐藏遮罩层
             DrawerPanel.Visibility = Visibility.Collapsed;
 
@@ -191,7 +183,12 @@ namespace Notes.APP
             if (service.SaveNote(_noteModel))
             {
                 Console.WriteLine("保存成功");
+                // 触发事件，通知 Window A
+                ReloadWindow?.Invoke(this, EventArgs.Empty);
             }
+        }
+        public void ChangedTextEvent() {
+                ReloadWindow?.Invoke(this, EventArgs.Empty);
         }
         private void ResizeHandle_DragDelta(object sender, DragDeltaEventArgs e)
         {
@@ -231,7 +228,8 @@ namespace Notes.APP
                         this.DragMove();
                     }
                 }
-                else {
+                else
+                {
                     // 执行拖拽
                     this.DragMove();
                 }
@@ -334,9 +332,46 @@ namespace Notes.APP
             }
             else
             {
+              
                 btnFixed.Content = "\uE718";
             }
+            this.Topmost = _noteModel.Fixed;
             SaveNote();
         }
+
+        private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if ((e.Key == Key.D) &&
+         ((Keyboard.Modifiers & ModifierKeys.Windows) == ModifierKeys.Windows))
+            {
+                // 如果按下的是 Win + D，取消默认处理
+                e.Handled = true;
+            }
+        }
+
+        //private void TopUp_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        //{
+        //    isTopUpBox.IsChecked = !isTopUpBox.IsChecked;
+        //}
+
+        //private void TopUpBox_Checked(object sender, RoutedEventArgs e)
+        //{
+        //    if (isTopUpBox.IsChecked.Value)
+        //    {
+        //        this.Topmost = true;
+        //        _noteModel.IsTopUp = true;
+        //        SaveNote();
+        //    }
+        //}
+
+        //private void TopUpBox_Unchecked(object sender, RoutedEventArgs e)
+        //{
+        //    if (!isTopUpBox.IsChecked.Value)
+        //    {
+        //        this.Topmost = false;
+        //        _noteModel.IsTopUp = false;
+        //        SaveNote();
+        //    }
+        //}
     }
 }

@@ -298,7 +298,7 @@
             TrayLeftMouseUp="TrayIcon_TrayLeftMouseUp">
             <tb:TaskbarIcon.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Click="OnTrayOpenClick" Header="打开" />
+                    <MenuItem Click="OnTrayOpenClick" Header="打开面板" />
                     <MenuItem Click="OnTrayExitClick" Header="退出" />
                 </ContextMenu>
             </tb:TaskbarIcon.ContextMenu>

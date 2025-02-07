@@ -29,9 +29,12 @@ namespace Notes.APP
         private Point _mouseDownPosition;
         private bool _isDrawerOpen = false;
         private bool isLoad = false;
+        // 定义静态事件
+        public static event EventHandler RefreshEvent;
         public ListWindow()
         {
             InitializeComponent();
+            
             // 默认显示 Page1
             ListFrame.Navigate(new ListPage());
 
@@ -56,7 +59,7 @@ namespace Notes.APP
                 mainWindow.Show();
             }
             isLoad = false;
-
+            this.Hide();
         }
         private void AddButton_Click(object sender, RoutedEventArgs e)
         {
@@ -67,13 +70,31 @@ namespace Notes.APP
             ReloadPage();
 
         }
+
+        private DateTime _lastClickTime = DateTime.MinValue;
+        private const int DoubleClickTimeLimit = 1000; // 双击时间限制，单位是毫秒
         private void TrayIcon_TrayLeftMouseUp(object sender, RoutedEventArgs e)
         {
-            this.Show();
-            this.WindowState = WindowState.Normal;
-            this.Activate();
+            //var currentTime = DateTime.Now;
+            //var timeDifference = currentTime - _lastClickTime;
+            //if (timeDifference.TotalMilliseconds <= DoubleClickTimeLimit)
+            //{
+            //    // 双击事件
+            //    this.Show();
+            //    this.WindowState = WindowState.Normal;
+            //    this.Activate();
+            //}
+            //// 更新上次点击时间
+            //_lastClickTime = currentTime;
+            var windows = Application.Current.Windows.OfType<Window>().Where(i=>i.Name== "NoteDetail");
+            foreach (var win in windows)
+            {
+                win.Activate();
+                win.WindowState = WindowState.Normal;
+                win.Show();
+            }
+          
         }
-
         private void SettingButton_Click(object sender, RoutedEventArgs e)
         {
             // 根据当前状态切换抽屉的打开或关闭
@@ -93,7 +114,11 @@ namespace Notes.APP
             // 切换状态
             _isDrawerOpen = !_isDrawerOpen;
         }
-
+        // 触发事件
+        public static void TriggerRefresh()
+        {
+            RefreshEvent?.Invoke(null, EventArgs.Empty);
+        }
         // INotifyPropertyChanged 实现
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
@@ -205,9 +230,10 @@ namespace Notes.APP
         }
         private void ReloadPage()
         {
+            ListWindow.TriggerRefresh();
             // 获取当前的 Frame
-            ListFrame.Navigate(null); // 先清空 Frame 内容
-            ListFrame.Navigate(new ListPage()); // 再重新加载页面
+            //ListFrame.Navigate(null); // 先清空 Frame 内容
+            //ListFrame.Navigate(new ListPage()); // 再重新加载页面
         }
         private void TextBlock_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {

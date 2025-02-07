@@ -108,6 +108,8 @@ namespace Notes.APP.Pages
             if (service.SaveNote(pageModel))
             {
                 myMessage.ShowSuccess("自动保存成功！");
+                var win=Window.GetWindow(this) as MainWindow;
+                win?.ChangedTextEvent();
             }
             else
             {
