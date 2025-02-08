@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -15,9 +16,11 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using static Notes.APP.App;
 
 namespace Notes.APP
 {
@@ -29,15 +32,49 @@ namespace Notes.APP
         private Point _mouseDownPosition;
         private bool _isDrawerOpen = false;
         private bool isLoad = false;
+        private const int WM_COPYDATA = 0x004A;
+
         // 定义静态事件
         public static event EventHandler RefreshEvent;
         public ListWindow()
         {
             InitializeComponent();
-            
+            SourceInitialized += MainWindow_SourceInitialized;
             // 默认显示 Page1
             ListFrame.Navigate(new ListPage());
 
+        }
+        private void MainWindow_SourceInitialized(object sender, EventArgs e)
+        {
+            HwndSource source = HwndSource.FromHwnd(new WindowInteropHelper(this).Handle);
+            source.AddHook(WndProc);
+        }
+
+        private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        {
+            if (msg == WM_COPYDATA)
+            {
+                COPYDATASTRUCT cds = (COPYDATASTRUCT)Marshal.PtrToStructure(lParam, typeof(COPYDATASTRUCT));
+                string receivedMessage = Marshal.PtrToStringAnsi(cds.lpData, cds.cbData);
+
+                if (receivedMessage == "SHOW")
+                {
+                    RestoreWindow();
+                }
+
+                handled = true;
+            }
+            return IntPtr.Zero;
+        }
+
+        public void RestoreWindow()
+        {
+            this.Show();
+            this.WindowState = WindowState.Normal;
+            this.Activate();
+            this.Topmost = true;
+            this.Topmost = false;
+            this.Focus();
         }
         private void MainWindow_ReloadWindow(object sender, EventArgs e)
         {

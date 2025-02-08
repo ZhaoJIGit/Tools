@@ -12,13 +12,15 @@
     Loaded="Page_Loaded"
     mc:Ignorable="d">
 
-    <Grid Name="pageConent">
+    <Grid Name="pageConent" Margin="0,1">
         <TextBox
             Name="txtConent"
+            Padding="5"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
             AcceptsReturn="True"
             Background="Transparent"
+            BorderThickness="0"
             HorizontalScrollBarVisibility="Hidden"
             TextChanged="txtConent_TextChanged"
             TextWrapping="Wrap"
