@@ -22,11 +22,10 @@ namespace Notes.APP.Pages
     /// <summary>
     /// HomePage.xaml 的交互逻辑
     /// </summary>
-    public partial class HomePage : Page
+    public partial class HomePage : BasePage
     {
         private NoteModel? pageModel;
         private DispatcherTimer _timer;
-        private MyMessage myMessage;
         private bool isUpdate = false;
         private string _lastText;
         public HomePage()
@@ -54,15 +53,12 @@ namespace Notes.APP.Pages
         {
             InitializeTimer();
             isUpdate = false;
-            var parentWindow = Window.GetWindow(this);
-            MessagePopupHelper popupHelper = new MessagePopupHelper(parentWindow);
-            // 创建 MyMessage 实例并传入 MessagePopupHelper
-            myMessage = new MyMessage(popupHelper);
-            pageModel = parentWindow.DataContext as NoteModel;
+          
+            pageModel = _ParentWindow.DataContext as NoteModel;
             txtConent.Text = pageModel.Content;
             _lastText = pageModel.Content;
             SetBackgroundColor(pageModel?.BackgroundColor);
-            if (parentWindow != null)
+            if (_ParentWindow != null)
             {
                 pageModel.BackgroundColorChanged += OnBackgroundColorChanged; // 订阅事件
             }
@@ -104,16 +100,16 @@ namespace Notes.APP.Pages
         // 保存文本的操作
         private void SaveText(string text)
         {
-            var service = new NoteService();
-            if (service.SaveNote(pageModel))
+            
+            if (_NoteService.SaveNote(pageModel))
             {
-                myMessage.ShowSuccess("自动保存成功！");
+                _Message.ShowSuccess("自动保存成功！");
                 var win=Window.GetWindow(this) as MainWindow;
                 win?.ChangedTextEvent();
             }
             else
             {
-                myMessage.ShowError();
+                _Message.ShowError();
             }
         }
     }

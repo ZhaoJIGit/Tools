@@ -21,7 +21,7 @@ namespace Notes.APP.Pages
     /// <summary>
     /// ListPage.xaml 的交互逻辑
     /// </summary>
-    public partial class ListPage : Page
+    public partial class ListPage : BasePage
     {
         public ObservableCollection<NoteModel> notes { get; set; } = new ObservableCollection<NoteModel>();
         public ListPage()
@@ -48,8 +48,7 @@ namespace Notes.APP.Pages
         private void GetNotes()
         {
             notes.Clear();
-            var service = new NoteService();
-            var list = service.GetNotes();
+            var list = _NoteService.GetNotes();
             foreach (var item in list)
             {
                 notes.Add(item);
@@ -99,8 +98,7 @@ namespace Notes.APP.Pages
                 // 删除选中的项
                 var note = selectedItem as NoteModel;
                 notes.Remove(note);
-                var service = new NoteService();
-                service.DeleteNote(note!.NoteId);
+                _NoteService.DeleteNote(note!.NoteId);
                 CloseNote(note);
             }
 

@@ -13,6 +13,7 @@
     MinHeight="280"
     AllowsTransparency="True"
     Background="Transparent"
+    ContentRendered="Window_ContentRendered"
     Loaded="Window_Loaded"
     Opacity="{Binding Opacity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
     PreviewKeyDown="Window_PreviewKeyDown"
@@ -310,44 +311,51 @@
                                 Text="窗口置顶" />
                         </StackPanel>-->
                         <!--  查看列表  -->
-                        <StackPanel
+                        <Grid
                             Grid.Row="6"
-                            Margin="5,0"
-                            VerticalAlignment="Bottom"
-                            MouseLeftButtonDown="StackPanel_MouseLeftButtonDown_1"
-                            Orientation="Horizontal">
-                            <TextBlock
-                                Margin="0,0,10,0"
-                                VerticalAlignment="Center"
-                                FontFamily="Segoe MDL2 Assets"
-                                FontSize="16"
-                                Text="&#xE8FD;" />
-                            <TextBlock
-                                VerticalAlignment="Center"
-                                FontSize="14"
-                                Text="查看列表" />
-                        </StackPanel>
+                            HorizontalAlignment="Stretch"
+                            Background="Transparent"
+                            MouseLeftButtonDown="StackPanel_MouseLeftButtonDown_1">
+                            <StackPanel
+                                Margin="5,0,5,10"
+                                VerticalAlignment="Bottom"
+                                Orientation="Horizontal">
+                                <TextBlock
+                                    Margin="0,0,10,0"
+                                    VerticalAlignment="Center"
+                                    FontFamily="Segoe MDL2 Assets"
+                                    FontSize="16"
+                                    Text="&#xE8FD;" />
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    FontSize="14"
+                                    Text="查看列表" />
+                            </StackPanel>
+                        </Grid>
                         <!--  删除  -->
-                        <StackPanel
+                        <Grid
                             Grid.Row="7"
-                            Margin="5,0,5,10"
-                            VerticalAlignment="Bottom"
-                            MouseLeftButtonDown="StackPanel_MouseLeftButtonDown"
-                            Orientation="Horizontal">
-                            <TextBlock
-                                Margin="0,0,10,0"
-                                VerticalAlignment="Center"
-                                FontFamily="Segoe MDL2 Assets"
-                                FontSize="16"
-                                Foreground="Red"
-                                Text="&#xE74D;" />
-                            <TextBlock
-                                VerticalAlignment="Center"
-                                FontSize="14"
-                                Foreground="Red"
-                                Text="删除便签" />
-                        </StackPanel>
-
+                            HorizontalAlignment="Stretch"
+                            Background="Transparent"
+                            MouseLeftButtonDown="StackPanel_MouseLeftButtonDown">
+                            <StackPanel
+                                Margin="5,0,5,10"
+                                VerticalAlignment="Bottom"
+                                Orientation="Horizontal">
+                                <TextBlock
+                                    Margin="0,0,10,0"
+                                    VerticalAlignment="Center"
+                                    FontFamily="Segoe MDL2 Assets"
+                                    FontSize="16"
+                                    Foreground="Red"
+                                    Text="&#xE74D;" />
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    FontSize="14"
+                                    Foreground="Red"
+                                    Text="删除便签" />
+                            </StackPanel>
+                        </Grid>
                     </Grid>
                 </Border>
             </Grid>

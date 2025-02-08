@@ -78,6 +78,10 @@ namespace Notes.APP
                 this.Top = _noteModel.YAxis;
             }
         }
+        private void Window_ContentRendered(object sender, EventArgs e)
+        {
+            this.Topmost = _noteModel.Fixed;
+        }
         // INotifyPropertyChanged 实现
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)

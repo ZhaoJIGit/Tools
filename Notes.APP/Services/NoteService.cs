@@ -16,6 +16,27 @@ namespace Notes.APP.Services
         {
             dBHelper = new DBHelper();
         }
+        private static NoteService _instance;
+        private static readonly object _lock = new object();
+
+
+        public static NoteService Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    lock (_lock)
+                    {
+                        if (_instance == null)
+                        {
+                            _instance = new NoteService();
+                        }
+                    }
+                }
+                return _instance;
+            }
+        }
         public bool AddNote(NoteModel model)
         {
             var sql = $@" INSERT INTO NoteInfo (NoteId,NoteName,
