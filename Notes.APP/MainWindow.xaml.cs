@@ -305,11 +305,17 @@ namespace Notes.APP
         /// <param name="e"></param>
         private void StackPanel_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            var service = new NoteService();
-            service.DeleteNote(_noteModel!.NoteId);
-            this.Close();
-            // 触发事件，通知 Window A
-            ReloadWindow?.Invoke(this, EventArgs.Empty);
+            ConfirmDialogHelper confirmDialogHelper = new ConfirmDialogHelper(this);
+            ConfirmMessage confirmMessage= new ConfirmMessage(confirmDialogHelper);
+            confirmMessage.ShowConfirm("确认删除吗？", () => {
+                // 删除逻辑
+                var service = new NoteService();
+                service.DeleteNote(_noteModel!.NoteId);
+                this.Close();
+                // 触发事件，通知 Window A
+                ReloadWindow?.Invoke(this, EventArgs.Empty);
+            });
+
         }
         /// <summary>
         /// 查看列表

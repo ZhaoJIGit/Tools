@@ -7,6 +7,9 @@
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="CustomCtrls\ConfirmPopup.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="CustomCtrls\MessagePopup.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -21,6 +24,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Page Update="CustomCtrls\ConfirmPopup.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="CustomCtrls\MessagePopup.xaml">
       <SubType>Designer</SubType>
     </Page>

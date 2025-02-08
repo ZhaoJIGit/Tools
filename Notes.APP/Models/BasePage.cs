@@ -15,12 +15,14 @@ namespace Notes.APP.Models
     public class BasePage : Page
     {
         public MyMessage _Message;
+        public ConfirmMessage _ConfirmMessage;
+
         public Window? _ParentWindow;
         public NoteService _NoteService;
         public BasePage()
         {
             // 监听页面加载事件
-            this.Loaded += BasePage_Loaded;
+            this.Loaded += BasePage_Loaded; 
         }
         /// <summary>
         /// 页面加载完成后执行的操作
@@ -32,6 +34,9 @@ namespace Notes.APP.Models
             MessagePopupHelper popupHelper = new MessagePopupHelper(_ParentWindow);
             // 创建 MyMessage 实例并传入 MessagePopupHelper
             _Message = new MyMessage(popupHelper);
+
+            ConfirmDialogHelper confirmDialogHelper = new ConfirmDialogHelper(_ParentWindow);
+            _ConfirmMessage = new ConfirmMessage(confirmDialogHelper);
         }
     }
 }

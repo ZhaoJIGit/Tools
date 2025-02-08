@@ -1,4 +1,5 @@
-﻿using Notes.APP.Models;
+﻿using Notes.APP.Common;
+using Notes.APP.Models;
 using Notes.APP.Services;
 using System;
 using System.Collections.Generic;
@@ -28,7 +29,7 @@ namespace Notes.APP.Pages
         {
             InitializeComponent();
             notesList.ItemsSource = notes;
-            ListWindow.RefreshEvent += OnRefreshEvent; // 订阅事件
+            
         }
         // 事件处理方法
         private void OnRefreshEvent(object sender, EventArgs e)
@@ -43,6 +44,7 @@ namespace Notes.APP.Pages
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
+            ListWindow.RefreshEvent += OnRefreshEvent; // 订阅事件
             GetNotes();
         }
         private void GetNotes()
@@ -91,17 +93,18 @@ namespace Notes.APP.Pages
         }
         private void DeleteMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            // 删除逻辑
-            var selectedItem = notesList.SelectedItem;
-            if (selectedItem != null)
-            {
-                // 删除选中的项
-                var note = selectedItem as NoteModel;
-                notes.Remove(note);
-                _NoteService.DeleteNote(note!.NoteId);
-                CloseNote(note);
-            }
-
+            _ConfirmMessage.ShowConfirm("确认删除吗？",() => {
+                // 删除逻辑
+                var selectedItem = notesList.SelectedItem;
+                if (selectedItem != null)
+                {
+                    // 删除选中的项
+                    var note = selectedItem as NoteModel;
+                    notes.Remove(note);
+                    _NoteService.DeleteNote(note!.NoteId);
+                    CloseNote(note);
+                }
+            });
         }
 
         private void EditMenuItem_Click(object sender, RoutedEventArgs e)

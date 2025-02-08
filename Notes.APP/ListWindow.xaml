@@ -297,11 +297,97 @@
             ToolTipText="便利贴"
             TrayLeftMouseUp="TrayIcon_TrayLeftMouseUp">
             <tb:TaskbarIcon.ContextMenu>
-                <ContextMenu>
-                    <MenuItem Click="OnTrayOpenClick" Header="打开面板" />
-                    <MenuItem Click="OnTrayExitClick" Header="退出" />
+                <ContextMenu Width="100">
+                    <MenuItem Click="OnTrayOpenClick" Header="打开面板">
+                        <MenuItem.Icon>
+                            <TextBlock
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Center"
+                                FontFamily="Segoe MDL2 Assets"
+                                FontSize="16"
+                                Text="&#xE8E4;" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Click="OnTrayExitClick">
+                        <MenuItem.Icon>
+                            <TextBlock
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Center"
+                                FontFamily="Segoe MDL2 Assets"
+                                FontSize="16"
+                                Foreground="Red"
+                                Text="&#xE7E8;" />
+                        </MenuItem.Icon>
+                        <MenuItem.Header>退出</MenuItem.Header>
+                    </MenuItem>
+                    <ContextMenu.Style>
+                        <Style TargetType="ContextMenu">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ContextMenu">
+                                        <Border
+                                            Padding="2"
+                                            Background="White"
+                                            BorderBrush="Gray"
+                                            BorderThickness="1"
+                                            CornerRadius="10">
+                                            <StackPanel>
+                                                <ItemsPresenter />
+                                            </StackPanel>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ContextMenu.Style>
+                    <ContextMenu.ItemContainerStyle>
+                        <Style TargetType="MenuItem">
+                            <Setter Property="Padding" Value="10,5,10,5" />
+                            <!--  给内容适当的Padding  -->
+                            <Setter Property="Margin" Value="0" />
+                            <Setter Property="HorizontalContentAlignment" Value="Left" />
+                            <Setter Property="VerticalContentAlignment" Value="Center" />
+                            <Setter Property="Cursor" Value="Hand" />
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="MenuItem">
+                                        <Border
+                                            Height="30"
+                                            Background="Transparent"
+                                            BorderBrush="{TemplateBinding BorderBrush}"
+                                            BorderThickness="1"
+                                            CornerRadius="10">
+                                            <StackPanel Orientation="Horizontal">
+                                                <!--  图标显示  -->
+                                                <ContentPresenter
+                                                    Margin="10,0,5,0"
+                                                    HorizontalAlignment="Left"
+                                                    VerticalAlignment="Center"
+                                                    Content="{TemplateBinding Icon}" />
+                                                <!--  文本显示  -->
+                                                <ContentPresenter
+                                                    Margin="5,0,0,0"
+                                                    HorizontalAlignment="Left"
+                                                    VerticalAlignment="Center"
+                                                    Content="{TemplateBinding Header}" />
+                                            </StackPanel>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <!--  设置悬浮时背景色变化  -->
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="red" />
+                                    <Setter Property="Foreground" Value="Black" />
+                                    <Setter Property="BorderBrush" Value="LightBlue" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ContextMenu.ItemContainerStyle>
                 </ContextMenu>
             </tb:TaskbarIcon.ContextMenu>
         </tb:TaskbarIcon>
+
     </Grid>
 </Window>

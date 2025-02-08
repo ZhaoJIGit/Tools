@@ -59,7 +59,8 @@ namespace Notes.APP
                 mainWindow.Show();
             }
             isLoad = false;
-            this.Hide();
+
+            //this.Hide();
         }
         private void AddButton_Click(object sender, RoutedEventArgs e)
         {

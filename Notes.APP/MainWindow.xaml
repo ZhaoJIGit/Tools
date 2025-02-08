@@ -315,7 +315,7 @@
                             Grid.Row="6"
                             HorizontalAlignment="Stretch"
                             Background="Transparent"
-                            MouseLeftButtonDown="StackPanel_MouseLeftButtonDown_1">
+                            MouseLeftButtonUp="StackPanel_MouseLeftButtonDown_1">
                             <StackPanel
                                 Margin="5,0,5,10"
                                 VerticalAlignment="Bottom"
