@@ -31,7 +31,7 @@ namespace Notes.APP.Pages
         public HomePage()
         {
             InitializeComponent();
-     
+
 
         }
         private void InitializeTimer()
@@ -53,9 +53,9 @@ namespace Notes.APP.Pages
         {
             InitializeTimer();
             isUpdate = false;
-          
+
             pageModel = _ParentWindow.DataContext as NoteModel;
-            txtConent.Text = pageModel.Content;
+            txtContent.Text = pageModel.Content;
             _lastText = pageModel.Content;
             SetBackgroundColor(pageModel?.BackgroundColor);
             if (_ParentWindow != null)
@@ -64,6 +64,7 @@ namespace Notes.APP.Pages
             }
             isUpdate = true;
         }
+
         private void OnBackgroundColorChanged(string newColor)
         {
             SetBackgroundColor(newColor);
@@ -72,11 +73,49 @@ namespace Notes.APP.Pages
         {
 
             //pageConent.Background = pageModel.PageBackgroundColor.ToSolidColorBrush();
-            txtConent.Background = pageModel.PageBackgroundColor.ToSolidColorBrush();
-            txtConent.Foreground = ColorHelper.GetColorByBackground(color).ToSolidColorBrush();
+            txtContent.Background = pageModel.PageBackgroundColor.ToSolidColorBrush();
+            txtContent.Foreground = ColorHelper.GetColorByBackground(color).ToSolidColorBrush();
+        }
+       
+        // 保存文本的操作
+        private void SaveText(string text)
+        {
+
+            if (_NoteService.SaveNote(pageModel))
+            {
+                _Message.ShowSuccess("自动保存成功！");
+                var win = Window.GetWindow(this) as MainWindow;
+                win?.ChangedTextEvent();
+            }
+            else
+            {
+                _Message.ShowError();
+            }
         }
 
-        private void txtConent_TextChanged(object sender, TextChangedEventArgs e)
+        private void txtContent_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
+            {
+                switch (e.Key)
+                {
+                    case Key.Add:
+                        // 处理向上键
+                        txtContent.FontSize += 1;
+                        break;
+                    case Key.Subtract:
+                        // 处理向下键
+                        if (txtContent.FontSize > 1)
+                        {
+                            txtContent.FontSize -= 1;
+                        }
+                        break;
+                }
+            }
+                
+        }
+
+        private void txtContent_TextChanged(object sender, TextChangedEventArgs e)
         {
             // 获取当前文本框内容
             _lastText = ((TextBox)sender).Text;
@@ -97,20 +136,7 @@ namespace Notes.APP.Pages
                 _timer.Start(); // 启动计时器
             }
         }
-        // 保存文本的操作
-        private void SaveText(string text)
-        {
-            
-            if (_NoteService.SaveNote(pageModel))
-            {
-                _Message.ShowSuccess("自动保存成功！");
-                var win=Window.GetWindow(this) as MainWindow;
-                win?.ChangedTextEvent();
-            }
-            else
-            {
-                _Message.ShowError();
-            }
-        }
+
+       
     }
 }

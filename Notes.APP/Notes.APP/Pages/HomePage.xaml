@@ -9,12 +9,14 @@
     Title="HomePage"
     d:Height="300"
     d:Width="300"
+    KeyDown="txtContent_KeyDown"
     Loaded="Page_Loaded"
     mc:Ignorable="d">
 
     <Grid Name="pageConent" Margin="0,1">
+
         <TextBox
-            Name="txtConent"
+            Name="txtContent"
             Padding="5"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
@@ -22,7 +24,7 @@
             Background="Transparent"
             BorderThickness="0"
             HorizontalScrollBarVisibility="Hidden"
-            TextChanged="txtConent_TextChanged"
+            TextChanged="txtContent_TextChanged"
             TextWrapping="Wrap"
             VerticalScrollBarVisibility="Hidden" />
     </Grid>

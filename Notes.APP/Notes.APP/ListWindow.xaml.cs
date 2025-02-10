@@ -52,15 +52,16 @@ namespace Notes.APP
 
         private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
+            var service = LogService.Instance;
             if (msg == WM_COPYDATA)
             {
-                COPYDATASTRUCT cds = (COPYDATASTRUCT)Marshal.PtrToStructure(lParam, typeof(COPYDATASTRUCT));
-                string receivedMessage = Marshal.PtrToStringAnsi(cds.lpData, cds.cbData);
-
-                if (receivedMessage == "SHOW")
-                {
-                    RestoreWindow();
-                }
+                //COPYDATASTRUCT cds = (COPYDATASTRUCT)Marshal.PtrToStructure(lParam, typeof(COPYDATASTRUCT));
+                //string receivedMessage = Marshal.PtrToStringAnsi(cds.lpData, cds.cbData);
+                //if (receivedMessage == "SHOW")
+                //{
+           
+                //    RestoreWindow();
+                //}
 
                 handled = true;
             }
@@ -89,7 +90,7 @@ namespace Notes.APP
             isOpenRunBox.IsChecked = StartupManager.IsAutoStartupEnabled();
             var noteService = new NoteService();
             var list = noteService.GetNotes();
-            foreach (var item in list.Where(i => i.Fixed))
+            foreach (var item in list)
             {
                 MainWindow mainWindow = new MainWindow(item);
                 mainWindow.Tag = item.NoteId;
@@ -124,14 +125,14 @@ namespace Notes.APP
             //}
             //// 更新上次点击时间
             //_lastClickTime = currentTime;
-            var windows = Application.Current.Windows.OfType<Window>().Where(i=>i.Name== "NoteDetail");
+            var windows = Application.Current.Windows.OfType<Window>().Where(i => i.Name == "NoteDetail");
             foreach (var win in windows)
             {
                 win.Activate();
                 win.WindowState = WindowState.Normal;
                 win.Show();
             }
-          
+
         }
         private void SettingButton_Click(object sender, RoutedEventArgs e)
         {

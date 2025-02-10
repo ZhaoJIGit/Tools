@@ -1,9 +1,11 @@
-﻿using System.Configuration;
+﻿using Notes.APP.Services;
+using System.Configuration;
 using System.Data;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows;
+using System.Windows.Interop;
 
 namespace Notes.APP
 {
@@ -40,9 +42,11 @@ namespace Notes.APP
 
             // 尝试创建一个全局 Mutex
             _mutex = new Mutex(true, mutexName, out createdNew);
-
+            var service = LogService.Instance;
+            service.AddMessage(@$"发送消息通知已存在的实例!{createdNew}");
             if (!createdNew)
             {
+             
                 // 发送消息通知已存在的实例
                 NotifyExistingInstance();
                 //ActivateOtherInstance();
@@ -65,9 +69,12 @@ namespace Notes.APP
 
         private void NotifyExistingInstance()
         {
-            IntPtr hWnd = FindWindow(null, "便利贴"); // 确保标题匹配
+            IntPtr hWnd = FindWindow(null, "计签"); // 确保标题匹配
+            var service = LogService.Instance;
+            service.AddMessage(@$"发送消息通知已存在的实例!NotifyExistingInstance1:{hWnd}");
             if (hWnd != IntPtr.Zero)
             {
+                service.AddMessage(@$"发送消息通知已存在的实例!NotifyExistingInstance2:{hWnd}");
                 string message = "SHOW";
                 byte[] messageBytes = System.Text.Encoding.UTF8.GetBytes(message);
                 IntPtr lpData = Marshal.AllocHGlobal(messageBytes.Length);
@@ -84,37 +91,7 @@ namespace Notes.APP
                 Marshal.FreeHGlobal(lpData);
             }
         }
-        /// <summary>
-        /// 激活已存在的实例窗口
-        /// </summary>
-        private void ActivateOtherInstance()
-        {
-            // 这里的窗口标题必须与主窗口的 Title 保持一致
-            const string windowTitle = "便利贴";
-            IntPtr hWnd = FindWindow(null, windowTitle);
-
-            if (hWnd != IntPtr.Zero)
-            {
-                Process currentProcess = Process.GetCurrentProcess();
-                Process[] processes = Process.GetProcessesByName(currentProcess.ProcessName);
-
-                foreach (Process process in processes)
-                {
-                    if (process.Id != currentProcess.Id)
-                    {
-                        // 允许目标进程获得前台权限
-                        AllowSetForegroundWindow(process.Id);
-                        break;
-                    }
-                }
-
-                if (IsIconic(hWnd))
-                {
-                    ShowWindowAsync(hWnd, SW_RESTORE); // 还原窗口
-                }
-                SetForegroundWindow(hWnd); // 置前窗口
-            }
-        }
+       
     }
 
 }

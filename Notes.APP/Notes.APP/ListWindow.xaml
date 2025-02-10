@@ -7,7 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:tb="http://www.hardcodet.net/taskbar"
     Name="listWindow"
-    Title="便利贴"
+    Title="计签"
     Width="400"
     Height="320"
     MinWidth="400"

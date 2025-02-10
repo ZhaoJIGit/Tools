@@ -47,7 +47,7 @@ namespace Notes.APP.Common
                 using (var connection = new SqliteConnection(_connectionString))
                 {
                     connection.Open();
-                    // 创建一个表
+                    // 创建表
                     var createTableQuery = @"
                             CREATE TABLE IF NOT EXISTS NoteInfo (
                                 NoteId TEXT PRIMARY KEY,
@@ -65,6 +65,11 @@ namespace Notes.APP.Common
                                 Width REAL NOT NULL,
                                 Fixed INTEGER NOT NULL,
                                 IsDeleted INTEGER NOT NULL
+                            );
+                            CREATE TABLE IF NOT EXISTS LogInfo (
+                                Id INTEGER  PRIMARY KEY AUTOINCREMENT,
+                                Message TEXT NOT NULL,
+                                CreateTime date Not NULL
                             );
                         ";
                     using (var command = new SqliteCommand(createTableQuery, connection))
