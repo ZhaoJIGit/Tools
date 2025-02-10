@@ -97,7 +97,7 @@ namespace Notes.APP
             }
             isLoad = false;
 
-            //this.Hide();
+            this.Hide();
         }
         private void AddButton_Click(object sender, RoutedEventArgs e)
         {

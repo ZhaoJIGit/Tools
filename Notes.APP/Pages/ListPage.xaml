@@ -48,7 +48,7 @@
                         Background="#c5ebf7"
                         BorderBrush="LightGray"
                         BorderThickness="1"
-                        CornerRadius="15">
+                        CornerRadius="8">
                         <!--  添加阴影效果  -->
                         <Border.Effect>
                             <DropShadowEffect
@@ -134,7 +134,7 @@
                                             Background="White"
                                             BorderBrush="Gray"
                                             BorderThickness="1"
-                                            CornerRadius="10">
+                                            CornerRadius="8">
                                             <StackPanel>
                                                 <ItemsPresenter />
                                             </StackPanel>
@@ -161,7 +161,7 @@
                                             Background="Transparent"
                                             BorderBrush="{TemplateBinding BorderBrush}"
                                             BorderThickness="1"
-                                            CornerRadius="10">
+                                            CornerRadius="8">
                                             <StackPanel Orientation="Horizontal">
                                                 <!--  图标显示  -->
                                                 <ContentPresenter
