@@ -1,4 +1,5 @@
-﻿using Notes.APP.Common;
+﻿using ICSharpCode.AvalonEdit;
+using Notes.APP.Common;
 using Notes.APP.Models;
 using Notes.APP.Services;
 using System;
@@ -53,7 +54,7 @@ namespace Notes.APP.Pages
         {
             InitializeTimer();
             isUpdate = false;
-
+            
             pageModel = _ParentWindow.DataContext as NoteModel;
             txtContent.Text = pageModel.Content;
             _lastText = pageModel.Content;
@@ -76,11 +77,10 @@ namespace Notes.APP.Pages
             txtContent.Background = pageModel.PageBackgroundColor.ToSolidColorBrush();
             txtContent.Foreground = ColorHelper.GetColorByBackground(color).ToSolidColorBrush();
         }
-       
+
         // 保存文本的操作
         private void SaveText(string text)
         {
-
             if (_NoteService.SaveNote(pageModel))
             {
                 _Message.ShowSuccess("自动保存成功！");
@@ -110,13 +110,16 @@ namespace Notes.APP.Pages
                             txtContent.FontSize -= 1;
                         }
                         break;
+                    case Key.B:
+                        txtContent.FontWeight = txtContent.FontWeight == FontWeights.Bold ? FontWeights.Normal : FontWeights.Bold;
+                        break;
                 }
             }
-                
         }
 
         private void txtContent_TextChanged(object sender, TextChangedEventArgs e)
         {
+            
             // 获取当前文本框内容
             _lastText = ((TextBox)sender).Text;
 
@@ -137,6 +140,27 @@ namespace Notes.APP.Pages
             }
         }
 
-       
+        private void txtContent_TextChanged_1(object sender, EventArgs e)
+        {
+            
+            // 获取当前文本框内容
+            _lastText = ((TextEditor)sender).Text;
+
+            if (_timer == null || pageModel == null)
+            {
+                return;
+            }
+            pageModel.Content = _lastText;
+
+            // 如果计时器已经在运行，停止并重启计时器
+            if (_timer.IsEnabled)
+            {
+                _timer.Stop();
+            }
+            if (isUpdate)
+            {
+                _timer.Start(); // 启动计时器
+            }
+        }
     }
 }
