@@ -14,7 +14,7 @@
     Loaded="Page_Loaded"
     mc:Ignorable="d">
 
-    <Grid Name="pageConent" Margin="0,1">
+    <Grid Name="pageConent" Margin="0,2">
         <avalon:TextEditor
             Name="txtContent"
             Background="Transparent"

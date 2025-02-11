@@ -64,7 +64,13 @@ namespace Notes.APP.Common
                                 Height REAL NOT NULL,
                                 Width REAL NOT NULL,
                                 Fixed INTEGER NOT NULL,
+                                Hitokoto TEXT NOT NULL,
                                 IsDeleted INTEGER NOT NULL
+                            );
+                            CREATE TABLE IF NOT EXISTS HitokotoInfo (
+                                id INTEGER  PRIMARY KEY AUTOINCREMENT,
+                                hitokoto TEXT NOT NULL,
+                                type TEXT NOT NULL
                             );
                             CREATE TABLE IF NOT EXISTS LogInfo (
                                 Id INTEGER  PRIMARY KEY AUTOINCREMENT,

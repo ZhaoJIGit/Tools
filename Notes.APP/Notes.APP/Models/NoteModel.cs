@@ -24,6 +24,10 @@ namespace Notes.APP.Models
         /// </summary>
         public string? NoteName { get; set; }
         /// <summary>
+        /// 一言
+        /// </summary>
+        public string? Hitokoto { get; set; }
+        /// <summary>
         /// 便签内容
         /// </summary>
         public string? Content { get; set; }
@@ -59,14 +63,26 @@ namespace Notes.APP.Models
         /// <summary>
         /// 更新时间
         /// </summary>
-        public DateTime UpdateTime { get; set; } = DateTime.Now;
-        public string UpdateTimeStr
+        private DateTime _updateTime;
+        public DateTime UpdateTime
         {
-            get
+            get => _updateTime;
+            set
             {
-                return UpdateTime.ToString("MM/dd HH:mm");
+                if (_updateTime != value)
+                {
+                    _updateTime = value;
+                    OnPropertyChanged(nameof(UpdateTime));
+                }
             }
         }
+        //public string UpdateTimeStr
+        //{
+        //    get
+        //    {
+        //        return UpdateTime.ToString("MM/dd HH:mm");
+        //    }
+        //}
         public bool IsDeleted { get; set; }
         public static NoteModel CreateNote()
         {
@@ -80,10 +96,21 @@ namespace Notes.APP.Models
             note.NoteName = "";
             note.Width = 250;
             note.Height = 280;
+            note.Hitokoto = HitokotoService.Instance.GetHitokoto();
             note.IsDeleted = false;
             note.PageBackgroundColor = ColorHelper.MakeColorTransparent(note.BackgroundColor.ToColor(), 0.8).ToHexColor();
             note.Color = ColorHelper.GetColorByBackground(note.BackgroundColor);
             note.Content = "";
+            if (string.IsNullOrWhiteSpace(note.Hitokoto))
+            {
+                HitokotoService.Instance.GetHitokotoInfoApi();
+                note.Hitokoto = HitokotoService.Instance.GetHitokoto();
+            }
+            Task.Run(() =>
+            {
+                //重新写一个
+                HitokotoService.Instance.GetHitokotoInfoApi();
+            });
             return note;
         }
 
@@ -93,7 +120,7 @@ namespace Notes.APP.Models
         /// <summary>
         /// 字体色
         /// </summary>
-        public string? _color;
+        private string? _color;
         public string? Color
         {
             get => _color;
@@ -109,7 +136,7 @@ namespace Notes.APP.Models
         /// <summary>
         /// 背景色
         /// </summary>
-        public string? _backgroundColor;
+        private string? _backgroundColor;
         public string? BackgroundColor
         {
             get => _backgroundColor;
@@ -127,7 +154,7 @@ namespace Notes.APP.Models
         /// <summary>
         /// 背景色
         /// </summary>
-        public string? _pageBackgroundColor;
+        private string? _pageBackgroundColor;
         public string? PageBackgroundColor
         {
             get => _pageBackgroundColor;

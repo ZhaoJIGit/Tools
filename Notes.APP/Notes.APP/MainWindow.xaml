@@ -120,7 +120,7 @@
                             Content="&#xE948;"
                             FontFamily="Segoe MDL2 Assets"
                             FontSize="18"
-                            Foreground="{Binding Color}" />
+                            Foreground="{Binding Color, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                         <!--  右侧按钮  -->
                         <StackPanel
                             Grid.Column="2"
@@ -146,7 +146,7 @@
                                     Content="&#xE840;"
                                     FontFamily="Segoe MDL2 Assets"
                                     FontSize="18"
-                                    Foreground="{Binding Color}" />
+                                    Foreground="{Binding Color, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                 <Button
                                     Grid.Column="1"
                                     Width="30"
@@ -157,7 +157,7 @@
                                     Content="&#xEA55;"
                                     FontFamily="Segoe MDL2 Assets"
                                     FontSize="18"
-                                    Foreground="{Binding Color}" />
+                                    Foreground="{Binding Color, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                 <!--  折叠按钮  -->
                                 <Button
                                     Name="btnCollapse"
@@ -240,16 +240,29 @@
                             TopLeft="0"
                             TopRight="0" />
                     </Border.CornerRadius>
-                    <Grid>
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="80" />
+                        </Grid.ColumnDefinitions>
                         <TextBlock
-                            Grid.Row="1"
+                            Grid.Column="0"
+                            Margin="10,0,10,2"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Bottom"
+                            Foreground="{Binding Color, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            Text="{Binding Hitokoto, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            TextTrimming="CharacterEllipsis" />
+                        <TextBlock
+                            Grid.Column="1"
                             Margin="10,3"
                             HorizontalAlignment="Right"
                             VerticalAlignment="Bottom"
                             Foreground="{Binding Color, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                            Text="{Binding UpdateTimeStr}" />
+                            Text="{Binding UpdateTime, StringFormat='{}{0:MM/dd HH:mm}', Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                         <Thumb
                             Name="ResizeHandle"
+                            Grid.Column="1"
                             Width="16"
                             Height="16"
                             Margin="0,0,2,2"
@@ -338,6 +351,7 @@
                             Foreground="#000"
                             Text="透明度" />
                         <!--  透明度  -->
+
                         <Slider
                             Grid.Row="3"
                             Width="130"

@@ -50,11 +50,12 @@ namespace Notes.APP.Pages
                 _timer.Stop();  // 停止计时器
             };
         }
+
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             InitializeTimer();
             isUpdate = false;
-            
+
             pageModel = _ParentWindow.DataContext as NoteModel;
             txtContent.Text = pageModel.Content;
             _lastText = pageModel.Content;
@@ -81,6 +82,7 @@ namespace Notes.APP.Pages
         // 保存文本的操作
         private void SaveText(string text)
         {
+            pageModel.UpdateTime = DateTime.Now;
             if (_NoteService.SaveNote(pageModel))
             {
                 _Message.ShowSuccess("自动保存成功！");
@@ -113,36 +115,20 @@ namespace Notes.APP.Pages
                     case Key.B:
                         txtContent.FontWeight = txtContent.FontWeight == FontWeights.Bold ? FontWeights.Normal : FontWeights.Bold;
                         break;
+                        //case Key.Enter:
+                        //    if (_timer.IsEnabled)
+                        //    {
+                        //        _timer.Stop();
+                        //    }
+                        //    SaveText(_lastText);
+                        //    break;
                 }
-            }
-        }
-
-        private void txtContent_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            
-            // 获取当前文本框内容
-            _lastText = ((TextBox)sender).Text;
-
-            if (_timer == null || pageModel == null)
-            {
-                return;
-            }
-            pageModel.Content = _lastText;
-
-            // 如果计时器已经在运行，停止并重启计时器
-            if (_timer.IsEnabled)
-            {
-                _timer.Stop();
-            }
-            if (isUpdate)
-            {
-                _timer.Start(); // 启动计时器
             }
         }
 
         private void txtContent_TextChanged_1(object sender, EventArgs e)
         {
-            
+
             // 获取当前文本框内容
             _lastText = ((TextEditor)sender).Text;
 
@@ -152,6 +138,8 @@ namespace Notes.APP.Pages
             }
             pageModel.Content = _lastText;
 
+
+            CheckKeyWord();
             // 如果计时器已经在运行，停止并重启计时器
             if (_timer.IsEnabled)
             {
@@ -160,6 +148,13 @@ namespace Notes.APP.Pages
             if (isUpdate)
             {
                 _timer.Start(); // 启动计时器
+            }
+        }
+        private void CheckKeyWord()
+        {
+            if (_lastText.Contains("赵计") || _lastText.Contains("计哥"))
+            {
+                _Message.ShowWarning("我也想你！");
             }
         }
     }

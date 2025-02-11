@@ -106,6 +106,7 @@ namespace Notes.APP
         private void AddButton_Click(object sender, RoutedEventArgs e)
         {
             var note = NoteModel.CreateNote();
+   
             MainWindow mainWindow = new MainWindow(note);
             mainWindow.Tag = note.NoteId;
             mainWindow.Height = note.Height;

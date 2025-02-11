@@ -61,7 +61,7 @@ namespace Notes.APP
             }
             if (_noteModel.Fixed)
             {
-                
+
                 btnFixed.Content = "\uE840";
             }
             else
@@ -138,8 +138,8 @@ namespace Notes.APP
             }
             e.Handled = true;
         }
-     
-     
+
+
 
         private void More_Click(object sender, RoutedEventArgs e)
         {
@@ -188,23 +188,28 @@ namespace Notes.APP
                 ReloadWindow?.Invoke(this, EventArgs.Empty);
             }
         }
-        public void ChangedTextEvent() {
-                ReloadWindow?.Invoke(this, EventArgs.Empty);
+        public void ChangedTextEvent()
+        {
+            ReloadWindow?.Invoke(this, EventArgs.Empty);
         }
         private void ResizeHandle_DragDelta(object sender, DragDeltaEventArgs e)
         {
-            if (isCollapsed)
-            {
-                return;
-            }
             // 获取当前窗口
             var window = this;
 
             // 调整窗口的宽度和高度
             window.Width = Math.Max(window.MinWidth, window.Width + e.HorizontalChange);
-            window.Height = Math.Max(window.MinHeight, window.Height + e.VerticalChange);
-            _noteModel.Height = window.Height;
-            _noteModel.Width = window.Width;
+            if (isCollapsed)
+            {
+                _noteModel.Width = window.Width;
+            }
+            else
+            {
+                window.Height = Math.Max(window.MinHeight, window.Height + e.VerticalChange);
+
+                _noteModel.Height = window.Height;
+                _noteModel.Width = window.Width;
+            }
             SaveNote();
         }
         private void Window_MouseMove(object sender, MouseEventArgs e)
@@ -307,8 +312,9 @@ namespace Notes.APP
         private void StackPanel_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             ConfirmDialogHelper confirmDialogHelper = new ConfirmDialogHelper(this);
-            ConfirmMessage confirmMessage= new ConfirmMessage(confirmDialogHelper);
-            confirmMessage.ShowConfirm("确认删除吗？", () => {
+            ConfirmMessage confirmMessage = new ConfirmMessage(confirmDialogHelper);
+            confirmMessage.ShowConfirm("确认删除吗？", () =>
+            {
                 // 删除逻辑
                 var service = new NoteService();
                 service.DeleteNote(_noteModel!.NoteId);
@@ -343,7 +349,7 @@ namespace Notes.APP
             }
             else
             {
-              
+
                 btnFixed.Content = "\uE718";
             }
             this.Topmost = _noteModel.Fixed;
@@ -417,7 +423,7 @@ namespace Notes.APP
         }
 
         private void TextButton_Click(object sender, RoutedEventArgs e)
-        { 
+        {
             // 创建便签窗口实例
             var note = NoteModel.CreateNote();
             MainWindow stickyNoteWindow = new MainWindow(note);
