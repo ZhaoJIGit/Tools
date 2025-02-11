@@ -7,10 +7,8 @@
     xmlns:xc="http://schemas.xceed.com/wpf/xaml/toolkit"
     Name="NoteDetail"
     Title="便签"
-    Width="250"
-    Height="280"
     MinWidth="250"
-    MinHeight="280"
+    MinHeight="70"
     AllowsTransparency="True"
     Background="Transparent"
     ContentRendered="Window_ContentRendered"
@@ -41,6 +39,21 @@
                 To="300"
                 Duration="0:0:0.3" />
         </Storyboard>
+        <Storyboard x:Key="CollapseContent">
+            <DoubleAnimation
+                Storyboard.TargetName="pageBorder"
+                Storyboard.TargetProperty="Height"
+                To="0"
+                Duration="0:0:0.3" />
+        </Storyboard>
+
+        <Storyboard x:Key="ExpandContent">
+            <DoubleAnimation
+                Storyboard.TargetName="pageBorder"
+                Storyboard.TargetProperty="Height"
+                To="250"
+                Duration="0:0:0.3" />
+        </Storyboard>
     </Window.Resources>
     <Grid>
         <Border
@@ -63,7 +76,8 @@
                 MouseLeave="Grid_MouseLeave">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="40" />
-                    <RowDefinition Height="*" />
+                    <RowDefinition x:Name="gridContent" Height="*" />
+                    <RowDefinition Height="20" />
                 </Grid.RowDefinitions>
                 <!--  自定义标题栏  -->
                 <Border
@@ -85,17 +99,28 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="50" />
                             <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="140" />
+                            <ColumnDefinition Width="150" />
                         </Grid.ColumnDefinitions>
                         <!--  左侧标题  -->
-                        <TextBlock
+                        <!--<Button
                             Margin="10"
                             VerticalAlignment="Center"
+                            Content="&#xE948;"
                             FontFamily="Segoe MDL2 Assets"
                             FontSize="16"
                             Foreground="{Binding Color, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                            MouseLeftButtonDown="TextButton_Click"
-                            Text="&#xE948;" />
+                            MouseLeftButtonDown="TextButton_Click" />-->
+                        <Button
+                            Grid.Column="0"
+                            Width="30"
+                            Height="30"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Click="TextButton_Click"
+                            Content="&#xE948;"
+                            FontFamily="Segoe MDL2 Assets"
+                            FontSize="18"
+                            Foreground="{Binding Color}" />
                         <!--  右侧按钮  -->
                         <StackPanel
                             Grid.Column="2"
@@ -122,7 +147,6 @@
                                     FontFamily="Segoe MDL2 Assets"
                                     FontSize="18"
                                     Foreground="{Binding Color}" />
-
                                 <Button
                                     Grid.Column="1"
                                     Width="30"
@@ -134,8 +158,9 @@
                                     FontFamily="Segoe MDL2 Assets"
                                     FontSize="18"
                                     Foreground="{Binding Color}" />
-                                <!--  最小化按钮  -->
+                                <!--  折叠按钮  -->
                                 <Button
+                                    Name="btnCollapse"
                                     Grid.Column="2"
                                     Width="30"
                                     Height="30"
@@ -143,12 +168,24 @@
                                     VerticalAlignment="Center"
                                     Background="Transparent"
                                     BorderThickness="0"
+                                    Click="CollapseButton_Click"
+                                    Content="&#xE70E;"
+                                    FontFamily="Segoe MDL2 Assets"
+                                    FontSize="16"
+                                    Foreground="{Binding Color, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                <!--  最小化按钮  -->
+                                <Button
+                                    Grid.Column="3"
+                                    Width="30"
+                                    Height="30"
+                                    Background="Transparent"
+                                    BorderThickness="0"
                                     Click="MinimizeButton_Click"
-                                    Content="&#xE921;"
+                                    Content="&#xE8BB;"
                                     FontFamily="Segoe MDL2 Assets"
                                     Foreground="{Binding Color, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                 <!--  关闭按钮  -->
-                                <Button
+                                <!--<Button
                                     Grid.Column="3"
                                     Width="30"
                                     Height="30"
@@ -157,7 +194,7 @@
                                     Click="CloseButton_Click"
                                     Content="&#xE8BB;"
                                     FontFamily="Segoe MDL2 Assets"
-                                    Foreground="{Binding Color, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                    Foreground="{Binding Color, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />-->
 
 
                             </Grid>
@@ -165,13 +202,37 @@
                         </StackPanel>
                     </Grid>
                 </Border>
-
                 <!--  主内容  -->
                 <Border
                     Name="pageBorder"
                     Grid.Row="1"
-                    Background="{Binding PageBackgroundColor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                    BorderBrush="{Binding PageBackgroundColor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                    Background="{Binding BackgroundColor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    BorderBrush="{Binding PageBackgroundColor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    Opacity="0.8">
+                    <Border.CornerRadius>
+                        <CornerRadius
+                            BottomLeft="0"
+                            BottomRight="0"
+                            TopLeft="0"
+                            TopRight="0" />
+                    </Border.CornerRadius>
+                    <Grid Margin="0,0,0,0">
+                        <Border ClipToBounds="True" CornerRadius="20">
+                            <Frame
+                                x:Name="MainFrame"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch"
+                                NavigationUIVisibility="Hidden" />
+                        </Border>
+                    </Grid>
+
+                </Border>
+
+                <!--  尾部  -->
+                <Border
+                    Grid.Row="2"
+                    Background="{Binding BackgroundColor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    BorderBrush="#bfc1be">
                     <Border.CornerRadius>
                         <CornerRadius
                             BottomLeft="15"
@@ -179,28 +240,45 @@
                             TopLeft="0"
                             TopRight="0" />
                     </Border.CornerRadius>
-                    <Grid Margin="0,0,0,20" Background="Transparent">
-                        <Border
-                            Background="Transparent"
-                            ClipToBounds="True"
-                            CornerRadius="20">
-                            <Frame
-                                x:Name="MainFrame"
-                                HorizontalAlignment="Stretch"
-                                VerticalAlignment="Stretch"
-                                Background="Transparent"
-                                NavigationUIVisibility="Hidden" />
-                        </Border>
+                    <Grid>
+                        <TextBlock
+                            Grid.Row="1"
+                            Margin="10,3"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Bottom"
+                            Foreground="{Binding Color, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            Text="{Binding UpdateTimeStr}" />
+                        <Thumb
+                            Name="ResizeHandle"
+                            Width="16"
+                            Height="16"
+                            Margin="0,0,2,2"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Bottom"
+                            Background="Gray"
+                            Cursor="SizeNWSE"
+                            DragDelta="ResizeHandle_DragDelta">
+                            <Thumb.Template>
+                                <ControlTemplate TargetType="Thumb">
+                                    <Border
+                                        Width="16"
+                                        Height="16"
+                                        Background="{TemplateBinding Background}"
+                                        CornerRadius="8"
+                                        Opacity="0.4">
+                                        <Border.RenderTransform>
+                                            <TranslateTransform X="0" Y="0" />
+                                        </Border.RenderTransform>
+                                    </Border>
+                                </ControlTemplate>
+                            </Thumb.Template>
+                        </Thumb>
                     </Grid>
 
+
+
                 </Border>
-                <TextBlock
-                    Grid.Row="1"
-                    Margin="10,3"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Bottom"
-                    Foreground="{Binding Color, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                    Text="{Binding UpdateTimeStr}" />
+
                 <!--  透明遮罩区域，用于关闭抽屉  -->
                 <Grid
                     x:Name="CloseArea"
@@ -360,43 +438,6 @@
                 </Border>
             </Grid>
         </Border>
-        <!--  右下角拖拽  -->
-        <Thumb
-            Name="ResizeHandle"
-            Width="16"
-            Height="16"
-            Margin="0,0,5,5"
-            HorizontalAlignment="Right"
-            VerticalAlignment="Bottom"
-            Background="Gray"
-            Cursor="SizeNWSE"
-            DragDelta="ResizeHandle_DragDelta">
-            <Thumb.Template>
-                <ControlTemplate TargetType="Thumb">
-                    <Border
-                        Width="16"
-                        Height="16"
-                        Background="{TemplateBinding Background}"
-                        CornerRadius="8"
-                        Opacity="0.2">
-                        <Border.RenderTransform>
-                            <TranslateTransform X="0" Y="0" />
-                        </Border.RenderTransform>
-                    </Border>
-                </ControlTemplate>
-            </Thumb.Template>
-        </Thumb>
-        <!--  定义托盘图标  -->
-        <!--<tb:TaskbarIcon x:Name="TrayIcon" IconSource="/Icons/16.ico" ToolTipText="便利贴" TrayLeftMouseUp="TrayIcon_TrayLeftMouseUp">
-            <tb:TaskbarIcon.ContextMenu>
-                <ContextMenu>
-                    <MenuItem Header="打开" Click="OnTrayOpenClick" />
-                    <MenuItem Header="退出" Click="OnTrayExitClick" />
-                </ContextMenu>
-            </tb:TaskbarIcon.ContextMenu>
-        </tb:TaskbarIcon>-->
 
-        <!--  公共提示框  -->
-        <!--<local:MessagePopup x:Name="NotificationPopup"/>-->
     </Grid>
 </Window>

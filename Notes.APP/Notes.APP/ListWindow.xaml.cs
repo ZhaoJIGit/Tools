@@ -59,7 +59,7 @@ namespace Notes.APP
                 //string receivedMessage = Marshal.PtrToStringAnsi(cds.lpData, cds.cbData);
                 //if (receivedMessage == "SHOW")
                 //{
-           
+
                 //    RestoreWindow();
                 //}
 
@@ -97,14 +97,19 @@ namespace Notes.APP
                 mainWindow.Show();
             }
             isLoad = false;
+            if (list.Count > 0)
+            {
+                this.Hide();
+            }
 
-            this.Hide();
         }
         private void AddButton_Click(object sender, RoutedEventArgs e)
         {
             var note = NoteModel.CreateNote();
             MainWindow mainWindow = new MainWindow(note);
             mainWindow.Tag = note.NoteId;
+            mainWindow.Height = note.Height;
+            mainWindow.Width = note.Width;
             mainWindow.Show();
             ReloadPage();
 

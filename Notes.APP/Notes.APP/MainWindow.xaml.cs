@@ -31,7 +31,10 @@ namespace Notes.APP
         private bool _isDrawerOpen = false;
         private NoteModel _noteModel;
         private MyMessage myMessage;
-
+        // 记录折叠前的高度（像素）
+        private double previousMiddleRowHeight = 200; // 默认200
+        // 标识中间行是否已经折叠
+        private bool isCollapsed = false;
         public MainWindow(NoteModel noteModel)
         {
             InitializeComponent();
@@ -68,7 +71,7 @@ namespace Notes.APP
             this.Topmost = _noteModel.Fixed;
             //isTopUpBox.IsChecked = _noteModel.IsTopUp;
 
-            pageBorder.Background = _noteModel.PageBackgroundColor.ToSolidColorBrush();
+            pageBorder.Background = _noteModel.BackgroundColor.ToSolidColorBrush();
             MyColorPicker.SelectedColor = _noteModel.BackgroundColor.ToColor();
             this.Width = _noteModel.Width;
             this.Height = _noteModel.Height;
@@ -77,10 +80,15 @@ namespace Notes.APP
                 this.Left = _noteModel.XAxis;
                 this.Top = _noteModel.YAxis;
             }
+            // 窗口加载后，记录初始高度（此时布局已完成）
+            previousMiddleRowHeight = gridContent.ActualHeight;
         }
         private void Window_ContentRendered(object sender, EventArgs e)
         {
             this.Topmost = _noteModel.Fixed;
+            _noteModel.XAxis = this.Left;
+            _noteModel.YAxis = this.Top;
+            SaveNote();
         }
         // INotifyPropertyChanged 实现
         public event PropertyChangedEventHandler PropertyChanged;
@@ -131,18 +139,7 @@ namespace Notes.APP
             e.Handled = true;
         }
      
-        private void TextButton_Click(object sender, MouseButtonEventArgs e)
-        {
-            // 创建便签窗口实例
-            var note = NoteModel.CreateNote();
-            MainWindow stickyNoteWindow = new MainWindow(note);
-            stickyNoteWindow.Tag = note.NoteId;
-            // 打开便签窗口
-            stickyNoteWindow.Show();
-
-            // 触发事件，通知 Window A
-            ReloadWindow?.Invoke(this, EventArgs.Empty);
-        }
+     
 
         private void More_Click(object sender, RoutedEventArgs e)
         {
@@ -196,6 +193,10 @@ namespace Notes.APP
         }
         private void ResizeHandle_DragDelta(object sender, DragDeltaEventArgs e)
         {
+            if (isCollapsed)
+            {
+                return;
+            }
             // 获取当前窗口
             var window = this;
 
@@ -359,6 +360,79 @@ namespace Notes.APP
             }
         }
 
+        private void CollapseButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (isCollapsed)
+            {
+                // 展开操作
+                // 构造展开动画：从 0 像素到之前记录的高度
+                var expandAnimation = new GridLengthAnimation
+                {
+                    From = new GridLength(0, GridUnitType.Pixel),
+                    To = new GridLength(previousMiddleRowHeight, GridUnitType.Pixel),
+                    Duration = new Duration(TimeSpan.FromSeconds(0.3))
+                };
+
+                expandAnimation.Completed += (s, a) =>
+                {
+                    // 动画完成后，取消动画并恢复为自适应模式
+                    gridContent.BeginAnimation(RowDefinition.HeightProperty, null);
+                    gridContent.Height = new GridLength(1, GridUnitType.Star);
+                };
+
+                gridContent.BeginAnimation(RowDefinition.HeightProperty, expandAnimation);
+                // 恢复中间行高度为星号，自动拉伸
+                //gridContent.Height = new GridLength(1, GridUnitType.Star);
+                //// 如果当前是折叠状态，则展开
+                //Storyboard expandStoryboard = (Storyboard)FindResource("ExpandContent");
+                //expandStoryboard.Begin();
+                btnCollapse.Content = "\uE70D"; // 更新按钮图标
+                isCollapsed = false;
+            }
+            else
+            {
+                // 折叠操作
+                // 记录当前行高度（用作展开时的目标高度）
+                previousMiddleRowHeight = gridContent.ActualHeight;
+                // 为了动画，先将 Height 固定为像素值
+                gridContent.Height = new GridLength(previousMiddleRowHeight, GridUnitType.Pixel);
+
+                // 构造折叠动画：从当前高度到 0
+                var collapseAnimation = new GridLengthAnimation
+                {
+                    From = new GridLength(previousMiddleRowHeight, GridUnitType.Pixel),
+                    To = new GridLength(1, GridUnitType.Pixel),
+                    Duration = new Duration(TimeSpan.FromSeconds(0.3))
+                };
+
+                gridContent.BeginAnimation(RowDefinition.HeightProperty, collapseAnimation);
+
+                //gridContent.Height = new GridLength(0);
+                // 如果当前是展开状态，则折叠
+                //Storyboard collapseStoryboard = (Storyboard)FindResource("CollapseContent");
+                //collapseStoryboard.Begin();
+                btnCollapse.Content = "\uE70E"; // 更新按钮图标
+                isCollapsed = true;
+            }
+        }
+
+        private void TextButton_Click(object sender, RoutedEventArgs e)
+        { 
+            // 创建便签窗口实例
+            var note = NoteModel.CreateNote();
+            MainWindow stickyNoteWindow = new MainWindow(note);
+            stickyNoteWindow.Tag = note.NoteId;
+            stickyNoteWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            stickyNoteWindow.Height = note.Height;
+            stickyNoteWindow.Width = note.Width;
+            // 打开便签窗口
+            stickyNoteWindow.Show();
+
+            // 触发事件，通知 Window A
+            ReloadWindow?.Invoke(this, EventArgs.Empty);
+
+        }
+
         //private void TopUp_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         //{
         //    isTopUpBox.IsChecked = !isTopUpBox.IsChecked;
@@ -383,5 +457,43 @@ namespace Notes.APP
         //        SaveNote();
         //    }
         //}
+    }
+    /// <summary>
+    /// 自定义 GridLength 动画类，用于动画 RowDefinition.Height 属性
+    /// </summary>
+    public class GridLengthAnimation : AnimationTimeline
+    {
+        public override Type TargetPropertyType => typeof(GridLength);
+
+        public GridLength From
+        {
+            get { return (GridLength)GetValue(FromProperty); }
+            set { SetValue(FromProperty, value); }
+        }
+        public static readonly DependencyProperty FromProperty =
+            DependencyProperty.Register("From", typeof(GridLength), typeof(GridLengthAnimation));
+
+        public GridLength To
+        {
+            get { return (GridLength)GetValue(ToProperty); }
+            set { SetValue(ToProperty, value); }
+        }
+        public static readonly DependencyProperty ToProperty =
+            DependencyProperty.Register("To", typeof(GridLength), typeof(GridLengthAnimation));
+
+        public override object GetCurrentValue(object defaultOriginValue, object defaultDestinationValue, AnimationClock animationClock)
+        {
+            // 取得 From 与 To 中的 Value 值
+            double fromVal = ((GridLength)this.From).Value;
+            double toVal = ((GridLength)this.To).Value;
+            double progress = animationClock.CurrentProgress.Value;
+            double currentVal = (toVal - fromVal) * progress + fromVal;
+            return new GridLength(currentVal, GridUnitType.Pixel);
+        }
+
+        protected override Freezable CreateInstanceCore()
+        {
+            return new GridLengthAnimation();
+        }
     }
 }
