@@ -208,6 +208,9 @@ namespace Notes.APP.Common
                                 Message TEXT NOT NULL,
                                 CreateTime date Not NULL
                             );
+                             CREATE TABLE IF NOT EXISTS VersionInfo (
+                                 Version INTEGER PRIMARY KEY
+                             );
                         ";
 
 

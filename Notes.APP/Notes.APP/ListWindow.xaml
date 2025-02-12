@@ -196,7 +196,7 @@
                     HorizontalAlignment="Right"
                     VerticalAlignment="Bottom"
                     Foreground="{Binding Color, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                    Text="{Binding CreateTimeStr}" />
+                    Text="{Binding UpdateTime, StringFormat='{}{0:MM/dd HH:mm}', Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                 <!--  透明遮罩区域，用于关闭抽屉  -->
                 <Grid
                     x:Name="CloseArea"

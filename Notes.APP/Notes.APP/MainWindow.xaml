@@ -122,6 +122,14 @@
                             FontSize="18"
                             Foreground="{Binding Color, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                         <!--  右侧按钮  -->
+                        <TextBlock
+                            Grid.Column="1"
+                            VerticalAlignment="Center"
+                            FontSize="14"
+                            FontWeight="Bold"
+                            Foreground="{Binding Color, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            Text="{Binding NoteName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            TextTrimming="CharacterEllipsis" />
                         <StackPanel
                             Grid.Column="2"
                             Margin="0,0,10,0"

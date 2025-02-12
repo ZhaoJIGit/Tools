@@ -82,7 +82,7 @@
                                 Padding="10"
                                 HorizontalAlignment="Right"
                                 FontSize="9"
-                                Text="{Binding UpdateTimeStr}" />
+                                Text="{Binding UpdateTime, StringFormat='{}{0:MM/dd HH:mm}', Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             <!--  TextBlock 自动换行，确保宽度自适应  -->
                             <TextBlock
                                 Grid.Row="1"
