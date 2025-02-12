@@ -36,6 +36,13 @@
   <ItemGroup>
     <None Remove="Icons\16.ico" />
     <None Remove="Icons\64.ico" />
+    <None Remove="sql\1.sql" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="sql\1.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>

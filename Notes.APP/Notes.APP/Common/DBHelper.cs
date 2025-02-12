@@ -15,40 +15,170 @@ namespace Notes.APP.Common
     using System.IO;
     using System.Linq.Expressions;
     using System.Reflection;
+    using System.Windows.Shapes;
 
+    public class DBConst
+    {
+        public const string Path = "C:\\Databases\\Note.db";
+        public const string MainDbPath = $"C:\\Databases\\Note.db";
+        public const string TempDbPath = $"C:\\Databases\\Note_Temp.db";//Data Source={Path};
+
+        //版本号，和需要执行的数据库文件名一致
+        public const int Version = 1;
+    }
     public class DBHelper
     {
-        private readonly string _connectionString;
-
         public DBHelper()
         {
             var dir = "C:\\Databases\\";
-            _connectionString = $"Data Source={dir}Note.db;";
             if (!Directory.Exists(dir))
             {
                 Directory.CreateDirectory(dir);
             }
             if (!InitDb())
             {
-                CreateDatabaseAndTable();
+                CreateDatabaseAndTable(DBConst.MainDbPath);
+            }
+            else
+            {
+                if (!CheckVersion())
+                {
+                    UpdateDatabase();
+                }
+            }
+        }
+        public void UpdateDatabase()
+        {
+            var sqlFilePath = $"sql\\{DBConst.Version}.sql";
+            // 读取 SQL 文件内容
+            string sqlCommands = File.ReadAllText(sqlFilePath);
+            ExecuteNonQuery(sqlCommands);
+            ExecuteNonQuery($" Insert into VersionInfo (Version) values({DBConst.Version})");
+        }
+        private void CopyDatabase(string sourceDb, string targetDb)
+        {
+            //var s = IsFileLocked(sourceDb);
+
+            if (File.Exists(targetDb))
+            {
+                File.Delete(targetDb);  // 删除已存在的临时数据库
+            }
+            // 复制主数据库到临时数据库
+            File.Copy(sourceDb, targetDb, true);
+            //var s1= IsFileLocked(sourceDb);
+            if (File.Exists(sourceDb))
+            {
+                File.Delete(sourceDb);  // 删除主数据库文件
+            }
+        }
+        private bool IsFileLocked(string filePath)
+        {
+            try
+            {
+                // 尝试打开文件，禁止共享
+                using (var fs = new FileStream(filePath, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
+                {
+                    return false; // 文件没有被占用
+                }
+            }
+            catch (IOException)
+            {
+                return true; // 文件被占用
+            }
+        }
+        private void DeleteDatabase(string path)
+        {
+            var s = IsFileLocked(path);
+
+            if (File.Exists(path))
+            {
+                File.Delete(path);  // 删除主数据库文件
+            }
+        }
+        private void MigrateDataToNewMainDatabase(string oldDb, string newDb)
+        {
+            using (var connection = new SqliteConnection($"Data Source={newDb};"))
+            {
+                connection.Open();
+
+                // 附加源数据库
+                string attachSql = $"ATTACH DATABASE '{oldDb}' AS oldDb";
+                using (var command = new SqliteCommand(attachSql, connection))
+                {
+                    command.ExecuteNonQuery();
+                }
+
+                // 同步数据：从源数据库（oldDb）迁移数据到目标数据库（newDb）
+                string copyDataSql = @"
+            INSERT INTO NoteInfo (NoteId,NoteName,
+                                Content,
+                                CreateTime,
+                                UpdateTime,
+                                Color,
+                                Fontsize,
+                                BackgroundColor,
+                                PageBackgroundColor,
+                                Opacity, 
+                                XAxis,
+                                YAxis,
+                                Height,
+                                Width,
+                                Fixed,Hitokoto,
+                                IsDeleted) 
+            SELECT NoteId,NoteName,
+                                Content,
+                                CreateTime,
+                                UpdateTime,
+                                Color,
+                                Fontsize,
+                                BackgroundColor,
+                                PageBackgroundColor,
+                                Opacity, 
+                                XAxis,
+                                YAxis,
+                                Height,
+                                Width,
+                                Fixed,Hitokoto,
+                                IsDeleted FROM oldDb.NoteInfo;
+            INSERT INTO HitokotoInfo ( hitokoto,type) SELECT hitokoto,type FROM oldDb.HitokotoInfo;
+        ";
+
+                using (var command = new SqliteCommand(copyDataSql, connection))
+                {
+                    command.ExecuteNonQuery();
+                }
+                connection.Close();
+                Console.WriteLine("Data migrated to the new main database.");
             }
         }
         public bool InitDb()
         {
             // 检查数据库文件是否存在
-            return File.Exists(_connectionString);
+            return File.Exists(DBConst.Path);
+        }
+        public bool CheckVersion()
+        {
+            try
+            {
+                var version = ExecuteScalar<int>("select Version from VersionInfo order by Version desc limit 1");
+                return version == DBConst.Version;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
         // 创建数据库和表
-        public void CreateDatabaseAndTable()
+        public void CreateDatabaseAndTable(string connectionString)
         {
             try
             {
                 // 连接到数据库（如果数据库不存在会自动创建）
-                using (var connection = new SqliteConnection(_connectionString))
+                using (var connection = new SqliteConnection($"Data Source={connectionString};"))
                 {
                     connection.Open();
                     // 创建表
-                    var createTableQuery = @"
+                    var createTableQuery = @$"
                             CREATE TABLE IF NOT EXISTS NoteInfo (
                                 NoteId TEXT PRIMARY KEY,
                                 NoteName TEXT NOT NULL,
@@ -79,6 +209,8 @@ namespace Notes.APP.Common
                                 CreateTime date Not NULL
                             );
                         ";
+
+
                     using (var command = new SqliteCommand(createTableQuery, connection))
                     {
                         command.ExecuteNonQuery();
@@ -93,7 +225,7 @@ namespace Notes.APP.Common
         // 执行非查询操作（增、删、改）
         public int ExecuteNonQuery(string query, object parameters = null)
         {
-            using (var connection = new SqliteConnection(_connectionString))
+            using (var connection = new SqliteConnection($"Data Source={DBConst.MainDbPath};"))
             {
                 connection.Open();
                 using (var command = new SqliteCommand(query, connection))
@@ -103,11 +235,10 @@ namespace Notes.APP.Common
                 }
             }
         }
-
         // 执行查询并返回单个值
         public T ExecuteScalar<T>(string query, object parameters = null)
         {
-            using (var connection = new SqliteConnection(_connectionString))
+            using (var connection = new SqliteConnection($"Data Source={DBConst.MainDbPath};"))
             {
                 connection.Open();
                 using (var command = new SqliteCommand(query, connection))
@@ -122,7 +253,7 @@ namespace Notes.APP.Common
         {
             var item = default(T);
 
-            using (var connection = new SqliteConnection(_connectionString))
+            using (var connection = new SqliteConnection($"Data Source={DBConst.MainDbPath};"))
             {
                 connection.Open();
                 using (var command = new SqliteCommand(query, connection))
@@ -141,7 +272,7 @@ namespace Notes.APP.Common
         {
             var result = new List<T>();
 
-            using (var connection = new SqliteConnection(_connectionString))
+            using (var connection = new SqliteConnection($"Data Source={DBConst.MainDbPath};"))
             {
                 connection.Open();
                 using (var command = new SqliteCommand(query, connection))
@@ -149,7 +280,7 @@ namespace Notes.APP.Common
                     AddParameters(command, parameters);
                     using (var reader = command.ExecuteReader())
                     {
-                        result= reader.ToObjectList<T>();
+                        result = reader.ToObjectList<T>();
                     }
                 }
             }
