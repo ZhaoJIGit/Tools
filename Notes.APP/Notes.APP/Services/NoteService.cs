@@ -44,6 +44,7 @@ namespace Notes.APP.Services
                                 CreateTime,
                                 UpdateTime,
                                 Color,
+                                Fontsize,
                                 BackgroundColor,
                                 PageBackgroundColor,
                                 Opacity, 
@@ -58,6 +59,7 @@ namespace Notes.APP.Services
                                 @CreateTime,
                                 @UpdateTime,
                                 @Color,
+                                @Fontsize,
                                 @BackgroundColor,
                                 @PageBackgroundColor,
                                 @Opacity, 
@@ -72,7 +74,7 @@ namespace Notes.APP.Services
         }
         public bool UpdateNote(NoteModel model)
         {
-            var sql = $@" Update NoteInfo set  Hitokoto=@Hitokoto,NoteName=@NoteName, Fixed=@Fixed,Height=@Height,Width=@Width, Content =@Content,UpdateTime=@UpdateTime ,BackgroundColor=@BackgroundColor ,Color =@Color,Opacity=@Opacity,XAxis=@XAxis,YAxis=@YAxis where NoteId =@NoteId";
+            var sql = $@" Update NoteInfo set  Fontsize=@Fontsize,Hitokoto=@Hitokoto,NoteName=@NoteName, Fixed=@Fixed,Height=@Height,Width=@Width, Content =@Content,UpdateTime=@UpdateTime ,BackgroundColor=@BackgroundColor ,Color =@Color,Opacity=@Opacity,XAxis=@XAxis,YAxis=@YAxis where NoteId =@NoteId";
             var result = dBHelper.ExecuteNonQuery(sql, model);
             return result > 0;
         }

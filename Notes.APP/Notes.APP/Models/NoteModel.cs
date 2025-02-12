@@ -96,10 +96,11 @@ namespace Notes.APP.Models
             note.NoteName = "";
             note.Width = 250;
             note.Height = 280;
+            note.Fontsize = 14;
             note.Hitokoto = HitokotoService.Instance.GetHitokoto();
             note.IsDeleted = false;
             note.PageBackgroundColor = ColorHelper.MakeColorTransparent(note.BackgroundColor.ToColor(), 0.8).ToHexColor();
-            note.Color = ColorHelper.GetColorByBackground(note.BackgroundColor);
+            note.Color =  ColorHelper.GetColorByBackground(note.BackgroundColor);
             note.Content = "";
             if (string.IsNullOrWhiteSpace(note.Hitokoto))
             {
@@ -118,6 +119,22 @@ namespace Notes.APP.Models
     public class ConfigModel : INotifyPropertyChanged
     {
         /// <summary>
+        /// 字体大小
+        /// </summary>
+        private double? _fontsize;
+        public double? Fontsize
+        {
+            get => _fontsize;
+            set
+            {
+                if (_fontsize != value)
+                {
+                    _fontsize = value;
+                    OnPropertyChanged(nameof(Fontsize));
+                }
+            }
+        }
+        /// <summary>
         /// 字体色
         /// </summary>
         private string? _color;
@@ -130,6 +147,8 @@ namespace Notes.APP.Models
                 {
                     _color = value;
                     OnPropertyChanged(nameof(Color));
+                    //Color = ColorHelper.GetColorByBackground(Color);
+                    ColorChanged?.Invoke(Color); // 触发事件通知
                 }
             }
         }
@@ -146,7 +165,7 @@ namespace Notes.APP.Models
                 {
                     _backgroundColor = value;
                     OnPropertyChanged(nameof(BackgroundColor));
-                    Color = ColorHelper.GetColorByBackground(BackgroundColor);
+                    //Color = ColorHelper.GetColorByBackground(BackgroundColor);
                     BackgroundColorChanged?.Invoke(BackgroundColor); // 触发事件通知
                 }
             }
@@ -190,6 +209,8 @@ namespace Notes.APP.Models
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
         public event Action<string> BackgroundColorChanged;
+        public event Action<string> ColorChanged;
+
         private double _xAxis { get; set; }
         public double XAxis
         {

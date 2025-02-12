@@ -21,7 +21,7 @@
             HorizontalScrollBarVisibility="Hidden"
             ShowLineNumbers="True"
             SyntaxHighlighting="C#"
-            TextChanged="txtContent_TextChanged_1"
+            TextChanged="txtContent_TextChanged"
             VerticalScrollBarVisibility="Hidden"
             WordWrap="True" />
         <!--<TextBox

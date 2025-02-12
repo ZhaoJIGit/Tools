@@ -73,6 +73,8 @@ namespace Notes.APP
 
             pageBorder.Background = _noteModel.BackgroundColor.ToSolidColorBrush();
             MyColorPicker.SelectedColor = _noteModel.BackgroundColor.ToColor();
+            MyFontColorPicker.SelectedColor = _noteModel.Color.ToColor();
+
             this.Width = _noteModel.Width;
             this.Height = _noteModel.Height;
             if (_noteModel.XAxis > 0 || _noteModel.YAxis > 0)
@@ -266,7 +268,7 @@ namespace Notes.APP
                 Color colorWithOpacity = ColorHelper.MakeColorTransparent(e.NewValue.Value, 0.7);
                 _noteModel.PageBackgroundColor = colorWithOpacity.ToHexColor();
                 _noteModel.BackgroundColor = e.NewValue.Value.ToHexColor();
-                _noteModel.Color = ColorHelper.GetColorByBackground(_noteModel.BackgroundColor);
+                // _noteModel.Color = ColorHelper.GetColorByBackground(_noteModel.BackgroundColor);
                 SaveNote();
             }
         }
@@ -387,11 +389,6 @@ namespace Notes.APP
                 };
 
                 gridContent.BeginAnimation(RowDefinition.HeightProperty, expandAnimation);
-                // 恢复中间行高度为星号，自动拉伸
-                //gridContent.Height = new GridLength(1, GridUnitType.Star);
-                //// 如果当前是折叠状态，则展开
-                //Storyboard expandStoryboard = (Storyboard)FindResource("ExpandContent");
-                //expandStoryboard.Begin();
                 btnCollapse.Content = "\uE70D"; // 更新按钮图标
                 isCollapsed = false;
             }
@@ -412,11 +409,6 @@ namespace Notes.APP
                 };
 
                 gridContent.BeginAnimation(RowDefinition.HeightProperty, collapseAnimation);
-
-                //gridContent.Height = new GridLength(0);
-                // 如果当前是展开状态，则折叠
-                //Storyboard collapseStoryboard = (Storyboard)FindResource("CollapseContent");
-                //collapseStoryboard.Begin();
                 btnCollapse.Content = "\uE70E"; // 更新按钮图标
                 isCollapsed = true;
             }
@@ -439,30 +431,15 @@ namespace Notes.APP
 
         }
 
-        //private void TopUp_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        //{
-        //    isTopUpBox.IsChecked = !isTopUpBox.IsChecked;
-        //}
-
-        //private void TopUpBox_Checked(object sender, RoutedEventArgs e)
-        //{
-        //    if (isTopUpBox.IsChecked.Value)
-        //    {
-        //        this.Topmost = true;
-        //        _noteModel.IsTopUp = true;
-        //        SaveNote();
-        //    }
-        //}
-
-        //private void TopUpBox_Unchecked(object sender, RoutedEventArgs e)
-        //{
-        //    if (!isTopUpBox.IsChecked.Value)
-        //    {
-        //        this.Topmost = false;
-        //        _noteModel.IsTopUp = false;
-        //        SaveNote();
-        //    }
-        //}
+        private void FontColorCanvas_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<Color?> e)
+        {
+            if (e != null && e.NewValue != null)
+            {
+                Color colorWithOpacity = ColorHelper.MakeColorTransparent(e.NewValue.Value, 1);
+                _noteModel.Color = colorWithOpacity.ToHexColor();
+                SaveNote();
+            }
+        }
     }
     /// <summary>
     /// 自定义 GridLength 动画类，用于动画 RowDefinition.Height 属性

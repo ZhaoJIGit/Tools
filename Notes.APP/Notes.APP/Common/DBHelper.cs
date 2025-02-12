@@ -56,6 +56,7 @@ namespace Notes.APP.Common
                                 CreateTime date Not NULL,
                                 UpdateTime Date NOT NULL,
                                 Color TEXT NOT NULL,
+                                Fontsize REAL NOT NULL,
                                 BackgroundColor TEXT NOT NULL,
                                 PageBackgroundColor TEXT NOT NULL,
                                 Opacity REAL NOT NULL,

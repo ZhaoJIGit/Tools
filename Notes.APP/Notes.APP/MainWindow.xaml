@@ -307,7 +307,7 @@
                     x:Name="DrawerPanel"
                     Grid.Row="1"
                     Width="150"
-                    Height="200"
+                    Height="250"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Top"
                     Background="#f8f8f8"
@@ -326,9 +326,10 @@
                             <RowDefinition Height="20" />
                             <RowDefinition Height="25" />
                             <RowDefinition Height="20" />
-                            <RowDefinition Height="30" />
+                            <RowDefinition Height="25" />
+                            <RowDefinition Height="20" />
+                            <RowDefinition Height="25" />
                             <RowDefinition Height="*" />
-                            <RowDefinition Height="1" />
                             <RowDefinition Height="40" />
                             <RowDefinition Height="40" />
                         </Grid.RowDefinitions>
@@ -336,24 +337,39 @@
                             Grid.Row="0"
                             Margin="2"
                             Foreground="#000"
-                            Text="颜色" />
+                            Text="背景颜色" />
                         <!--  颜色选择  -->
                         <!--  色彩板  -->
                         <xc:ColorPicker
                             Name="MyColorPicker"
                             Grid.Row="1"
-                            Width="150"
+                            Width="auto"
+                            Margin="2,0"
                             DisplayColorAndName="True"
                             SelectedColorChanged="ColorCanvas_SelectedColorChanged" />
                         <TextBlock
                             Grid.Row="2"
                             Margin="2"
                             Foreground="#000"
+                            Text="字体颜色" />
+                        <!--  颜色选择  -->
+                        <!--  色彩板  -->
+                        <xc:ColorPicker
+                            Name="MyFontColorPicker"
+                            Grid.Row="3"
+                            Width="auto"
+                            Margin="2,0"
+                            DisplayColorAndName="True"
+                            SelectedColorChanged="FontColorCanvas_SelectedColorChanged" />
+                        <TextBlock
+                            Grid.Row="4"
+                            Margin="2"
+                            Foreground="#000"
                             Text="透明度" />
                         <!--  透明度  -->
 
                         <Slider
-                            Grid.Row="3"
+                            Grid.Row="5"
                             Width="130"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
@@ -404,7 +420,7 @@
                         </StackPanel>-->
                         <!--  查看列表  -->
                         <Grid
-                            Grid.Row="6"
+                            Grid.Row="7"
                             HorizontalAlignment="Stretch"
                             Background="Transparent"
                             MouseLeftButtonUp="StackPanel_MouseLeftButtonDown_1">
@@ -426,8 +442,9 @@
                         </Grid>
                         <!--  删除  -->
                         <Grid
-                            Grid.Row="7"
+                            Grid.Row="8"
                             HorizontalAlignment="Stretch"
+                            VerticalAlignment="Bottom"
                             Background="Transparent"
                             MouseLeftButtonDown="StackPanel_MouseLeftButtonDown">
                             <StackPanel

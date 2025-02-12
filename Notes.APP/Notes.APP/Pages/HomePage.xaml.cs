@@ -46,7 +46,7 @@ namespace Notes.APP.Pages
             // 计时器到期时执行保存操作
             _timer.Tick += (sender, e) =>
             {
-                SaveText(_lastText);
+                SaveText();
                 _timer.Stop();  // 停止计时器
             };
         }
@@ -58,33 +58,44 @@ namespace Notes.APP.Pages
 
             pageModel = _ParentWindow.DataContext as NoteModel;
             txtContent.Text = pageModel.Content;
+            txtContent.FontSize = pageModel.Fontsize.Value;
             _lastText = pageModel.Content;
             SetBackgroundColor(pageModel?.BackgroundColor);
+            SetColor(pageModel!.Color);
             if (_ParentWindow != null)
             {
                 pageModel.BackgroundColorChanged += OnBackgroundColorChanged; // 订阅事件
+                pageModel.ColorChanged += OnColorChanged;
             }
             isUpdate = true;
         }
-
         private void OnBackgroundColorChanged(string newColor)
         {
             SetBackgroundColor(newColor);
         }
+        private void OnColorChanged(string newColor)
+        {
+            SetColor(newColor);
+        }
         private void SetBackgroundColor(string color)
         {
-
-            //pageConent.Background = pageModel.PageBackgroundColor.ToSolidColorBrush();
             txtContent.Background = pageModel.PageBackgroundColor.ToSolidColorBrush();
-            txtContent.Foreground = ColorHelper.GetColorByBackground(color).ToSolidColorBrush();
         }
-
+        private void SetColor(string color)
+        {
+            txtContent.Foreground = pageModel.Color.ToSolidColorBrush();
+        }
         // 保存文本的操作
-        private void SaveText(string text)
+        private void SaveText(bool isNotity = true)
         {
             pageModel.UpdateTime = DateTime.Now;
-            if (_NoteService.SaveNote(pageModel))
+            var reslut = _NoteService.SaveNote(pageModel);
+            if (reslut)
             {
+                if (!isNotity)
+                {
+                    return;
+                }
                 _Message.ShowSuccess("自动保存成功！");
                 var win = Window.GetWindow(this) as MainWindow;
                 win?.ChangedTextEvent();
@@ -104,13 +115,17 @@ namespace Notes.APP.Pages
                     case Key.Add:
                         // 处理向上键
                         txtContent.FontSize += 1;
+                        pageModel!.Fontsize = txtContent.FontSize;
+                        SaveText(false);
                         break;
                     case Key.Subtract:
                         // 处理向下键
-                        if (txtContent.FontSize > 1)
+                        if (txtContent.FontSize > 8)
                         {
                             txtContent.FontSize -= 1;
                         }
+                        pageModel!.Fontsize = txtContent.FontSize;
+                        SaveText(false);
                         break;
                     case Key.B:
                         txtContent.FontWeight = txtContent.FontWeight == FontWeights.Bold ? FontWeights.Normal : FontWeights.Bold;
@@ -126,7 +141,7 @@ namespace Notes.APP.Pages
             }
         }
 
-        private void txtContent_TextChanged_1(object sender, EventArgs e)
+        private void txtContent_TextChanged(object sender, EventArgs e)
         {
 
             // 获取当前文本框内容
