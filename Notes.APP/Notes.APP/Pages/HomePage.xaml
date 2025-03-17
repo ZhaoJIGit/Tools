@@ -18,12 +18,11 @@
         <avalon:TextEditor
             Name="txtContent"
             Background="Transparent"
-            HorizontalScrollBarVisibility="Hidden"
             ShowLineNumbers="True"
             SyntaxHighlighting="C#"
             TextChanged="txtContent_TextChanged"
-            VerticalScrollBarVisibility="Hidden"
             WordWrap="True" />
+        
         <!--<TextBox
             Name="txtContent"
             Padding="5"

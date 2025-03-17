@@ -49,7 +49,7 @@ namespace Notes.APP.Common
         }
         public void UpdateDatabase()
         {
-            var sqlFilePath = $"sql\\{DBConst.Version}.sql";
+            var sqlFilePath = $"sql\\sql.sql";
             // 读取 SQL 文件内容
             string sqlCommands = File.ReadAllText(sqlFilePath);
             ExecuteNonQuery(sqlCommands);

@@ -2,6 +2,7 @@
     x:Class="Notes.APP.Pages.ListPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:hc="https://handyorg.github.io/handycontrol"
     xmlns:pg="clr-namespace:Notes.APP.Models"
     Title="ListPage"
     Background="White"
@@ -45,8 +46,8 @@
                     <Border
                         Height="80"
                         Margin="10"
-                        Background="#c5ebf7"
-                        BorderBrush="LightGray"
+                        Background="{Binding BackgroundColor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        BorderBrush="{Binding BackgroundColor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                         BorderThickness="1"
                         CornerRadius="8">
                         <!--  添加阴影效果  -->
@@ -66,7 +67,7 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <TextBlock
+                            <!--<TextBlock
                                 Grid.Row="0"
                                 Grid.Column="0"
                                 Width="50"
@@ -74,14 +75,27 @@
                                 HorizontalAlignment="left"
                                 FontFamily="Segoe MDL2 Assets"
                                 FontSize="16"
-                                Text="&#xE8FD;" />
-
+                                Text="&#xE8FD;" />-->
+                            <hc:Badge
+                                Grid.Row="0"
+                                Grid.Column="0"
+                                HorizontalAlignment="Left"
+                                Background="{Binding BackgroundColor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                Text="" />
+                            <hc:Badge
+                                Grid.Row="0"
+                                Grid.Column="0"
+                                Margin="0,0,10,0"
+                                HorizontalAlignment="Right"
+                                Background="{Binding BackgroundColor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                Text="" />
                             <TextBlock
                                 Grid.Row="0"
                                 Grid.Column="1"
                                 Padding="10"
                                 HorizontalAlignment="Right"
                                 FontSize="9"
+                                Foreground="{Binding Color, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                 Text="{Binding UpdateTime, StringFormat='{}{0:MM/dd HH:mm}', Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             <!--  TextBlock 自动换行，确保宽度自适应  -->
                             <TextBlock
@@ -92,6 +106,7 @@
                                 Margin="-20,0"
                                 Padding="10,0"
                                 HorizontalAlignment="Stretch"
+                                Foreground="{Binding Color, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                 Text="{Binding ContentShort}"
                                 TextWrapping="Wrap" />
                         </Grid>

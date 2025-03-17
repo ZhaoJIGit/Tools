@@ -35,6 +35,7 @@ namespace Notes.APP.Pages
 
 
         }
+
         private void InitializeTimer()
         {
             // 初始化计时器
@@ -89,6 +90,18 @@ namespace Notes.APP.Pages
         private void SaveText(bool isNotity = true)
         {
             pageModel.UpdateTime = DateTime.Now;
+            var content = pageModel.Content?.Split("\n");
+            if (content != null)
+            {
+                if (content[0].Length > 50)
+                {
+                    pageModel.NoteName = content[0].Replace("\n", "").Replace("\r", "").Substring(50);
+                }
+                else
+                {
+                    pageModel.NoteName = content[0].Replace("\n", "").Replace("\r", "");
+                }
+            }
             var reslut = _NoteService.SaveNote(pageModel);
             if (reslut)
             {

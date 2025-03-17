@@ -1,8 +1,10 @@
-﻿using Notes.APP.Common;
+﻿using Microsoft.Win32;
+using Notes.APP.Common;
 using Notes.APP.Models;
 using Notes.APP.Pages;
 using Notes.APP.Services;
 using System.ComponentModel;
+using System.IO;
 using System.Printing;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -10,7 +12,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
-using System.Windows.Documents;
+using System.Windows.Documents; 
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
@@ -141,7 +143,37 @@ namespace Notes.APP
             e.Handled = true;
         }
 
+        //gpt 帮我写一个wpf的按钮事件，需要实现点击按钮导出文件，将指定内容写入文件中，最后弹出选择保存地址
+        private void Export_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            // Create a SaveFileDialog to choose file location
+            var saveFileDialog = new Microsoft.Win32.SaveFileDialog
+            {
+                Filter = "Text Files (*.txt)|*.txt|All Files (*.*)|*.*",
+                DefaultExt = ".txt",
+                FileName = _noteModel?.NoteName?.Length == 0 ? "ExportedFile.txt" : _noteModel?.NoteName
+            };
 
+            // Show dialog and check if user clicked OK
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                try
+                {
+                    // Specify content to be written
+                    string content = _noteModel?.Content;
+
+                    // Write content to selected file
+                    File.WriteAllText(saveFileDialog.FileName, content);
+
+                    myMessage.ShowSuccess("文件导出成功！");
+             
+                }
+                catch (Exception ex)
+                {
+                    myMessage.ShowError("文件导出失败！");
+                }
+            }
+        }
 
         private void More_Click(object sender, RoutedEventArgs e)
         {
@@ -437,6 +469,15 @@ namespace Notes.APP
             {
                 Color colorWithOpacity = ColorHelper.MakeColorTransparent(e.NewValue.Value, 1);
                 _noteModel.Color = colorWithOpacity.ToHexColor();
+                SaveNote();
+            }
+        }
+
+        private void PreviewSlider_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (_noteModel != null)
+            {
+                _noteModel.Opacity = e.NewSize.Width;
                 SaveNote();
             }
         }

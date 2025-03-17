@@ -80,18 +80,7 @@ namespace Notes.APP.Services
         }
         public bool SaveNote(NoteModel model)
         {
-            model.NoteName = $@"未命名-{DateTime.Today.ToString("MM月dd")}";
-            var content = model.Content?.Split("\n");
-            if (content != null)
-            {
-                if (content[0].Length > 50)
-                {
-                    model.NoteName = content[0].Replace("\n","").Replace("\r","").Substring(50);
-                }
-                else {
-                    model.NoteName = content[0].Replace("\n", "").Replace("\r", "");
-                }
-            }
+            
             var note = GetNote(model.NoteId);
             if (note != null)
             {

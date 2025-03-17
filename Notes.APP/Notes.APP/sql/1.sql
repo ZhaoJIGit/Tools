@@ -1,4 +1,0 @@
- CREATE TABLE IF NOT EXISTS VersionInfo (
-     Version INTEGER PRIMARY KEY
- );
-
