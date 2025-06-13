@@ -2,139 +2,207 @@
     x:Class="Notes.APP.Pages.ListPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:hc="https://handyorg.github.io/handycontrol"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:pg="clr-namespace:Notes.APP.Models"
     Title="ListPage"
-    Background="White"
-    Loaded="Page_Loaded">
+    d:Height="50"
+    d:Width="200"
+    Background="Transparent"
+    Loaded="Page_Loaded"
+    mc:Ignorable="d">
 
     <Page.Resources>
         <!--  ListView 基础样式  -->
         <Style TargetType="ListView">
             <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Hidden" />
-            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Hidden" />
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
         </Style>
 
     </Page.Resources>
 
     <Grid>
+
         <ListView
             x:Name="notesList"
-            HorizontalAlignment="Stretch"
+            HorizontalContentAlignment="Stretch"
+            Background="Transparent"
             BorderBrush="Transparent"
             BorderThickness="0"
             MouseDoubleClick="NotesList_MouseDoubleClick"
-            VirtualizingStackPanel.IsVirtualizing="False">
+            ScrollViewer.CanContentScroll="False"
+            ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+            VirtualizingStackPanel.IsVirtualizing="True">
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                     <Setter Property="Background" Value="Transparent" />
                     <Setter Property="BorderThickness" Value="0" />
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="ListViewItem">
-                                <Border Background="{TemplateBinding Background}">
+
+                                <Border
+                                    Grid.Column="0"
+                                    HorizontalAlignment="Stretch"
+                                    Background="{TemplateBinding Background}">
                                     <ContentPresenter />
                                 </Border>
+
                             </ControlTemplate>
                         </Setter.Value>
                     </Setter>
                 </Style>
             </ListView.ItemContainerStyle>
             <!--  绑定的数据项使用的模板  -->
+
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <Border
-                        Height="80"
-                        Margin="10"
-                        Background="{Binding BackgroundColor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                        BorderBrush="{Binding BackgroundColor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                        BorderThickness="1"
-                        CornerRadius="8">
-                        <!--  添加阴影效果  -->
-                        <Border.Effect>
-                            <DropShadowEffect
-                                BlurRadius="10"
-                                Direction="0"
-                                Opacity="0.5"
-                                ShadowDepth="0"
-                                Color="Black" />
-                        </Border.Effect>
-                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        Margin="8,0"
+                        VerticalAlignment="Center"
+                        BorderBrush="{Binding BackgroundColor}"
+                        BorderThickness="0"
+                        CornerRadius="5">
+
+                        <Grid>
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="30" />
-                                <RowDefinition Height="*" />
+                                <RowDefinition Height="Auto" />
+                                <!--  标题和时间  -->
+                                <!--<RowDefinition Height="Auto"/>-->
+                                <!--  内容  -->
+                                <RowDefinition Height="1" />
+                                <!--  分割线  -->
                             </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <!--<TextBlock
-                                Grid.Row="0"
-                                Grid.Column="0"
-                                Width="50"
-                                Padding="10"
-                                HorizontalAlignment="left"
-                                FontFamily="Segoe MDL2 Assets"
-                                FontSize="16"
-                                Text="&#xE8FD;" />-->
-                            <hc:Badge
-                                Grid.Row="0"
-                                Grid.Column="0"
-                                HorizontalAlignment="Left"
-                                Background="{Binding BackgroundColor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                Text="" />
-                            <hc:Badge
-                                Grid.Row="0"
-                                Grid.Column="0"
-                                Margin="0,0,10,0"
-                                HorizontalAlignment="Right"
-                                Background="{Binding BackgroundColor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                Text="" />
-                            <TextBlock
-                                Grid.Row="0"
-                                Grid.Column="1"
-                                Padding="10"
-                                HorizontalAlignment="Right"
-                                FontSize="9"
-                                Foreground="{Binding Color, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                Text="{Binding UpdateTime, StringFormat='{}{0:MM/dd HH:mm}', Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                            <!--  TextBlock 自动换行，确保宽度自适应  -->
-                            <TextBlock
+
+                            <!--  标题 + 时间  -->
+
+                            <Grid Grid.Row="0" Margin="6">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto" />
+                                    <RowDefinition Height="auto" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <CheckBox
+                                    Grid.Column="0"
+                                    Margin="5"
+                                    Background="#1A000000"
+                                    BorderBrush="Gray"
+                                    Checked="CheckBox_Checked"
+                                    IsChecked="{Binding StatusTag, Mode=TwoWay}"
+                                    PreviewMouseDoubleClick="CheckBox_PreviewMouseDoubleClick" />
+                                <TextBlock
+                                    x:Name="txtNoteName"
+                                    Grid.Column="1"
+                                    MaxHeight="120"
+                                    Padding="5,2,0,2"
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Center"
+                                    FontSize="12"
+                                    FontWeight="Bold"
+                                    Foreground="{Binding BackgroundColor}"
+                                    Text="{Binding Content}"
+                                    TextTrimming="CharacterEllipsis"
+                                    TextWrapping="Wrap">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <!--  默认不显示删除线  -->
+                                            <Setter Property="TextDecorations" Value="None" />
+                                            <Style.Triggers>
+                                                <!--  当 IsDeleted 为 True 时加删除线  -->
+                                                <DataTrigger Binding="{Binding StatusTag}" Value="True">
+                                                    <Setter Property="TextDecorations" Value="Strikethrough" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+
+                                <TextBlock
+                                    Grid.Row="2"
+                                    Grid.Column="2"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Bottom"
+                                    FontSize="9"
+                                    Foreground="{Binding BackgroundColor}"
+                                    Text="{Binding UpdateTime, StringFormat='{}{0:MM/dd HH:mm}'}" />
+                            </Grid>
+
+                            <!--  分割线  -->
+                            <Border
                                 Grid.Row="1"
-                                Grid.Column="0"
-                                Grid.ColumnSpan="2"
-                                Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Border}}"
-                                Margin="-20,0"
-                                Padding="10,0"
-                                HorizontalAlignment="Stretch"
-                                Foreground="{Binding Color, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                Text="{Binding ContentShort}"
-                                TextWrapping="Wrap" />
+                                Height="1"
+                                Margin="0,0,0,0"
+                                Background="Gray" />
                         </Grid>
                     </Border>
                 </DataTemplate>
             </ListView.ItemTemplate>
+
+
             <!--  右键菜单  -->
             <ListView.ContextMenu>
                 <!--  打开菜单项  -->
                 <ContextMenu>
-                    <MenuItem Click="EditMenuItem_Click" Header="查看便签">
+                    <MenuItem
+                        Click="IsTopUpMenuItem_Click"
+                        Foreground="White"
+                        Header="置顶">
                         <MenuItem.Icon>
                             <TextBlock
                                 HorizontalAlignment="Right"
                                 VerticalAlignment="Center"
                                 FontFamily="Segoe MDL2 Assets"
                                 FontSize="16"
-                                Text="&#xE8FD;" />
+                                Foreground="White"
+                                Text="&#xE898;" />
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Click="DeleteMenuItem_Click" Header="删除便签">
+                    <MenuItem
+                        Click="FixedMenuItem_Click"
+                        Foreground="White"
+                        Header="固定桌面">
                         <MenuItem.Icon>
                             <TextBlock
                                 HorizontalAlignment="Right"
                                 VerticalAlignment="Center"
                                 FontFamily="Segoe MDL2 Assets"
                                 FontSize="16"
-                                Foreground="Red"
+                                Foreground="White"
+                                Text="&#xE840;" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+
+                    <MenuItem
+                        Click="EditMenuItem_Click"
+                        Foreground="White"
+                        Header="详情">
+                        <MenuItem.Icon>
+                            <TextBlock
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Center"
+                                FontFamily="Segoe MDL2 Assets"
+                                FontSize="16"
+                                Foreground="White"
+                                Text="&#xEE92;" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem
+                        Click="DeleteMenuItem_Click"
+                        Foreground="#fb300e"
+                        Header="删除">
+                        <MenuItem.Icon>
+                            <TextBlock
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Center"
+                                FontFamily="Segoe MDL2 Assets"
+                                FontSize="16"
+                                Foreground="#fb300e"
                                 Text="&#xE74D;" />
                         </MenuItem.Icon>
                     </MenuItem>
@@ -145,11 +213,11 @@
                                 <Setter.Value>
                                     <ControlTemplate TargetType="ContextMenu">
                                         <Border
-                                            Padding="5"
-                                            Background="White"
+                                            Padding="2"
+                                            Background="#CC696969"
                                             BorderBrush="Gray"
                                             BorderThickness="1"
-                                            CornerRadius="8">
+                                            CornerRadius="4">
                                             <StackPanel>
                                                 <ItemsPresenter />
                                             </StackPanel>
@@ -162,7 +230,7 @@
                     </ContextMenu.Style>
                     <ContextMenu.ItemContainerStyle>
                         <Style TargetType="MenuItem">
-                            <Setter Property="Padding" Value="10,5,10,5" />
+                            <!--<Setter Property="Padding" Value="10,5,10,5" />-->
                             <!--  给内容适当的Padding  -->
                             <Setter Property="Margin" Value="0" />
                             <Setter Property="HorizontalContentAlignment" Value="Left" />
@@ -176,11 +244,11 @@
                                             Background="Transparent"
                                             BorderBrush="{TemplateBinding BorderBrush}"
                                             BorderThickness="1"
-                                            CornerRadius="8">
+                                            CornerRadius="4">
                                             <StackPanel Orientation="Horizontal">
                                                 <!--  图标显示  -->
                                                 <ContentPresenter
-                                                    Margin="10,0,5,0"
+                                                    Margin="5,0"
                                                     HorizontalAlignment="Left"
                                                     VerticalAlignment="Center"
                                                     Content="{TemplateBinding Icon}" />

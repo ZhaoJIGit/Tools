@@ -24,7 +24,7 @@ namespace Notes.APP.Common
         public const string TempDbPath = $"C:\\Databases\\Note_Temp.db";//Data Source={Path};
 
         //版本号，和需要执行的数据库文件名一致
-        public const int Version = 1;
+        public const int Version = 2;
     }
     public class DBHelper
     {
@@ -181,22 +181,26 @@ namespace Notes.APP.Common
                     var createTableQuery = @$"
                             CREATE TABLE IF NOT EXISTS NoteInfo (
                                 NoteId TEXT PRIMARY KEY,
-                                NoteName TEXT NOT NULL,
-                                Content TEXT NOT NULL,
-                                CreateTime date Not NULL,
-                                UpdateTime Date NOT NULL,
-                                Color TEXT NOT NULL,
-                                Fontsize REAL NOT NULL,
-                                BackgroundColor TEXT NOT NULL,
-                                PageBackgroundColor TEXT NOT NULL,
-                                Opacity REAL NOT NULL,
-                                XAxis REAL NOT NULL,
-                                YAxis REAL NOT NULL,
-                                Height REAL NOT NULL,
-                                Width REAL NOT NULL,
-                                Fixed INTEGER NOT NULL,
-                                Hitokoto TEXT NOT NULL,
-                                IsDeleted INTEGER NOT NULL
+                                NoteName TEXT NOT NULL DEFAULT '',
+                                Content TEXT NOT NULL DEFAULT '',
+                                CreateTime date Not NULL DEFAULT (date('now')),
+                                UpdateTime Date NOT NULL DEFAULT (date('now')),
+                                Color TEXT NOT NULL DEFAULT '',
+                                Fontsize REAL NOT NULL  DEFAULT 0.0,
+                                BackgroundColor TEXT NOT NULL DEFAULT '',
+                                PageBackgroundColor TEXT NOT NULL DEFAULT '',
+                                Opacity REAL NOT NULL  DEFAULT 0.0,
+                                XAxis REAL NOT NULL  DEFAULT 0.0,
+                                YAxis REAL NOT NULL  DEFAULT 0.0,
+                                Height REAL NOT NULL  DEFAULT 0.0,
+                                Width REAL NOT NULL  DEFAULT 0.0,
+                                Fixed INTEGER NOT NULL  DEFAULT 0,
+                                Hitokoto TEXT NOT NULL DEFAULT '',
+                                Status INT NOT NULL  DEFAULT 0,
+                                StatusTag INTEGER NOT NULL  DEFAULT 0,
+                                Tags Text NOT NULL  DEFAULT '',
+                                IsTopUp INTEGER NOT NULL  DEFAULT 0,
+                                IsDeleted INTEGER NOT NULL  DEFAULT 0
                             );
                             CREATE TABLE IF NOT EXISTS HitokotoInfo (
                                 id INTEGER  PRIMARY KEY AUTOINCREMENT,

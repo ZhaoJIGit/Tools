@@ -52,7 +52,10 @@ namespace Notes.APP.Services
                                 YAxis,
                                 Height,
                                 Width,
-                                Fixed,Hitokoto,
+                                Fixed,
+                                Hitokoto,
+                                Status,
+                                StatusTag,Tags,IsTopUp,
                                 IsDeleted) 
                           Values(@NoteId,@NoteName,
                                 @Content,
@@ -67,14 +70,17 @@ namespace Notes.APP.Services
                                 @YAxis,
                                 @Height,
                                 @Width,
-                                @Fixed,@Hitokoto,
+                                @Fixed,
+                                @Hitokoto,
+                                @Status,
+                                @StatusTag,@Tags,@IsTopUp,
                                 @IsDeleted)";
             var result = dBHelper.ExecuteNonQuery(sql, model);
             return result > 0;
         }
         public bool UpdateNote(NoteModel model)
         {
-            var sql = $@" Update NoteInfo set  Fontsize=@Fontsize,Hitokoto=@Hitokoto,NoteName=@NoteName, Fixed=@Fixed,Height=@Height,Width=@Width, Content =@Content,UpdateTime=@UpdateTime ,BackgroundColor=@BackgroundColor ,Color =@Color,Opacity=@Opacity,XAxis=@XAxis,YAxis=@YAxis where NoteId =@NoteId";
+            var sql = $@" Update NoteInfo set Tags=@Tags,IsTopUp=@IsTopUp,StatusTag=@StatusTag, Fontsize=@Fontsize,Hitokoto=@Hitokoto,NoteName=@NoteName, Fixed=@Fixed,Height=@Height,Width=@Width, Content =@Content,UpdateTime=@UpdateTime ,BackgroundColor=@BackgroundColor ,Color =@Color,Opacity=@Opacity,XAxis=@XAxis,YAxis=@YAxis,Status=@Status where NoteId =@NoteId";
             var result = dBHelper.ExecuteNonQuery(sql, model);
             return result > 0;
         }
@@ -105,7 +111,7 @@ namespace Notes.APP.Services
         }
         public List<NoteModel> GetNotes()
         {
-            var sql = $@" SELECT * FROM NoteInfo WHERE IsDeleted = 0";
+            var sql = $@" SELECT * FROM NoteInfo WHERE IsDeleted = 0 ";
             var result = dBHelper.ExecuteReader<NoteModel>(sql);
             return result;
         }

@@ -3,6 +3,7 @@ using Notes.APP.Common;
 using Notes.APP.Models;
 using Notes.APP.Pages;
 using Notes.APP.Services;
+using System;
 using System.ComponentModel;
 using System.IO;
 using System.Printing;
@@ -12,7 +13,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
-using System.Windows.Documents; 
+using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
@@ -50,6 +51,14 @@ namespace Notes.APP
 
             // 默认显示 Page1
             MainFrame.Navigate(new HomePage());
+        }
+        public void ReloadData()
+        {
+            var model = NoteService.Instance.GetNote(_noteModel.NoteId);
+            if (model!=null) {
+                _noteModel = model;
+                this.DataContext = model;
+            }
         }
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -103,7 +112,14 @@ namespace Notes.APP
         // 最小化窗口
         private void MinimizeButton_Click(object sender, RoutedEventArgs e)
         {
-            this.Hide(); // 隐藏窗口
+            if (_noteModel.StatusTag)
+            {
+                this.Close();
+            }
+            else
+            {
+                this.Hide(); // 隐藏窗口
+            }
             //this.WindowState = WindowState.Minimized;
         }
 
@@ -166,7 +182,7 @@ namespace Notes.APP
                     File.WriteAllText(saveFileDialog.FileName, content);
 
                     myMessage.ShowSuccess("文件导出成功！");
-             
+
                 }
                 catch (Exception ex)
                 {
@@ -208,7 +224,9 @@ namespace Notes.APP
         {
             if (_noteModel != null)
             {
-                _noteModel.Opacity = e.NewValue;
+                //_noteModel.Opacity = e.NewValue;
+                _noteModel.BackgroundColor = ColorHelper.MakeColorTransparent(_noteModel.BackgroundColor.ToColor(), e.NewValue).ToHexColor();
+
                 SaveNote();
             }
         }
@@ -473,11 +491,23 @@ namespace Notes.APP
             }
         }
 
-        private void PreviewSlider_SizeChanged(object sender, SizeChangedEventArgs e)
+        //private void PreviewSlider_SizeChanged(object sender, SizeChangedEventArgs e)
+        //{
+        //    if (_noteModel != null)
+        //    {
+        //        _noteModel.Opacity = e.NewSize.Width;
+        //        _noteModel.BackgroundColor= ColorHelper.MakeColorTransparent(_noteModel.BackgroundColor.ToColor(), e.NewSize.Width).ToHexColor();
+        //        SaveNote();
+        //    }
+        //}
+
+        private void PreviewSlider_SizeChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             if (_noteModel != null)
             {
-                _noteModel.Opacity = e.NewSize.Width;
+                _noteModel.Opacity = e.NewValue;
+                _noteModel.BackgroundColor = ColorHelper.MakeColorTransparent(_noteModel.BackgroundColor.ToColor(), e.NewValue).ToHexColor();
+                _noteModel.PageBackgroundColor = _noteModel.BackgroundColor;
                 SaveNote();
             }
         }

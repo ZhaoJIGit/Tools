@@ -8,7 +8,7 @@
         <Popup
             x:Name="popupMessage"
             Width="250"
-            Height="100"
+            Height="120"
             AllowsTransparency="True"
             Opacity="0.9"
             Placement="Absolute"

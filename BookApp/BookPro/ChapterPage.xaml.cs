@@ -163,7 +163,7 @@ namespace BookPro
                 foreach (string line in lines.Where(i => i.Trim() != string.Empty))
                 {
                     //Match match = regex.Match(line);
-                    if (line.TrimStart().StartsWith("☆、") || (line.TrimStart().StartsWith("第") && (line.TrimStart().Contains("章") || line.TrimStart().Contains("卷"))))
+                    if (line.TrimStart().StartsWith("☆、") || (line.TrimStart().StartsWith("第") && (line.TrimStart().Contains("章") || line.TrimStart().Contains("卷") || line.TrimStart().Contains("张")||line.TrimStart().Contains("节"))))
                     {
                         string chapterName = line.Trim();
                         chapterPositions[chapterName] = lineNumber;

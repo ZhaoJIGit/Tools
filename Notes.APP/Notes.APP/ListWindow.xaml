@@ -10,7 +10,7 @@
     Title="计签"
     Width="400"
     Height="320"
-    MinWidth="400"
+    MinWidth="250"
     MinHeight="320"
     AllowsTransparency="True"
     Background="Transparent"
@@ -69,8 +69,9 @@
                     Grid.Row="0"
                     Height="40"
                     VerticalAlignment="Top"
-                    Background="#e6edee"
+                    Background="#80000000"
                     BorderBrush="#bfc1be"
+                    BorderThickness="0,0,0,1"
                     MouseLeftButtonDown="OnMouseLeftButtonDown"
                     MouseMove="Window_MouseMove">
                     <Border.CornerRadius>
@@ -84,7 +85,7 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="50" />
                             <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="140" />
+                            <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <!--  左侧标题  -->
 
@@ -100,7 +101,16 @@
                             Click="AddButton_Click"
                             Content="&#xE948;"
                             FontFamily="Segoe MDL2 Assets"
-                            FontSize="16" />
+                            FontSize="16"
+                            Foreground="White" />
+                        <TextBlock
+                            Grid.Column="1"
+                            VerticalAlignment="Center"
+                            FontFamily="FangSong"
+                            FontSize="16"
+                            FontWeight="Bold"
+                            Foreground="White"
+                            Text="计签" />
                         <!--  右侧按钮  -->
                         <StackPanel
                             Grid.Column="2"
@@ -108,66 +118,55 @@
                             HorizontalAlignment="Right"
                             VerticalAlignment="Center"
                             Orientation="Horizontal">
-                            <Grid Height="30">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="30" />
-                                    <ColumnDefinition Width="30" />
-                                    <ColumnDefinition Width="30" />
-                                    <ColumnDefinition Width="30" />
-                                </Grid.ColumnDefinitions>
-                                <!--  刷新按钮  -->
+                            <UniformGrid Height="30" Rows="1">
                                 <Button
-                                    Grid.Column="0"
-                                    Width="30"
-                                    Height="30"
-                                    Padding="0"
-                                    HorizontalAlignment="Center"
+                                    x:Name="btnFixed"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    Click="Fixed_Click"
+                                    Content="&#xE840;"
+                                    FontFamily="Segoe MDL2 Assets"
+                                    FontSize="16"
+                                    Foreground="White"
+                                    Visibility="Hidden" />
+                                <Button
                                     VerticalAlignment="Center"
                                     Background="Transparent"
                                     BorderThickness="0"
                                     Click="RefreshButton_Click"
                                     Content="&#xE72C;"
                                     FontFamily="Segoe MDL2 Assets"
-                                    FontSize="16" />
+                                    FontSize="16"
+                                    Foreground="White" />
                                 <!--  设置按钮  -->
                                 <Button
-                                    Grid.Column="1"
-                                    Width="30"
-                                    Height="30"
-                                    Padding="0"
-                                    HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
                                     Background="Transparent"
                                     BorderThickness="0"
                                     Click="SettingButton_Click"
                                     Content="&#xE713;"
                                     FontFamily="Segoe MDL2 Assets"
-                                    FontSize="16" />
+                                    FontSize="16"
+                                    Foreground="White" />
                                 <!--  最小化按钮  -->
                                 <Button
-                                    Grid.Column="2"
-                                    Width="30"
-                                    Height="30"
-                                    Padding="0"
-                                    HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
                                     Background="Transparent"
                                     BorderThickness="0"
                                     Click="MinimizeButton_Click"
                                     Content="&#xE921;"
-                                    FontFamily="Segoe MDL2 Assets" />
+                                    FontFamily="Segoe MDL2 Assets"
+                                    Foreground="White" />
                                 <!--  关闭按钮  -->
                                 <Button
-                                    Grid.Column="3"
-                                    Width="30"
-                                    Height="30"
-                                    Padding="0"
                                     Background="Transparent"
                                     BorderThickness="0"
                                     Click="CloseButton_Click"
                                     Content="&#xE8BB;"
-                                    FontFamily="Segoe MDL2 Assets" />
-                            </Grid>
+                                    FontFamily="Segoe MDL2 Assets"
+                                    Foreground="White" />
+                            </UniformGrid>
+
                         </StackPanel>
                     </Grid>
                 </Border>
@@ -176,7 +175,7 @@
                 <Border
                     Name="pageBorder"
                     Grid.Row="1"
-                    Background="White">
+                    Background="#66000000">
                     <Border.CornerRadius>
                         <CornerRadius
                             BottomLeft="15"
@@ -190,6 +189,7 @@
                                 x:Name="ListFrame"
                                 HorizontalAlignment="Stretch"
                                 VerticalAlignment="Stretch"
+                                BorderThickness="0"
                                 NavigationUIVisibility="Hidden" />
                         </Border>
                     </Grid>
@@ -215,20 +215,20 @@
                 <Border
                     x:Name="DrawerPanel"
                     Grid.Row="1"
-                    Width="300"
+                    Width="200"
                     Height="250"
                     Margin="0,10,0,0"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Top"
-                    Background="#f8f8f8"
-                    BorderThickness="1"
-                    Opacity="1"
+                    Background="#66000000"
+                    BorderBrush="Gray"
+                    BorderThickness="1,1,0,1"
                     Visibility="Collapsed">
                     <Border.CornerRadius>
                         <CornerRadius
-                            BottomLeft="15"
-                            BottomRight="15"
-                            TopLeft="15"
+                            BottomLeft="8"
+                            BottomRight="0"
+                            TopLeft="8"
                             TopRight="0" />
                     </Border.CornerRadius>
                     <!--  添加阴影效果  -->
@@ -259,6 +259,7 @@
                             <TextBlock
                                 VerticalAlignment="Center"
                                 FontSize="14"
+                                Foreground="White"
                                 MouseLeftButtonDown="TextBlock_MouseLeftButtonDown"
                                 Text="开机启动" />
                         </StackPanel>
@@ -335,7 +336,7 @@
                                             Background="White"
                                             BorderBrush="Gray"
                                             BorderThickness="1"
-                                            CornerRadius="10">
+                                            CornerRadius="4">
                                             <StackPanel>
                                                 <ItemsPresenter />
                                             </StackPanel>
@@ -361,7 +362,7 @@
                                             Background="Transparent"
                                             BorderBrush="{TemplateBinding BorderBrush}"
                                             BorderThickness="1"
-                                            CornerRadius="10">
+                                            CornerRadius="4">
                                             <StackPanel Orientation="Horizontal">
                                                 <!--  图标显示  -->
                                                 <ContentPresenter

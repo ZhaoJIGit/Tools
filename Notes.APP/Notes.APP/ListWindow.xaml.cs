@@ -42,6 +42,9 @@ namespace Notes.APP
             SourceInitialized += MainWindow_SourceInitialized;
             // 默认显示 Page1
             ListFrame.Navigate(new ListPage());
+            
+            //todo 记录当前窗口大小
+
 
         }
         private void MainWindow_SourceInitialized(object sender, EventArgs e)
@@ -90,7 +93,8 @@ namespace Notes.APP
             isOpenRunBox.IsChecked = StartupManager.IsAutoStartupEnabled();
             var noteService = new NoteService();
             var list = noteService.GetNotes();
-            foreach (var item in list)
+            //标记完成的不在自动打开页面
+            foreach (var item in list.Where(i=>!i.IsDeleted && !i.StatusTag))
             {
                 MainWindow mainWindow = new MainWindow(item);
                 mainWindow.Tag = item.NoteId;
@@ -301,6 +305,25 @@ namespace Notes.APP
                 // 当勾选框被取消选中时触发
                 StartupManager.DisableAutoStartup();
             }
+        }
+
+        private void Fixed_Click(object sender, RoutedEventArgs e)
+        {
+            var hostWindow = Window.GetWindow(this);
+            if (hostWindow == null)
+                return;
+
+            // 2. 切换 Topmost
+            hostWindow.Topmost = !hostWindow.Topmost;
+            if (hostWindow.Topmost)
+            {
+                btnFixed.Content = "\uE840";
+            }
+            else
+            {
+                btnFixed.Content = "\uE718";
+            }
+            //todo 需要写入设置信息里面
         }
     }
 }

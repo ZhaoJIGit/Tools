@@ -30,7 +30,33 @@ namespace Notes.APP.Models
         /// <summary>
         /// 便签内容
         /// </summary>
-        public string? Content { get; set; }
+        //public string? Content { get; set; }
+        private string? _content;
+        public string? Content
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(_content))
+                {
+                    return "随便写写";
+                }
+                else
+                {
+                    return _content;
+                }
+            }
+
+            set
+            {
+                if (_content != value)
+                {
+                    _content = value;
+                    OnPropertyChanged(nameof(Content));
+                    OnPropertyChanged(nameof(ContentShort));
+
+                }
+            }
+        }
         public string ContentShort
         {
             get
@@ -83,12 +109,91 @@ namespace Notes.APP.Models
         //        return UpdateTime.ToString("MM/dd HH:mm");
         //    }
         //}
-        public bool IsDeleted { get; set; }
+        public bool _isDeleted { get; set; }
+        public bool IsDeleted
+        {
+            get => _isDeleted;
+            set
+            {
+                if (_isDeleted != value)
+                {
+                    _isDeleted = value;
+                    OnPropertyChanged(nameof(IsDeleted));
+                }
+            }
+        }
+
+        public long _status { get; set; }
+        /// <summary>
+        ///  0 未完成，1 正在执行，2 已完成，3 已取消 ，4
+        /// </summary>
+        public long Status
+        {
+            get => _status;
+            set
+            {
+                if (_status != value)
+                {
+                    _status = value;
+                    OnPropertyChanged(nameof(Status));
+                }
+            }
+        }
+        public bool _statusTag { get; set; }
+        /// <summary>
+        ///  标识是否完成，或取消
+        /// </summary>
+        public bool StatusTag
+        {
+            get => _statusTag;
+            set
+            {
+                if (_statusTag != value)
+                {
+                    _statusTag = value;
+                    OnPropertyChanged(nameof(StatusTag));
+                }
+            }
+        }
+
+        public string _tags { get; set; }
+        /// <summary>
+        ///  标识是否完成，或取消
+        /// </summary>
+        public string Tags
+        {
+            get => _tags;
+            set
+            {
+                if (_tags != value)
+                {
+                    _tags = value;
+                    OnPropertyChanged(nameof(Tags));
+                }
+            }
+        }
+        public bool _isTopUp { get; set; }
+        /// <summary>
+        ///  置顶
+        /// </summary>
+        public bool IsTopUp
+        {
+            get => _isTopUp;
+            set
+            {
+                if (_isTopUp != value)
+                {
+                    _isTopUp = value;
+                    OnPropertyChanged(nameof(IsTopUp));
+                }
+            }
+        }
+
         public static NoteModel CreateNote()
         {
             var note = new NoteModel();
             note.NoteId = Guid.NewGuid().ToString("n");
-            note.BackgroundColor = ColorHelper.GenerateRandomColor();
+            note.BackgroundColor = ColorHelper.GenerateSoftRandomColor();
             note.Opacity = 50;
             note.Fixed = false;
             note.CreateTime = DateTime.Now;
@@ -100,8 +205,13 @@ namespace Notes.APP.Models
             note.Hitokoto = HitokotoService.Instance.GetHitokoto();
             note.IsDeleted = false;
             note.PageBackgroundColor = ColorHelper.MakeColorTransparent(note.BackgroundColor.ToColor(), 0.8).ToHexColor();
-            note.Color =  ColorHelper.GetColorByBackground(note.BackgroundColor);
+            note.Color = ColorHelper.GetColorByBackground(note.BackgroundColor);
             note.Content = "";
+            note.Status = 0;
+            note.StatusTag = false;
+            note.Tags = "";
+            note.IsTopUp = false;
+
             if (string.IsNullOrWhiteSpace(note.Hitokoto))
             {
                 HitokotoService.Instance.GetHitokotoInfoApi();

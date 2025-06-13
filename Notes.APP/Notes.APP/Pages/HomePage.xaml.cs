@@ -112,6 +112,7 @@ namespace Notes.APP.Pages
                 _Message.ShowSuccess("自动保存成功！");
                 var win = Window.GetWindow(this) as MainWindow;
                 win?.ChangedTextEvent();
+                win?.ReloadData();
             }
             else
             {
