@@ -47,19 +47,12 @@ namespace Notes.APP.Pages
             ListWindow.RefreshEvent += OnRefreshEvent; // 订阅事件
             GetNotes();
 
-            notes.CollectionChanged += (s, e) =>
-            {
-                if (e.NewItems != null)
-                {
-                    foreach (NoteModel n in e.NewItems)
-                        n.PropertyChanged += Note_PropertyChanged;
-                }
-            };
+            
 
         }
         private void Note_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
-            if (sender is NoteModel note && e.PropertyName == nameof(NoteModel.StatusTag))
+            if (sender is NoteModel note)
             {
                 _NoteService.UpdateNote(note);
                 var windows = Application.Current.Windows.OfType<Window>().Where(i => i.Tag != null);
@@ -69,11 +62,19 @@ namespace Notes.APP.Pages
                     (win as MainWindow).ReloadData();
                 }
                 
-                //ListWindow.TriggerRefresh();
             }
+           
         }
         private void GetNotes(bool clear=false)
         {
+            notes.CollectionChanged += (s, e) =>
+            {
+                if (e.NewItems != null)
+                {
+                    foreach (NoteModel n in e.NewItems)
+                        n.PropertyChanged += Note_PropertyChanged;
+                }
+            };
             if (clear) {
                 notes.Clear();
             }
@@ -108,6 +109,7 @@ namespace Notes.APP.Pages
             //{
             //    notes.Add(item);
             //}
+           
         }
 
         private void NotesList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -174,7 +176,13 @@ namespace Notes.APP.Pages
 
         private void CheckBox_Checked(object sender, RoutedEventArgs e)
         {
-
+            //var selectedItem = notesList.SelectedItem;
+            //if (selectedItem != null)
+            //{
+            //    var note = selectedItem as NoteModel;
+            //    note.StatusTag = !note.StatusTag;
+            //    _NoteService.UpdateNote(note);
+            //}
         }
 
         private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
@@ -210,6 +218,22 @@ namespace Notes.APP.Pages
                 GetNotes(true);
             }
           
+        }
+
+        private void NoteContextMenu_Opened(object sender, RoutedEventArgs e)
+        {
+            if (notesList.SelectedItem is NoteModel selectedNote)
+            {
+                btnTopUp.Header = selectedNote.IsTopUp ? "取消置顶" : "置顶";
+                btnFixed.Header = selectedNote.Fixed ? "取消固定" : "固定桌面";
+                iconFixed.Text = selectedNote.Fixed ? "\uE718" : "\uE840";
+            }
+            else
+            {
+                btnTopUp.Header = "置顶"; // 没选中时默认文字
+                btnFixed.Header = "固定桌面";
+                iconFixed.Text = "\uE840";
+            }
         }
     }
 }

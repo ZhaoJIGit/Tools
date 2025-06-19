@@ -58,21 +58,12 @@ namespace Notes.APP
             if (model!=null) {
                 _noteModel = model;
                 this.DataContext = model;
+                ReloadPage();
             }
         }
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            // 设置 DataContext
-            var service = new NoteService();
-            //_noteModel = service.SelectNote("b2a642c94a654175b455cb2337b1012d");
-            if (_noteModel == null)
-            {
-                MessageBox.Show("便签不存在！");
-                return;
-            }
+        private void ReloadPage() {
             if (_noteModel.Fixed)
             {
-
                 btnFixed.Content = "\uE840";
             }
             else
@@ -85,6 +76,18 @@ namespace Notes.APP
             pageBorder.Background = _noteModel.BackgroundColor.ToSolidColorBrush();
             MyColorPicker.SelectedColor = _noteModel.BackgroundColor.ToColor();
             MyFontColorPicker.SelectedColor = _noteModel.Color.ToColor();
+        }
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            // 设置 DataContext
+            var service = new NoteService();
+            //_noteModel = service.SelectNote("b2a642c94a654175b455cb2337b1012d");
+            if (_noteModel == null)
+            {
+                MessageBox.Show("便签不存在！");
+                return;
+            }
+            ReloadPage();
 
             this.Width = _noteModel.Width;
             this.Height = _noteModel.Height;

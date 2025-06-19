@@ -310,9 +310,10 @@
                     Grid.Row="1"
                     Width="150"
                     Height="220"
+                    Padding="10"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Top"
-                    Background="#f8f8f8"
+                    Background="{Binding BackgroundColor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                     BorderThickness="1"
                     Visibility="Collapsed">
                     <Border.CornerRadius>
@@ -324,20 +325,20 @@
                     </Border.CornerRadius>
                     <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="20" />
-                            <RowDefinition Height="25" />
-                            <RowDefinition Height="20" />
-                            <RowDefinition Height="25" />
-                            <RowDefinition Height="20" />
-                            <RowDefinition Height="25" />
-                            <RowDefinition Height="*" />
-                            <RowDefinition Height="30" />
-                            <RowDefinition Height="30" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
                         </Grid.RowDefinitions>
                         <TextBlock
                             Grid.Row="0"
                             Margin="2"
-                            Foreground="#000"
+                            Foreground="{Binding Color, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                             Text="背景颜色" />
                         <!--  颜色选择  -->
                         <!--  色彩板  -->
@@ -351,7 +352,7 @@
                         <TextBlock
                             Grid.Row="2"
                             Margin="2"
-                            Foreground="#000"
+                            Foreground="{Binding Color, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                             Text="字体颜色" />
                         <!--  颜色选择  -->
                         <!--  色彩板  -->
@@ -365,7 +366,7 @@
                         <TextBlock
                             Grid.Row="4"
                             Margin="2"
-                            Foreground="#000"
+                            Foreground="{Binding Color, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                             Text="透明度" />
                         <!--  透明度  -->
                         <!--<hc:RangeSlider Grid.Row="5" />-->
@@ -375,58 +376,7 @@
                             Minimum="0.1"
                             ValueChanged="PreviewSlider_SizeChanged"
                             Value="{Binding Opacity, Mode=TwoWay}" />
-                        <!--<Slider
-                            Grid.Row="5"
-                            Width="130"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Maximum="1"
-                            Minimum="0.1"
-                            ValueChanged="Slider_ValueChanged"
-                            Value="{Binding Opacity}">
-                            <Slider.Template>
-                                <ControlTemplate TargetType="Slider">
-                                    <Grid>
-                        -->
-                        <!--  Track  -->
-                        <!--
-                                        <Track Name="PART_Track" IsDirectionReversed="False">
-                                            <Track.DecreaseRepeatButton>
-                                                <RepeatButton Command="Slider.DecreaseLarge" />
-                                            </Track.DecreaseRepeatButton>
-                                            <Track.IncreaseRepeatButton>
-                                                <RepeatButton Command="Slider.IncreaseLarge" />
-                                            </Track.IncreaseRepeatButton>
-                                            <Track.Thumb>
-                                                <Thumb
-                                                    Width="10"
-                                                    Height="8"
-                                                    Background="#4A4343" />
-                                            </Track.Thumb>
-                                        </Track>
-                                    </Grid>
-                                </ControlTemplate>
-                            </Slider.Template>
 
-                        </Slider>-->
-                        <!--  置顶  -->
-                        <!--<StackPanel
-                            Grid.Row="4"
-                            Width="auto"
-                            VerticalAlignment="Center"
-                            Orientation="Horizontal">
-                            <CheckBox
-                                Name="isTopUpBox"
-                                Margin="5,3"
-                                Checked="TopUpBox_Checked"
-                                Unchecked="TopUpBox_Unchecked" />
-                            <TextBlock
-                                Margin="5,0"
-                                VerticalAlignment="Center"
-                                FontSize="14"
-                                MouseLeftButtonDown="TopUp_MouseLeftButtonDown"
-                                Text="窗口置顶" />
-                        </StackPanel>-->
                         <!--  查看列表  -->
                         <Grid
                             Grid.Row="6"
@@ -442,10 +392,12 @@
                                     VerticalAlignment="Center"
                                     FontFamily="Segoe MDL2 Assets"
                                     FontSize="16"
+                                    Foreground="{Binding Color, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                     Text="&#xE896;" />
                                 <TextBlock
                                     VerticalAlignment="Center"
                                     FontSize="14"
+                                    Foreground="{Binding Color, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                     Text="导出内容" />
                             </StackPanel>
                         </Grid>
@@ -463,10 +415,12 @@
                                     VerticalAlignment="Center"
                                     FontFamily="Segoe MDL2 Assets"
                                     FontSize="16"
+                                    Foreground="{Binding Color, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                     Text="&#xE8FD;" />
                                 <TextBlock
                                     VerticalAlignment="Center"
                                     FontSize="14"
+                                    Foreground="{Binding Color, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                     Text="查看列表" />
                             </StackPanel>
                         </Grid>
