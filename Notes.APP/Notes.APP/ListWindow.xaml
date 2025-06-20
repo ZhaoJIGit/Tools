@@ -10,11 +10,12 @@
     Title="计签"
     Width="400"
     Height="320"
-    MinWidth="250"
+    MinWidth="300"
     MinHeight="320"
     AllowsTransparency="True"
     Background="Transparent"
     Loaded="Window_Loaded"
+    ShowInTaskbar="False"
     WindowStartupLocation="Manual"
     WindowStyle="None"
     mc:Ignorable="d">
@@ -124,11 +125,10 @@
                                     Background="Transparent"
                                     BorderThickness="0"
                                     Click="Fixed_Click"
-                                    Content="&#xE840;"
+                                    Content="&#xE718;"
                                     FontFamily="Segoe MDL2 Assets"
                                     FontSize="16"
-                                    Foreground="White"
-                                    Visibility="Hidden" />
+                                    Foreground="White" />
                                 <Button
                                     VerticalAlignment="Center"
                                     Background="Transparent"

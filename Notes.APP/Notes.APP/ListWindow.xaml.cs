@@ -52,7 +52,12 @@ namespace Notes.APP
             HwndSource source = HwndSource.FromHwnd(new WindowInteropHelper(this).Handle);
             source.AddHook(WndProc);
         }
-
+        protected override void OnSourceInitialized(EventArgs e)
+        {
+            base.OnSourceInitialized(e);
+            // 启动嵌入桌面 + 自动监控
+            //DesktopEmbedder.StartEmbedding(this);
+        }
         private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
             var service = LogService.Instance;
@@ -94,7 +99,7 @@ namespace Notes.APP
             var noteService = new NoteService();
             var list = noteService.GetNotes();
             //标记完成的不在自动打开页面
-            foreach (var item in list.Where(i=>!i.IsDeleted && !i.StatusTag))
+            foreach (var item in list.Where(i=>!i.IsDeleted && i.Fixed))
             {
                 MainWindow mainWindow = new MainWindow(item);
                 mainWindow.Tag = item.NoteId;

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,28 +27,37 @@ namespace Notes.APP.Pages
     public partial class ListPage : BasePage
     {
         public ObservableCollection<NoteModel> notes { get; set; } = new ObservableCollection<NoteModel>();
+        public ICollectionView NotesView;
         public ListPage()
         {
             InitializeComponent();
-            notesList.ItemsSource = notes;
+            NotesView = CollectionViewSource.GetDefaultView(notes);
+            //NotesView?.SortDescriptions.Add(new SortDescription(nameof(NoteModel.IsTopUp), ListSortDirection.Descending));
+            if (NotesView.CanSort)
+            {
+                NotesView.SortDescriptions.Add(new SortDescription(nameof(NoteModel.IsTopUp), ListSortDirection.Descending));
+            }
+            if (NotesView is ICollectionViewLiveShaping liveView)
+            {
+                if (liveView.CanChangeLiveSorting)
+                {
+                    liveView.IsLiveSorting = true;
+                    liveView.LiveSortingProperties.Add(nameof(NoteModel.IsTopUp));
+                }
+            }
+            notesList.ItemsSource = NotesView;
 
         }
         // 事件处理方法
         private void OnRefreshEvent(object sender, EventArgs e)
         {
-            GetNotes();
-        }
-        private void Note_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-
+            GetNotes(false);
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             ListWindow.RefreshEvent += OnRefreshEvent; // 订阅事件
             GetNotes();
-
-            
 
         }
         private void Note_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -61,11 +71,11 @@ namespace Notes.APP.Pages
                     var win = windows.First(i => i.Tag.Equals(note.NoteId));
                     (win as MainWindow).ReloadData();
                 }
-                
+
             }
-           
+
         }
-        private void GetNotes(bool clear=false)
+        private void GetNotes(bool clear = false)
         {
             notes.CollectionChanged += (s, e) =>
             {
@@ -75,7 +85,8 @@ namespace Notes.APP.Pages
                         n.PropertyChanged += Note_PropertyChanged;
                 }
             };
-            if (clear) {
+            if (clear)
+            {
                 notes.Clear();
             }
             var list = _NoteService.GetNotes();
@@ -91,25 +102,23 @@ namespace Notes.APP.Pages
                 if (exist != null)
                 {
                     // 只更新属性，不替换对象
-                    exist.NoteName= newNote.NoteName;
+                    exist.NoteName = newNote.NoteName;
                     exist.StatusTag = newNote.StatusTag;  // 这会自动刷新UI
                     exist.UpdateTime = newNote.UpdateTime;  // 这会自动刷新UI
                     exist.Content = newNote.Content;
+                    exist.IsTopUp = newNote.IsTopUp;
+                    exist.Fixed = newNote.Fixed;
+                    exist.BackgroundColor = newNote.BackgroundColor;
+                    exist.Color = newNote.Color;
+                    exist.PageBackgroundColor = newNote.PageBackgroundColor;
+
                 }
                 else
                 {
                     notes.Add(newNote);
                 }
             }
-            //notes= notes.OrderByDescending(i=>i.IsTopUp);
 
-            //notes.Clear();
-            //var list = _NoteService.GetNotes();
-            //foreach (var item in list)
-            //{
-            //    notes.Add(item);
-            //}
-           
         }
 
         private void NotesList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -174,21 +183,8 @@ namespace Notes.APP.Pages
             }
         }
 
-        private void CheckBox_Checked(object sender, RoutedEventArgs e)
-        {
-            //var selectedItem = notesList.SelectedItem;
-            //if (selectedItem != null)
-            //{
-            //    var note = selectedItem as NoteModel;
-            //    note.StatusTag = !note.StatusTag;
-            //    _NoteService.UpdateNote(note);
-            //}
-        }
 
-        private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
-        {
-
-        }
+  
 
         private void CheckBox_PreviewMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
@@ -213,27 +209,58 @@ namespace Notes.APP.Pages
             if (selectedItem != null)
             {
                 var note = selectedItem as NoteModel;
-                note.IsTopUp= !note.IsTopUp;
+                note.IsTopUp = !note.IsTopUp;
                 _NoteService.UpdateNote(note);
-                GetNotes(true);
+
             }
-          
+
         }
 
         private void NoteContextMenu_Opened(object sender, RoutedEventArgs e)
         {
-            if (notesList.SelectedItem is NoteModel selectedNote)
-            {
-                btnTopUp.Header = selectedNote.IsTopUp ? "取消置顶" : "置顶";
-                btnFixed.Header = selectedNote.Fixed ? "取消固定" : "固定桌面";
-                iconFixed.Text = selectedNote.Fixed ? "\uE718" : "\uE840";
-            }
-            else
-            {
-                btnTopUp.Header = "置顶"; // 没选中时默认文字
-                btnFixed.Header = "固定桌面";
-                iconFixed.Text = "\uE840";
-            }
+            //if (notesList.SelectedItem is NoteModel selectedNote)
+            //{
+            //    btnTopUp.Header = selectedNote.IsTopUp ? "取消置顶" : "置顶";
+            //    btnFixed.Header = selectedNote.Fixed ? "取消固定" : "固定桌面";
+            //    iconFixed.Text = selectedNote.Fixed ? "\uE718" : "\uE840";
+            //}
+            //else
+            //{
+            //    btnTopUp.Header = "置顶"; // 没选中时默认文字
+            //    btnFixed.Header = "固定桌面";
+            //    iconFixed.Text = "\uE840";
+            //}
         }
+
+    }
+    public class TopHeaderConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return (value is bool b && b) ? "取消置顶" : "置顶";
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+            => Binding.DoNothing;
+    }
+    public class FixedHeaderConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return (value is bool b && b) ? "取消固定" : "固定桌面";
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+            => Binding.DoNothing;
+    }
+    public class FixedIconHeaderConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return (value is bool b && b) ? "\uE718" : "\uE840";
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+            => Binding.DoNothing;
     }
 }
