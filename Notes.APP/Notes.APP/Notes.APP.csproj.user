@@ -24,6 +24,9 @@
     <Compile Update="Pages\ListPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="SettingWindow.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Page Update="CustomCtrls\ConfirmPopup.xaml">

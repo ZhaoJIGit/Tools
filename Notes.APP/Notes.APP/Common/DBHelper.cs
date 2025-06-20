@@ -215,10 +215,18 @@ namespace Notes.APP.Common
                              CREATE TABLE IF NOT EXISTS VersionInfo (
                                  Version INTEGER PRIMARY KEY
                              );
+                             CREATE TABLE IF NOT EXISTS SystemConfigInfo (
+                                 Id INTEGER PRIMARY KEY,
+                                 StartOpen INTEGER NOT NULL  DEFAULT 0,
+                                 Color TEXT NOT NULL DEFAULT '',
+                                 BackgroundColor TEXT NOT NULL DEFAULT '',
+                                 Fixed INTEGER NOT NULL  DEFAULT 0
+                             );
+                            
                         ";
+                    var initData = $@" INSERT INTO SystemConfigInfo(StartOpen,Color,BackgroundColor,Fixed) values(0,'#fff','#66000000',0)";
 
-
-                    using (var command = new SqliteCommand(createTableQuery, connection))
+                    using (var command = new SqliteCommand(createTableQuery+ initData, connection))
                     {
                         command.ExecuteNonQuery();
                     }

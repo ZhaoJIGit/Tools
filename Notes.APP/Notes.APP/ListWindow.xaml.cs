@@ -33,16 +33,20 @@ namespace Notes.APP
         private bool _isDrawerOpen = false;
         private bool isLoad = false;
         private const int WM_COPYDATA = 0x004A;
-
+        SystemConfigInfo SystemConfigInfo { get; set; }
         // 定义静态事件
         public static event EventHandler RefreshEvent;
         public ListWindow()
         {
             InitializeComponent();
+            SystemConfigInfoService systemConfig = SystemConfigInfoService.Instance;
+            var config = systemConfig.GetConfig();
+            SystemConfigInfo = config;
+            this.DataContext = SystemConfigInfo;
+
             SourceInitialized += MainWindow_SourceInitialized;
             // 默认显示 Page1
             ListFrame.Navigate(new ListPage());
-            
             //todo 记录当前窗口大小
 
 
@@ -95,11 +99,13 @@ namespace Notes.APP
 
             // 绑定数据源
             isLoad = true;
-            isOpenRunBox.IsChecked = StartupManager.IsAutoStartupEnabled();
+
+         
+            isOpenRunBox.IsChecked = SystemConfigInfo.StartOpen;
             var noteService = new NoteService();
             var list = noteService.GetNotes();
             //标记完成的不在自动打开页面
-            foreach (var item in list.Where(i=>!i.IsDeleted && i.Fixed))
+            foreach (var item in list.Where(i => !i.IsDeleted && i.Fixed))
             {
                 MainWindow mainWindow = new MainWindow(item);
                 mainWindow.Tag = item.NoteId;
@@ -115,7 +121,7 @@ namespace Notes.APP
         private void AddButton_Click(object sender, RoutedEventArgs e)
         {
             var note = NoteModel.CreateNote();
-   
+
             MainWindow mainWindow = new MainWindow(note);
             mainWindow.Tag = note.NoteId;
             mainWindow.Height = note.Height;
@@ -151,22 +157,34 @@ namespace Notes.APP
         }
         private void SettingButton_Click(object sender, RoutedEventArgs e)
         {
-            // 根据当前状态切换抽屉的打开或关闭
-            if (_isDrawerOpen)
+            var windows = Application.Current.Windows.OfType<Window>().FirstOrDefault(i => i.Tag == "NoteSetting");
+            if (windows != null)
             {
-                // 关闭抽屉
-                DrawerPanel.Visibility = Visibility.Collapsed;
-                CloseArea.Visibility = Visibility.Collapsed;  // 隐藏遮罩层
+                windows.Show();
+                windows.Activate();
             }
             else
             {
-                // 打开抽屉
-                DrawerPanel.Visibility = Visibility.Visible;
-                CloseArea.Visibility = Visibility.Visible;  // 显示遮罩层
+                SettingWindow setting = new SettingWindow();
+                setting.Tag = "NoteSetting";
+                setting.Show();
             }
+            //// 根据当前状态切换抽屉的打开或关闭
+            //if (_isDrawerOpen)
+            //{
+            //    // 关闭抽屉
+            //    DrawerPanel.Visibility = Visibility.Collapsed;
+            //    CloseArea.Visibility = Visibility.Collapsed;  // 隐藏遮罩层
+            //}
+            //else
+            //{
+            //    // 打开抽屉
+            //    DrawerPanel.Visibility = Visibility.Visible;
+            //    CloseArea.Visibility = Visibility.Visible;  // 显示遮罩层
+            //}
 
-            // 切换状态
-            _isDrawerOpen = !_isDrawerOpen;
+            //// 切换状态
+            //_isDrawerOpen = !_isDrawerOpen;
         }
         // 触发事件
         public static void TriggerRefresh()
@@ -298,6 +316,9 @@ namespace Notes.APP
         {
             if (isOpenRunBox.IsChecked.Value && !isLoad)
             {
+                SystemConfigInfoService systemConfig = SystemConfigInfoService.Instance;
+                SystemConfigInfo.StartOpen = isOpenRunBox.IsChecked.Value;
+                systemConfig.SaveConfig(SystemConfigInfo);
                 // 当勾选框被选中时触发
                 StartupManager.EnableAutoStartup();
             }
@@ -307,6 +328,9 @@ namespace Notes.APP
         {
             if (!isOpenRunBox.IsChecked.Value && !isLoad)
             {
+                SystemConfigInfoService systemConfig = SystemConfigInfoService.Instance;
+                SystemConfigInfo.StartOpen = !isOpenRunBox.IsChecked.Value;
+                systemConfig.SaveConfig(SystemConfigInfo);
                 // 当勾选框被取消选中时触发
                 StartupManager.DisableAutoStartup();
             }
@@ -317,9 +341,12 @@ namespace Notes.APP
             var hostWindow = Window.GetWindow(this);
             if (hostWindow == null)
                 return;
-
+       
             // 2. 切换 Topmost
             hostWindow.Topmost = !hostWindow.Topmost;
+            SystemConfigInfoService systemConfig = SystemConfigInfoService.Instance;
+            SystemConfigInfo.Fixed = hostWindow.Topmost;
+            systemConfig.SaveConfig(SystemConfigInfo);
             if (hostWindow.Topmost)
             {
                 btnFixed.Content = "\uE840";
