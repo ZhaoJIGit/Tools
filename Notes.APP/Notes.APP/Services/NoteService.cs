@@ -55,7 +55,7 @@ namespace Notes.APP.Services
                                 Fixed,
                                 Hitokoto,
                                 Status,
-                                StatusTag,Tags,IsTopUp,
+                                StatusTag,Tags,IsTopUp, 
                                 IsDeleted) 
                           Values(@NoteId,@NoteName,
                                 @Content,
@@ -73,7 +73,7 @@ namespace Notes.APP.Services
                                 @Fixed,
                                 @Hitokoto,
                                 @Status,
-                                @StatusTag,@Tags,@IsTopUp,
+                                @StatusTag,@Tags,@IsTopUp
                                 @IsDeleted)";
             var result = dBHelper.ExecuteNonQuery(sql, model);
             return result > 0;
@@ -100,6 +100,12 @@ namespace Notes.APP.Services
         public bool SaveContentNote(NoteModel model)
         {
             var sql = $@"Update NoteInfo set NoteName=@NoteName,Content =@Content,UpdateTime=@UpdateTime  WHERE NoteId = @NoteId";
+            var result = dBHelper.ExecuteNonQuery(sql, model);
+            return result > 0;
+        }
+        public bool SaveNoteNotice(NoteModel model)
+        {
+            var sql = $@"Update NoteInfo set NoticeTime=@NoticeTime,UpdateTime=@UpdateTime  WHERE NoteId = @NoteId";
             var result = dBHelper.ExecuteNonQuery(sql, model);
             return result > 0;
         }

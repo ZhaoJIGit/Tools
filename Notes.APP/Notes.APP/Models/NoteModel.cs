@@ -188,6 +188,21 @@ namespace Notes.APP.Models
                 }
             }
         }
+        private DateTime? _noticeTime { get; set; }
+        /// <summary>
+        /// 提醒时间
+        /// </summary>
+        public DateTime? NoticeTime {
+            get => _noticeTime;
+            set
+            {
+                if (_noticeTime != value)
+                {
+                    _noticeTime = value;
+                    OnPropertyChanged(nameof(NoticeTime));
+                }
+            }
+        }
 
         public static NoteModel CreateNote()
         {
@@ -224,6 +239,7 @@ namespace Notes.APP.Models
             });
             return note;
         }
+
 
     }
     public class ConfigModel : INotifyPropertyChanged

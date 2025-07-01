@@ -1,4 +1,5 @@
 ﻿using Notes.APP.Common;
+using Notes.APP.CustomCtrls;
 using Notes.APP.Models;
 using Notes.APP.Services;
 using System;
@@ -16,7 +17,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Xml.Linq;
-using Notes.APP.CustomCtrls;
 
 namespace Notes.APP
 {
@@ -28,11 +28,15 @@ namespace Notes.APP
         SystemConfigInfo config;
         private Point _mouseDownPosition;
         private NoteModel _noteModel;
+        private MyMessage myMessage;
+
         public TimePickerWindow()
         {
             InitializeComponent();
-            HourList.ItemsSource = Enumerable.Range(0, 24).Select(i => i.ToString("D2")).ToList();
-            MinuteList.ItemsSource = Enumerable.Range(0, 60).Select(i => i.ToString("D2")).ToList();
+            MessagePopupHelper popupHelper = new MessagePopupHelper(this);
+
+            // 创建 MyMessage 实例并传入 MessagePopupHelper
+            myMessage = new MyMessage(popupHelper);
         }
         public void SetNote(NoteModel note)
         {
@@ -43,7 +47,9 @@ namespace Notes.APP
             //pageBorder.Background = config.BackGroundColor.ToSolidColorBrush();
             //txtTitle.Foreground= config.Color.ToSolidColorBrush();
             //btnClose.Foreground = config.Color.ToSolidColorBrush();
-            TimePicker.Text = DateTime.Now.ToString("yyyy-MM-dd HH:mm");
+            var now = _noteModel.NoticeTime == null ? DateTime.Now.AddMinutes(15) : _noteModel.NoticeTime.Value;
+            datePicker.Text = now.ToString("yyyy-MM-dd");
+            timePicker.SelectedTime = now;
 
             // 更新 UI 显示
             this.DataContext = config;
@@ -58,12 +64,37 @@ namespace Notes.APP
 
         private void Confirm_Click(object sender, RoutedEventArgs e)
         {
+            var service = new NoteService();
+            if (datePicker.Text == null || string.IsNullOrWhiteSpace(datePicker.Text))
+            {
+                myMessage.ShowWarning("请选择时间");
+            }
+            if (timePicker.Text == null || string.IsNullOrWhiteSpace(timePicker.Text))
+            {
+                myMessage.ShowWarning("请选择时间");
+            }
+            _noteModel.NoticeTime = Convert.ToDateTime(datePicker.Text +" "+ timePicker.Text.ToString());
 
+            if (_noteModel.NoticeTime < DateTime.Now)
+            {
+                myMessage.ShowWarning("提醒时间不能小于当前时间");
+            }
+            _noteModel.UpdateTime = DateTime.Now;
+            if (service.SaveNoteNotice(_noteModel))
+            {
+
+
+                this.Close(); // 隐藏窗口
+            }
+            else
+            {
+                myMessage.ShowError("保存失败！");
+            }
         }
 
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
-
+            this.Close(); // 隐藏窗口
         }
         // 实现窗口拖动
         private void OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -78,16 +109,6 @@ namespace Notes.APP
                 //this.DragMove(); // 拖动窗口
             }
             e.Handled = true;
-        }
-        private void OnTrayOpenClick(object sender, RoutedEventArgs e)
-        {
-            this.Show();
-            this.WindowState = WindowState.Normal;
-            this.Activate();
-        }
-        private void OnTrayExitClick(object sender, RoutedEventArgs e)
-        {
-            Application.Current.Shutdown();
         }
 
         private void Grid_MouseEnter(object sender, MouseEventArgs e)
@@ -139,16 +160,5 @@ namespace Notes.APP
             this.Close(); // 隐藏窗口
         }
 
-        private void HourList_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            var selectedHour = HourList.SelectedItem?.ToString();
-            // 可处理选中逻辑
-        }
-
-        private void MinuteList_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            var selectedMinute = MinuteList.SelectedItem?.ToString();
-            // 可处理选中逻辑
-        }
     }
 }

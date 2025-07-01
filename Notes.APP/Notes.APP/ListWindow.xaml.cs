@@ -1,4 +1,5 @@
-﻿using Notes.APP.Common;
+﻿using Microsoft.Toolkit.Uwp.Notifications;
+using Notes.APP.Common;
 using Notes.APP.Models;
 using Notes.APP.Pages;
 using Notes.APP.Services;
@@ -20,6 +21,7 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using static Notes.APP.App;
 
 namespace Notes.APP
@@ -48,7 +50,7 @@ namespace Notes.APP
             // 默认显示 Page1
             ListFrame.Navigate(new ListPage());
             //todo 记录当前窗口大小
-
+           // ShowNotification("通知", $"您有个待办事项即将开始，请前往计签查看详情【】。");
 
         }
         private void MainWindow_SourceInitialized(object sender, EventArgs e)
@@ -62,24 +64,40 @@ namespace Notes.APP
             // 启动嵌入桌面 + 自动监控
             //DesktopEmbedder.StartEmbedding(this);
         }
+        //private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        //{
+        //    var service = LogService.Instance;
+        //    if (msg == WM_COPYDATA)
+        //    {
+        //        handled = true;
+        //    }
+        //    return IntPtr.Zero;
+        //}
         private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
-            var service = LogService.Instance;
             if (msg == WM_COPYDATA)
             {
-                //COPYDATASTRUCT cds = (COPYDATASTRUCT)Marshal.PtrToStructure(lParam, typeof(COPYDATASTRUCT));
-                //string receivedMessage = Marshal.PtrToStringAnsi(cds.lpData, cds.cbData);
-                //if (receivedMessage == "SHOW")
-                //{
+                COPYDATASTRUCT cds = Marshal.PtrToStructure<COPYDATASTRUCT>(lParam);
+                if (cds.cbData > 0)
+                {
+                    byte[] data = new byte[cds.cbData];
+                    Marshal.Copy(cds.lpData, data, 0, cds.cbData);
+                    string message = System.Text.Encoding.UTF8.GetString(data);
 
-                //    RestoreWindow();
-                //}
-
+                    if (message == "SHOW")
+                    {
+                        // 收到消息后激活窗口
+                        if (this.WindowState == WindowState.Minimized)
+                            this.WindowState = WindowState.Normal;
+                        this.Show();
+                        this.Activate();
+                    }
+                }
                 handled = true;
             }
+
             return IntPtr.Zero;
         }
-
         public void RestoreWindow()
         {
             this.Show();
@@ -100,12 +118,12 @@ namespace Notes.APP
             // 绑定数据源
             isLoad = true;
 
-         
+
             isOpenRunBox.IsChecked = SystemConfigInfo.StartOpen;
             var noteService = new NoteService();
             var list = noteService.GetNotes();
             //标记完成的不在自动打开页面
-            foreach (var item in list.Where(i => !i.IsDeleted ))//&& i.Fixed
+            foreach (var item in list.Where(i => !i.IsDeleted))//&& i.Fixed
             {
                 MainWindow mainWindow = new MainWindow(item);
                 mainWindow.Tag = item.NoteId;
@@ -116,8 +134,48 @@ namespace Notes.APP
             {
                 this.Hide();
             }
+            InitNoticeTask();
 
         }
+
+        private DispatcherTimer _timer;
+
+        private void InitNoticeTask()
+        {
+            _timer = new DispatcherTimer();
+            _timer.Interval = TimeSpan.FromSeconds(10);
+            _timer.Tick += Timer_Tick;
+            _timer.Start();
+        }
+        private void Timer_Tick(object? sender, EventArgs e)
+        {
+            var now = DateTime.Now;
+
+            // 找出所有已到时间且未提醒的项
+            var noteService = new NoteService();
+            var list = noteService.GetNotes();
+            var dueItems = list.FindAll(r => now >= r.NoticeTime && r.NoticeTime!=null);
+
+            foreach (var item in dueItems)
+            {
+                ShowNotification("通知", $"您有个待办事项即将开始，请前往计签查看详情【{item.NoteName?.Trim()}】。");
+                item.NoticeTime = null; // 标记已提醒，避免重复提醒
+                noteService.SaveNoteNotice(item);
+            }
+        }
+
+        private void ShowNotification(string title, string message)
+        {
+            new ToastContentBuilder()
+                .AddText(title)
+                .AddText(message)
+                .AddArgument("action", "openNote")
+                 //.SetToastScenario(ToastScenario.Reminder) // 关键，变成需要用户关闭的提醒
+                .SetToastScenario(ToastScenario.Reminder) // 闹钟场景，系统会响铃
+                .AddAudio(new Uri("ms-winsoundevent:Notification.Looping.Alarm2"), loop: true) // 自定义循环响铃声音
+                .Show();
+        }
+
         private void AddButton_Click(object sender, RoutedEventArgs e)
         {
             var note = NoteModel.CreateNote();
@@ -135,17 +193,7 @@ namespace Notes.APP
         private const int DoubleClickTimeLimit = 1000; // 双击时间限制，单位是毫秒
         private void TrayIcon_TrayLeftMouseUp(object sender, RoutedEventArgs e)
         {
-            //var currentTime = DateTime.Now;
-            //var timeDifference = currentTime - _lastClickTime;
-            //if (timeDifference.TotalMilliseconds <= DoubleClickTimeLimit)
-            //{
-            //    // 双击事件
-            //    this.Show();
-            //    this.WindowState = WindowState.Normal;
-            //    this.Activate();
-            //}
-            //// 更新上次点击时间
-            //_lastClickTime = currentTime;
+
             var windows = Application.Current.Windows.OfType<Window>().Where(i => i.Name == "NoteDetail");
             foreach (var win in windows)
             {
@@ -169,29 +217,13 @@ namespace Notes.APP
                 setting.Tag = "NoteSetting";
                 setting.Show();
             }
-            //// 根据当前状态切换抽屉的打开或关闭
-            //if (_isDrawerOpen)
-            //{
-            //    // 关闭抽屉
-            //    DrawerPanel.Visibility = Visibility.Collapsed;
-            //    CloseArea.Visibility = Visibility.Collapsed;  // 隐藏遮罩层
-            //}
-            //else
-            //{
-            //    // 打开抽屉
-            //    DrawerPanel.Visibility = Visibility.Visible;
-            //    CloseArea.Visibility = Visibility.Visible;  // 显示遮罩层
-            //}
 
-            //// 切换状态
-            //_isDrawerOpen = !_isDrawerOpen;
         }
         // 触发事件
         public static void TriggerRefresh()
         {
             RefreshEvent?.Invoke(null, EventArgs.Empty);
         }
-        // INotifyPropertyChanged 实现
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
@@ -341,7 +373,7 @@ namespace Notes.APP
             var hostWindow = Window.GetWindow(this);
             if (hostWindow == null)
                 return;
-       
+
             // 2. 切换 Topmost
             hostWindow.Topmost = !hostWindow.Topmost;
             SystemConfigInfoService systemConfig = SystemConfigInfoService.Instance;

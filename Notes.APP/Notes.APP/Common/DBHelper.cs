@@ -200,7 +200,8 @@ namespace Notes.APP.Common
                                 StatusTag INTEGER NOT NULL  DEFAULT 0,
                                 Tags Text NOT NULL  DEFAULT '',
                                 IsTopUp INTEGER NOT NULL  DEFAULT 0,
-                                IsDeleted INTEGER NOT NULL  DEFAULT 0
+                                IsDeleted INTEGER NOT NULL  DEFAULT 0,
+                                NoticeTime date Not NULL DEFAULT (date('now'))
                             );
                             CREATE TABLE IF NOT EXISTS HitokotoInfo (
                                 id INTEGER  PRIMARY KEY AUTOINCREMENT,
@@ -453,7 +454,7 @@ namespace Notes.APP.Common
                             propertyInfo.SetValue(entity, Enum.Parse(propertyInfo.PropertyType, value.ToString()));
                         }
                         // 根据属性的类型进行转换
-                        else if (propertyInfo.PropertyType == typeof(DateTime)) // 如果是 DateTime 类型
+                        else if (propertyInfo.PropertyType == typeof(DateTime?)|| propertyInfo.PropertyType == typeof(DateTime)) // 如果是 DateTime 类型
                         {
                             propertyInfo.SetValue(entity, Convert.ToDateTime(value));
                         }

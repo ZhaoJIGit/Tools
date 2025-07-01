@@ -42,7 +42,7 @@
                     Grid.Row="0"
                     Height="40"
                     VerticalAlignment="Top"
-                    Background="#80000000"
+                    Background="{Binding BackGroundColor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                     BorderBrush="#bfc1be"
                     BorderThickness="0,0,0,1"
                     MouseLeftButtonDown="OnMouseLeftButtonDown"
@@ -68,7 +68,7 @@
                             FontFamily="FangSong"
                             FontSize="16"
                             FontWeight="Bold"
-                            Foreground="White"
+                            Foreground="{Binding Color, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                             Text="设置" />
                         <!--  右侧按钮  -->
                         <StackPanel
@@ -85,7 +85,7 @@
                                     Click="CloseButton_Click"
                                     Content="&#xE8BB;"
                                     FontFamily="Segoe MDL2 Assets"
-                                    Foreground="White" />
+                                    Foreground="{Binding Color, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             </UniformGrid>
 
                         </StackPanel>
@@ -97,7 +97,7 @@
                 <Border
                     Name="pageBorder"
                     Grid.Row="2"
-                    Background="#66000000">
+                    Background="{Binding BackGroundColor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                     <Border.CornerRadius>
                         <CornerRadius
                             BottomLeft="15"
@@ -113,7 +113,7 @@
                             <TabItem
                                 Width="100"
                                 Background="Transparent"
-                                Foreground="White">
+                                Foreground="{Binding Color, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                                 <TabItem.Header>
                                     <StackPanel
                                         HorizontalAlignment="Left"
@@ -146,14 +146,14 @@
                                         <TextBlock
                                             VerticalAlignment="Center"
                                             FontSize="14"
-                                            Foreground="White"
+                                            Foreground="{Binding Color, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                             MouseLeftButtonDown="TextBlock_MouseLeftButtonDown"
                                             Text="开机启动" />
                                     </StackPanel>
 
                                 </Grid>
                             </TabItem>
-                            <TabItem Background="Transparent" Foreground="White">
+                            <TabItem Background="Transparent" Foreground="{Binding Color, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                                 <TabItem.Header>
                                     <StackPanel
                                         HorizontalAlignment="Left"
@@ -174,7 +174,7 @@
                                 </TabItem.Header>
                                 <TextBlock Padding="10" Text="C:\Databases\Note.db" />
                             </TabItem>
-                            <TabItem Background="Transparent" Foreground="#fff">
+                            <TabItem Background="Transparent" Foreground="{Binding Color, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                                 <TabItem.Header>
                                     <StackPanel
                                         HorizontalAlignment="Left"

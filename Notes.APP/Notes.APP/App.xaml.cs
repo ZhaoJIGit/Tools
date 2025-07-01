@@ -37,6 +37,7 @@ namespace Notes.APP
 
         protected override void OnStartup(StartupEventArgs e)
         {
+            _listWindow = new ListWindow();
             const string mutexName = "MyUniqueWpfAppMutexName"; // 请确保这个名称全局唯一
             bool createdNew;
 
@@ -51,10 +52,26 @@ namespace Notes.APP
                 NotifyExistingInstance();
                 //ActivateOtherInstance();
                 Shutdown();
+                //_listWindow.Show();
             }
             base.OnStartup(e);
+            _listWindow.Show();
+            // 这里可以根据启动参数决定打开哪个窗口
 
+
+            if (e.Args != null && e.Args.Length > 0)
+            {
+                foreach (var arg in e.Args)
+                {
+                    if (arg.Contains("openNote"))
+                    {
+                        NotifyExistingInstance();
+                        break;
+                    }
+                }
+            }
            
+
         }
         [DllImport("user32.dll")]
         private static extern bool SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, ref COPYDATASTRUCT lParam);
