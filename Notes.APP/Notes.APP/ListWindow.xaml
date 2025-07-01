@@ -175,7 +175,7 @@
                 <Border
                     Name="pageBorder"
                     Grid.Row="1"
-                    Background="#66000000">
+                    Background="{Binding BackGroundColor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                     <Border.CornerRadius>
                         <CornerRadius
                             BottomLeft="15"

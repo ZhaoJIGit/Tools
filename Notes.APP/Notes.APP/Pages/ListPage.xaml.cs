@@ -26,6 +26,7 @@ namespace Notes.APP.Pages
     /// </summary>
     public partial class ListPage : BasePage
     {
+        private TimePickerWindow _timePickerDialog;
         public ObservableCollection<NoteModel> notes { get; set; } = new ObservableCollection<NoteModel>();
         public ICollectionView NotesView;
         public ListPage()
@@ -111,7 +112,10 @@ namespace Notes.APP.Pages
                     exist.BackgroundColor = newNote.BackgroundColor;
                     exist.Color = newNote.Color;
                     exist.PageBackgroundColor = newNote.PageBackgroundColor;
-
+                    exist.Width = newNote.Width;
+                    exist.Height = newNote.Height;
+                    exist.XAxis = newNote.XAxis;
+                    exist.YAxis = newNote.YAxis;
                 }
                 else
                 {
@@ -184,7 +188,7 @@ namespace Notes.APP.Pages
         }
 
 
-  
+
 
         private void CheckBox_PreviewMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
@@ -232,6 +236,28 @@ namespace Notes.APP.Pages
             //}
         }
 
+        private void NoticeMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            var selectedItem = notesList.SelectedItem;
+            if (selectedItem != null)
+            {
+                // 窗口未打开，则创建
+                if (_timePickerDialog == null || !_timePickerDialog.IsVisible)
+                {
+                    _timePickerDialog = new TimePickerWindow();
+                    _timePickerDialog.Owner = this._ParentWindow;
+                    _timePickerDialog.Closed += (s, args) => _timePickerDialog = null;
+                    _timePickerDialog.SetNote(selectedItem as NoteModel);
+                    _timePickerDialog.Show();
+                }
+                else
+                {
+                    // 窗口已打开，只更新内容并激活
+                    _timePickerDialog.SetNote(selectedItem as NoteModel);
+                    _timePickerDialog.Activate();
+                }
+            }
+        }
     }
     public class TopHeaderConverter : IValueConverter
     {

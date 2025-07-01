@@ -105,7 +105,7 @@ namespace Notes.APP
             var noteService = new NoteService();
             var list = noteService.GetNotes();
             //标记完成的不在自动打开页面
-            foreach (var item in list.Where(i => !i.IsDeleted && i.Fixed))
+            foreach (var item in list.Where(i => !i.IsDeleted ))//&& i.Fixed
             {
                 MainWindow mainWindow = new MainWindow(item);
                 mainWindow.Tag = item.NoteId;

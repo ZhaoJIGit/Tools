@@ -80,7 +80,7 @@ namespace Notes.APP.Pages
         }
         private void SetBackgroundColor(string color)
         {
-            txtContent.Background = pageModel.PageBackgroundColor.ToSolidColorBrush();
+            //txtContent.Background = pageModel.PageBackgroundColor.ToSolidColorBrush();
         }
         private void SetColor(string color)
         {
@@ -102,7 +102,7 @@ namespace Notes.APP.Pages
                     pageModel.NoteName = content[0].Replace("\n", "").Replace("\r", "");
                 }
             }
-            var reslut = _NoteService.SaveNote(pageModel);
+            var reslut = _NoteService.SaveContentNote(pageModel);
             if (reslut)
             {
                 if (!isNotity)

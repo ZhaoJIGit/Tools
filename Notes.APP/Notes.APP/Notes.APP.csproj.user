@@ -15,6 +15,9 @@
     <Compile Update="CustomCtrls\MessagePopup.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="CustomCtrls\TimePickerUserControl.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="ListWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>

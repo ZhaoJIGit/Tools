@@ -22,7 +22,7 @@
             SyntaxHighlighting="C#"
             TextChanged="txtContent_TextChanged"
             WordWrap="True" />
-        
+
         <!--<TextBox
             Name="txtContent"
             Padding="5"

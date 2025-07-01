@@ -86,7 +86,7 @@ namespace Notes.APP.Services
         }
         public bool SaveNote(NoteModel model)
         {
-            
+
             var note = GetNote(model.NoteId);
             if (note != null)
             {
@@ -96,6 +96,12 @@ namespace Notes.APP.Services
             {
                 return AddNote(model);
             }
+        }
+        public bool SaveContentNote(NoteModel model)
+        {
+            var sql = $@"Update NoteInfo set NoteName=@NoteName,Content =@Content,UpdateTime=@UpdateTime  WHERE NoteId = @NoteId";
+            var result = dBHelper.ExecuteNonQuery(sql, model);
+            return result > 0;
         }
         public bool DeleteNote(string id)
         {

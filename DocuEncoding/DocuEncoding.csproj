@@ -12,16 +12,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="天命反派：我，拒绝退婚！.txt">
+    <None Update="我魔道少主，抓個正道聖女怎麼了.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="灭运图录.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="谁让他当鬼差的？.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="重生1993，暗海.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

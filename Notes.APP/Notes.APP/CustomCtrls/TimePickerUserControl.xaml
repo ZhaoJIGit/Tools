@@ -1,0 +1,65 @@
+﻿<UserControl
+    x:Class="Notes.APP.CustomCtrls.TimePickerUserControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:Notes.APP.CustomCtrls"
+    x:Name="root"
+    Width="{Binding ElementName=root, Path=ControlWidth}"
+    Height="{Binding ElementName=root, Path=ControlHeight}">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!--  Hour List  -->
+        <ListBox
+            x:Name="HourList"
+            Grid.Column="0"
+            Width="80"
+            Height="{Binding ElementName=root, Path=ControlHeight}"
+            Background="{Binding ElementName=root, Path=ItemBackground}"
+            Foreground="{Binding ElementName=root, Path=ItemForeground}"
+            ScrollViewer.VerticalScrollBarVisibility="Hidden"
+            SelectionChanged="HourList_SelectionChanged">
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <VirtualizingStackPanel />
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="Height" Value="30" />
+                    <Setter Property="FontSize" Value="18" />
+                    <Setter Property="HorizontalContentAlignment" Value="Center" />
+                    <Setter Property="VerticalContentAlignment" Value="Center" />
+                </Style>
+            </ListBox.ItemContainerStyle>
+        </ListBox>
+
+        <!--  Minute List  -->
+        <ListBox
+            x:Name="MinuteList"
+            Grid.Column="1"
+            Width="80"
+            Height="{Binding ElementName=root, Path=ControlHeight}"
+            Background="{Binding ElementName=root, Path=ItemBackground}"
+            Foreground="{Binding ElementName=root, Path=ItemForeground}"
+            ScrollViewer.VerticalScrollBarVisibility="Hidden"
+            SelectionChanged="MinuteList_SelectionChanged">
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <VirtualizingStackPanel />
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="Height" Value="30" />
+                    <Setter Property="FontSize" Value="18" />
+                    <Setter Property="HorizontalContentAlignment" Value="Center" />
+                    <Setter Property="VerticalContentAlignment" Value="Center" />
+                </Style>
+            </ListBox.ItemContainerStyle>
+        </ListBox>
+    </Grid>
+</UserControl>

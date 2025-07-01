@@ -76,18 +76,22 @@
                     <Border
                         Margin="8,2"
                         VerticalAlignment="Center"
-                        BorderBrush="{Binding BackgroundColor}"
+                        BorderBrush="{Binding BackgroundColor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                         BorderThickness="0"
                         CornerRadius="5">
                         <Border.Style>
                             <Style TargetType="Border">
                                 <Setter Property="Background" Value="Transparent" />
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsTopUp}" Value="True">
+                                    <DataTrigger Binding="{Binding IsTopUp, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
                                         <Setter Property="Background" Value="#33F5F5F5" />
                                     </DataTrigger>
                                     <Trigger Property="IsMouseOver" Value="True">
                                         <Setter Property="Background" Value="#26F5F5F5" />
+                                        <!--  字体颜色改变  -->
+                                        <!--<Setter TargetName="txtNoteName" Property="TextBlock.Foreground" Value="Red" />
+                                        <Setter TargetName="txtTime" Property="TextBlock.Foreground" Value="Red" />-->
+
                                         <!--  鼠标悬浮背景色  -->
                                     </Trigger>
                                 </Style.Triggers>
@@ -128,7 +132,21 @@
                                             FontFamily="Segoe MDL2 Assets"
                                             FontSize="16"
                                             Foreground="White"
-                                            Text="{Binding Fixed, Converter={StaticResource FixedIconHeaderConverter}}" />
+                                            Text="{Binding Fixed, Converter={StaticResource FixedIconHeaderConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem
+                                    Click="NoticeMenuItem_Click"
+                                    Foreground="White"
+                                    Header="添加提醒">
+                                    <MenuItem.Icon>
+                                        <TextBlock
+                                            HorizontalAlignment="Right"
+                                            VerticalAlignment="Center"
+                                            FontFamily="Segoe MDL2 Assets"
+                                            FontSize="16"
+                                            Foreground="White"
+                                            Text="&#xF738;" />
                                     </MenuItem.Icon>
                                 </MenuItem>
 
@@ -261,14 +279,14 @@
                                 <TextBlock
                                     x:Name="txtNoteName"
                                     Grid.Column="1"
-                                    MaxHeight="120"
+                                    MaxHeight="80"
                                     Padding="5,2,0,2"
                                     HorizontalAlignment="Stretch"
                                     VerticalAlignment="Center"
                                     FontSize="12"
                                     FontWeight="Bold"
-                                    Foreground="{Binding BackgroundColor}"
-                                    Text="{Binding Content}"
+                                    Foreground="{Binding BackgroundColor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                    Text="{Binding Content, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                     TextTrimming="CharacterEllipsis"
                                     TextWrapping="Wrap">
                                     <TextBlock.Style>
@@ -277,22 +295,40 @@
                                             <Setter Property="TextDecorations" Value="None" />
                                             <Style.Triggers>
                                                 <!--  当 IsDeleted 为 True 时加删除线  -->
-                                                <DataTrigger Binding="{Binding StatusTag}" Value="True">
+                                                <DataTrigger Binding="{Binding StatusTag, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
                                                     <Setter Property="TextDecorations" Value="Strikethrough" />
                                                 </DataTrigger>
+
                                             </Style.Triggers>
                                         </Style>
                                     </TextBlock.Style>
                                 </TextBlock>
 
+
+
                                 <TextBlock
+                                    x:Name="txtTime"
                                     Grid.Row="2"
                                     Grid.Column="2"
                                     HorizontalAlignment="Right"
                                     VerticalAlignment="Bottom"
                                     FontSize="9"
-                                    Foreground="{Binding BackgroundColor}"
-                                    Text="{Binding UpdateTime, StringFormat='{}{0:MM/dd HH:mm}'}" />
+                                    Foreground="{Binding BackgroundColor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                    Text="{Binding UpdateTime, StringFormat='{}{0:MM/dd HH:mm}', Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <!--  默认不显示删除线  -->
+                                            <Setter Property="TextDecorations" Value="None" />
+                                            <Style.Triggers>
+                                                <!--  当 IsDeleted 为 True 时加删除线  -->
+                                                <!--<DataTrigger Binding="{Binding IsMouseOver, ElementName=ItemBorder}" Value="True">
+                                                    <Setter Property="Foreground" Value="Red" />
+                                                </DataTrigger>-->
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+
+                                </TextBlock>
                             </Grid>
 
                             <!--  分割线  -->
