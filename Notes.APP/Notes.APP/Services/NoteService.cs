@@ -73,7 +73,7 @@ namespace Notes.APP.Services
                                 @Fixed,
                                 @Hitokoto,
                                 @Status,
-                                @StatusTag,@Tags,@IsTopUp
+                                @StatusTag,@Tags,@IsTopUp,
                                 @IsDeleted)";
             var result = dBHelper.ExecuteNonQuery(sql, model);
             return result > 0;

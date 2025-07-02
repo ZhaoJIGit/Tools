@@ -284,7 +284,6 @@
                                     HorizontalAlignment="Stretch"
                                     VerticalAlignment="Center"
                                     FontSize="12"
-                                    FontWeight="Bold"
                                     Foreground="{Binding BackgroundColor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                     Text="{Binding Content, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                     TextTrimming="CharacterEllipsis"

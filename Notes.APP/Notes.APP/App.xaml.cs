@@ -1,4 +1,5 @@
-﻿using Notes.APP.Services;
+﻿using HandyControl.Tools;
+using Notes.APP.Services;
 using System.Configuration;
 using System.Data;
 using System.Diagnostics;
@@ -37,6 +38,10 @@ namespace Notes.APP
 
         protected override void OnStartup(StartupEventArgs e)
         {
+
+            //ConfigHelper.Instance.SetWindowDefaultStyle();
+            //ConfigHelper.Instance.SetNavigationWindowDefaultStyle();
+
             _listWindow = new ListWindow();
             const string mutexName = "MyUniqueWpfAppMutexName"; // 请确保这个名称全局唯一
             bool createdNew;

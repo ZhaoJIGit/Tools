@@ -1,4 +1,5 @@
-﻿using Microsoft.Toolkit.Uwp.Notifications;
+﻿using HandyControl.Tools;
+using Microsoft.Toolkit.Uwp.Notifications;
 using Notes.APP.Common;
 using Notes.APP.Models;
 using Notes.APP.Pages;
@@ -41,6 +42,9 @@ namespace Notes.APP
         public ListWindow()
         {
             InitializeComponent();
+            //ConfigHelper.Instance.SetWindowDefaultStyle();
+            //ConfigHelper.Instance.SetNavigationWindowDefaultStyle();
+
             SystemConfigInfoService systemConfig = SystemConfigInfoService.Instance;
             var config = systemConfig.GetConfig();
             SystemConfigInfo = config;
