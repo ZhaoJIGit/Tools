@@ -30,6 +30,7 @@ namespace Notes.APP
     {
         // 定义静态事件
         public static event EventHandler ReloadWindow;
+        public event Action<string>? ColorChanged;
         private Point _mouseDownPosition;
         private bool _isDrawerOpen = false;
         private NoteModel _noteModel;
@@ -50,7 +51,9 @@ namespace Notes.APP
             myMessage = new MyMessage(popupHelper);
 
             // 默认显示 Page1
-            MainFrame.Navigate(new HomePage());
+            var page = new HomePage();
+            ColorChanged += page.OnColorChanged;
+            MainFrame.Navigate(page);
         }
         public void ReloadData()
         {
@@ -491,6 +494,7 @@ namespace Notes.APP
                 Color colorWithOpacity = ColorHelper.MakeColorTransparent(e.NewValue.Value, 1);
                 _noteModel.Color = colorWithOpacity.ToHexColor();
                 SaveNote();
+                ColorChanged?.Invoke(_noteModel.Color);
             }
         }
 

@@ -375,7 +375,7 @@
                             Maximum="1"
                             Minimum="0.1"
                             ValueChanged="PreviewSlider_SizeChanged"
-                            Value="{Binding Opacity, Mode=TwoWay}" />
+                            Value="{Binding Opacity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
                         <!--  查看列表  -->
                         <Grid

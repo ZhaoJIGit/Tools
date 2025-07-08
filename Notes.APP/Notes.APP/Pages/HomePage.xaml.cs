@@ -4,7 +4,9 @@ using Notes.APP.Models;
 using Notes.APP.Services;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -32,10 +34,9 @@ namespace Notes.APP.Pages
         public HomePage()
         {
             InitializeComponent();
-
-
+          
         }
-
+      
         private void InitializeTimer()
         {
             // 初始化计时器
@@ -56,25 +57,31 @@ namespace Notes.APP.Pages
         {
             InitializeTimer();
             isUpdate = false;
-
             pageModel = _ParentWindow.DataContext as NoteModel;
+            this.DataContext = pageModel;
+
             txtContent.Text = pageModel.Content;
             txtContent.FontSize = pageModel.Fontsize.Value;
             _lastText = pageModel.Content;
-            SetBackgroundColor(pageModel?.BackgroundColor);
-            SetColor(pageModel!.Color);
-            if (_ParentWindow != null)
-            {
-                pageModel.BackgroundColorChanged += OnBackgroundColorChanged; // 订阅事件
-                pageModel.ColorChanged += OnColorChanged;
-            }
+            //SetBackgroundColor(pageModel?.BackgroundColor);
+            //SetColor(pageModel!.Color);
+            //if (_ParentWindow != null)
+            //{
+            //    pageModel.BackgroundColorChanged += OnBackgroundColorChanged; // 订阅事件
+            //    pageModel.ColorChanged += OnColorChanged;
+            //}
             isUpdate = true;
+        }
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
         private void OnBackgroundColorChanged(string newColor)
         {
             SetBackgroundColor(newColor);
         }
-        private void OnColorChanged(string newColor)
+        public void OnColorChanged(string newColor)
         {
             SetColor(newColor);
         }
@@ -84,7 +91,7 @@ namespace Notes.APP.Pages
         }
         private void SetColor(string color)
         {
-            txtContent.Foreground = pageModel.Color.ToSolidColorBrush();
+            txtContent.Foreground = color.ToSolidColorBrush();
         }
         // 保存文本的操作
         private void SaveText(bool isNotity = true)

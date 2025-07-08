@@ -18,6 +18,7 @@
         <avalon:TextEditor
             Name="txtContent"
             Background="Transparent"
+            Foreground="Transparent"
             ShowLineNumbers="True"
             SyntaxHighlighting="C#"
             TextChanged="txtContent_TextChanged"

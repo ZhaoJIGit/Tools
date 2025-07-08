@@ -116,6 +116,7 @@ namespace Notes.APP.Pages
                     exist.Height = newNote.Height;
                     exist.XAxis = newNote.XAxis;
                     exist.YAxis = newNote.YAxis;
+                    exist.Opacity = newNote.Opacity;
                 }
                 else
                 {
