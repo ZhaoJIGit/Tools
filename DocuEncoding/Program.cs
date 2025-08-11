@@ -9,14 +9,25 @@ namespace DocuEncoding
         {
             // 注册 CodePagesEncodingProvider 来支持更多编码，包括 GB2312
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-            // 输入文件路径和输出文件路径
-            string inputFilePath =Path.Combine(Directory.GetCurrentDirectory(), "我魔道少主，抓個正道聖女怎麼了.txt");
-            string outputFilePath = Path.Combine(Directory.GetCurrentDirectory(), "我魔道少主，抓個正道聖女怎麼了2.txt");
+            var dirc = Path.Combine(Directory.GetCurrentDirectory(),"files");
+            string[] txtFiles = Directory.GetFiles(dirc, "*.txt");
 
-            // 指定源文件的编码为 GB2312，并将其转换为目标编码 UTF-8
-            ConvertFileEncoding(inputFilePath, outputFilePath,Encoding.GetEncoding("GB2312"), Encoding.UTF8,ChineseConversionDirection.TraditionalToSimplified);
+            foreach (var file in txtFiles)
+            {
+                FileInfo fileInfo = new FileInfo(file);
 
-            Console.WriteLine("文件编码转换完成！");
+                // 输入文件路径和输出文件路径
+                string inputFilePath = file;
+                string outputFilePath = Path.Combine("D:/6、工作文件/books", fileInfo.Name.Replace(".txt","_new.txt")); ;
+                // 指定源文件的编码为 GB2312，并将其转换为目标编码 UTF-8
+                ConvertFileEncoding(inputFilePath, outputFilePath, Encoding.GetEncoding("GB2312"), Encoding.UTF8, ChineseConversionDirection.TraditionalToSimplified);
+
+                Console.WriteLine("文件编码转换完成！");
+
+            }
+            Console.WriteLine("已全部转码！");
+
+
         }
 
         static void ConvertFileEncoding(string inputFilePath, string outputFilePath, Encoding sourceEncoding, Encoding targetEncoding, ChineseConversionDirection direction)

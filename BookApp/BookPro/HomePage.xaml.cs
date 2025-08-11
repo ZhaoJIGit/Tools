@@ -1,7 +1,9 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.International.Converters.TraditionalChineseToSimplifiedConverter;
+using Newtonsoft.Json;
 using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -72,16 +74,53 @@ namespace BookPro
             {
                 string fileName = openFileDialog.SafeFileName;
                 string filePath = openFileDialog.FileName;
-
+                Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
                 // 将文件复制到临时目录
                 string tempFilePath = Path.Combine(cacheDirectory, fileName);
-                File.Copy(filePath, tempFilePath, true);
+                // 指定源文件的编码为 GB2312，并将其转换为目标编码 UTF-8
+                ConvertFileEncoding(filePath, tempFilePath, Encoding.GetEncoding("GB2312"), Encoding.UTF8, ChineseConversionDirection.TraditionalToSimplified);
+
+
+               // File.Copy(filePath, tempFilePath, true);
 
                 // 将文件名添加到 ListBox 中
                 FileList.Items.Add(fileName);
                 // 添加到位置记录中，默认位置为 0
                 filePositions[fileName] = 0;
                 SavePositionsToJson();
+            }
+        }
+        static void ConvertFileEncoding(string inputFilePath, string outputFilePath, Encoding sourceEncoding, Encoding targetEncoding, ChineseConversionDirection direction)
+        {
+            // 检查输入文件是否存在
+            if (!File.Exists(inputFilePath))
+            {
+                Console.WriteLine("输入文件不存在。");
+                return;
+            }
+
+            try
+            {
+                // 使用 StreamReader 读取文件内容并指定源编码
+                using (StreamReader reader = new StreamReader(inputFilePath, sourceEncoding))
+                // 使用 StreamWriter 写入文件内容并指定目标编码
+                using (StreamWriter writer = new StreamWriter(outputFilePath, false, targetEncoding))
+                {
+                    string line;
+                    while ((line = reader.ReadLine()) != null)
+                    {
+                        // 使用 ChineseConverter 进行转换
+                        string convertedContent = ChineseConverter.Convert(line, direction);
+
+                        writer.WriteLine(convertedContent);
+                    }
+                }
+
+                Console.WriteLine($"文件已成功从 {sourceEncoding.EncodingName} 编码转换为 {targetEncoding.EncodingName} 编码。");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"文件转换失败: {ex.Message}");
             }
         }
         private void OpenButton_Click(object sender, RoutedEventArgs e)

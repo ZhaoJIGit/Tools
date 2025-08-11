@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="我魔道少主，抓個正道聖女怎麼了.txt">
+    <None Update="files\《第一序列》.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="灭运图录.txt">
