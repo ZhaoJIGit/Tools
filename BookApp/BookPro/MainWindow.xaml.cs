@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows;
+
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
@@ -24,8 +25,12 @@ namespace BookPro
             InitializeComponent();
             // 默认显示 Page1
             MainFrame.Navigate(new HomePage());
-           
+            // 让窗口不在任务栏显示
+            this.ShowInTaskbar = false;
+
         }
+
+        
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             //var title = this.Template.FindName("title", this) as TextBlock;
@@ -150,6 +155,21 @@ namespace BookPro
                     g.CopyFromScreen((int)location.X, (int)location.Y, 0, 0, new System.Drawing.Size(1, 1));
                 }
                 return screenshot.GetPixel(0, 0);
+            }
+        }
+
+        private void TrayIcon_DoubleClick(object sender, RoutedEventArgs e)
+        {
+            if (this.Visibility == Visibility.Visible)
+            {
+                //this.Hide();
+                this.Visibility= Visibility.Hidden;
+            }
+            else
+            {
+                this.Visibility = Visibility.Visible;
+                this.Activate();
+            
             }
         }
     }

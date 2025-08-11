@@ -274,10 +274,10 @@ namespace BookPro
                     SetColor();
                     break;
                 case Key.Down:
-                    Window.GetWindow(this).WindowState = WindowState.Minimized;
+                    Window.GetWindow(this).Visibility = Visibility.Hidden;
                     break;
                 case Key.Up:
-                    Window.GetWindow(this).WindowState = WindowState.Normal;
+                    Window.GetWindow(this).Visibility = Visibility.Visible;
                     break;
                 case Key.Escape:
                     Window.GetWindow(this).Close();
