@@ -1,0 +1,16 @@
+[
+  {
+    "Name": "新建配置文件",
+    "Projects": [
+      {
+        "Path": "PublishWeb\\PublishWeb.csproj",
+        "Action": "Start",
+        "DebugTarget": "http"
+      },
+      {
+        "Path": "PublishDesk\\PublishDesk.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

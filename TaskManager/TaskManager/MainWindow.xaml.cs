@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -8,11 +9,12 @@ using System.Linq;
 using System.Management;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using Newtonsoft.Json;
+using System.Windows.Threading;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace TaskManager
@@ -74,10 +76,12 @@ namespace TaskManager
                 //GetProcess(taskGroups.First().TaskGroup);
             }
         }
-        private async void btnTest_Click(object sender, RoutedEventArgs e) {
+        private async void btnTest_Click(object sender, RoutedEventArgs e)
+        {
             await Excute();
         }
-        private async Task Excute() {
+        private async Task Excute()
+        {
             await Task.Delay(5000);
         }
         private void btnFindProcesses_Click(object sender, RoutedEventArgs e)
@@ -161,7 +165,7 @@ namespace TaskManager
             bool isRun = true;
             do
             {
-                var tasks = batches.Skip(i * size).Take(size).Select(batch => Task.Run(() => Excute(batch, searchName)));
+                var tasks = batches.Skip(i * size).Take(size).Select(batch => Task.Run(() => Execute(batch, searchName)));
                 if (tasks.Count() <= 0)
                 {
                     isRun = false; break;
@@ -172,13 +176,280 @@ namespace TaskManager
 
             //Dispatcher.Invoke(() => lvProcesses.ItemsSource = processInfos);
         }
+        void Execute(List<Process> processes, string searchName, string targetDirectory = null)
+        {
+            foreach (var process in processes)
+            {
+                try
+                {
+                    // 只处理 dotnet.exe 进程
+                    if (!string.Equals(process.ProcessName, "dotnet", StringComparison.OrdinalIgnoreCase))
+                        continue;
+
+                    string commandLine = GetCommandLine(process);
+
+                    // 检查命令行中是否包含目标关键字
+                    if (commandLine.IndexOf(searchName, StringComparison.OrdinalIgnoreCase) < 0)
+                        continue;
+
+                    // 如果指定了目标目录，则检查该进程命令行或主模块路径是否在目录下
+                    if (!string.IsNullOrEmpty(targetDirectory))
+                    {
+                        bool inTargetDir = false;
+
+                        try
+                        {
+                            // 尝试用命令行路径判断
+                            if (commandLine.IndexOf(targetDirectory, StringComparison.OrdinalIgnoreCase) >= 0)
+                                inTargetDir = true;
+
+                            // 或者直接用主模块路径判断
+                            if (!inTargetDir)
+                            {
+                                string exePath = process.MainModule?.FileName;
+                                if (!string.IsNullOrEmpty(exePath) &&
+                                    exePath.StartsWith(targetDirectory, StringComparison.OrdinalIgnoreCase))
+                                    inTargetDir = true;
+                            }
+                        }
+                        catch
+                        {
+                            // 某些系统进程访问 MainModule 会抛异常，忽略即可
+                        }
+
+                        if (!inTargetDir)
+                            continue;
+                    }
+
+                    // 添加到集合
+                    lock (processInfos)
+                    {
+                        if (processInfos.Any(i => i.ProcessId == process.Id))
+                            continue;
+
+                        Dispatcher.Invoke(() =>
+                        {
+                            processInfos.Add(new ProcessInfo()
+                            {
+                                ProcessId = process.Id,
+                                TaskGroup = searchName,
+                                TaskName = commandLine
+                            });
+                        });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"无法访问进程 {process.ProcessName}: {ex.Message}");
+                }
+            }
+        }
+
+
+        void ExecuteAll(List<Process> processes, string searchName)
+        {
+            bool isDirectorySearch = searchName.Contains("\\") || searchName.Contains("/");
+
+            foreach (var process in processes)
+            {
+                try
+                {
+                    if (!string.Equals(process.ProcessName, "dotnet", StringComparison.OrdinalIgnoreCase))
+                        continue;
+
+                    string commandLine = GetCommandLine(process);
+                    if (string.IsNullOrEmpty(commandLine))
+                        continue;
+
+                    string dllPathInCmd = ExtractDllPathFromCommandLine(commandLine);
+
+                    bool match = false;
+
+                    if (isDirectorySearch)
+                    {
+                        // 如果是目录模式，只匹配该目录下启动的进程
+                        string actualDir = null;
+                        if (!string.IsNullOrEmpty(dllPathInCmd))
+                        {
+                            actualDir = Path.IsPathRooted(dllPathInCmd)
+                                ? Path.GetDirectoryName(dllPathInCmd)
+                                : searchName; // 相对路径假设在该目录
+                        }
+
+                        if (!string.IsNullOrEmpty(actualDir) &&
+                            actualDir.Equals(searchName, StringComparison.OrdinalIgnoreCase))
+                        {
+                            match = true;
+                        }
+                    }
+                    else
+                    {
+                        // 如果是任务名模式，匹配命令行中包含名称的进程
+                        if (commandLine.IndexOf(searchName, StringComparison.OrdinalIgnoreCase) >= 0)
+                            match = true;
+                    }
+
+                    if (!match)
+                        continue;
+
+                    lock (processInfos)
+                    {
+                        if (processInfos.Any(i => i.ProcessId == process.Id))
+                            continue;
+
+                        Dispatcher.Invoke(() =>
+                        {
+                            processInfos.Add(new ProcessInfo()
+                            {
+                                ProcessId = process.Id,
+                                TaskGroup = searchName,
+                                TaskName = $"{commandLine} [DLL: {dllPathInCmd}]"
+                            });
+                        });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"无法访问进程 {process.ProcessName}: {ex.Message}");
+                }
+            }
+        }
+
+   
+
+
+        /// <summary>
+        /// 从命令行提取 .dll 路径或文件名
+        /// </summary>
+        string ExtractDllPathFromCommandLine(string cmd)
+        {
+            var match = System.Text.RegularExpressions.Regex.Match(cmd, @"dotnet\s+(""[^""]+\.dll""|[^\s]+\.dll)", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+            if (match.Success)
+            {
+                string dll = match.Groups[1].Value.Trim('"');
+                return dll;
+            }
+            return "";
+        }
+
+        /// <summary>
+        /// 在所有本地磁盘中搜索指定 dll 文件
+        /// </summary>
+        string FindDllDirectory(string dllName, string searchDirectory)
+        {
+            try
+            {
+                if (System.IO.Directory.Exists(searchDirectory))
+                {
+                    var found = System.IO.Directory.EnumerateFiles(searchDirectory, dllName, System.IO.SearchOption.TopDirectoryOnly)
+                        .FirstOrDefault();
+
+                    if (!string.IsNullOrEmpty(found))
+                        return System.IO.Path.GetDirectoryName(found);
+                }
+            }
+            catch
+            {
+                // 忽略异常，比如无权限目录
+            }
+
+            return "";
+        }
+
+        /// <summary>
+        /// 安全枚举目录（跳过无权限和系统目录）
+        /// </summary>
+        IEnumerable<string> SafeEnumerateDirectories(string root)
+        {
+            Queue<string> queue = new Queue<string>();
+            queue.Enqueue(root);
+
+            while (queue.Count > 0)
+            {
+                string current = queue.Dequeue();
+                string[] subDirs;
+
+                try
+                {
+                    // 跳过系统保护目录
+                    if (current.IndexOf("System Volume Information", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        current.IndexOf("$Recycle.Bin", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        current.IndexOf("Recovery", StringComparison.OrdinalIgnoreCase) >= 0)
+                        continue;
+
+                    subDirs = System.IO.Directory.GetDirectories(current);
+                }
+                catch
+                {
+                    continue; // 没权限的目录直接跳过
+                }
+
+                foreach (var dir in subDirs)
+                {
+                    yield return dir;
+                    queue.Enqueue(dir);
+                }
+            }
+        }
+
+
+
+
+        //string GetCommandLine(Process process)
+        //{
+        //    try
+        //    {
+        //        using (var searcher = new ManagementObjectSearcher(
+        //            $"SELECT CommandLine FROM Win32_Process WHERE ProcessId = {process.Id}"))
+        //        {
+        //            foreach (ManagementObject obj in searcher.Get())
+        //            {
+        //                return obj["CommandLine"]?.ToString() ?? string.Empty;
+        //            }
+        //        }
+        //    }
+        //    catch { }
+        //    return string.Empty;
+        //}
+
+        string GetWorkingDirectory(Process process)
+        {
+            try
+            {
+                using (var searcher = new ManagementObjectSearcher(
+                    $"SELECT ExecutablePath, CommandLine, ProcessId, Caption, CreationDate, Handle, ExecutablePath, WorkingSetSize FROM Win32_Process WHERE ProcessId = {process.Id}"))
+                {
+                    foreach (ManagementObject obj in searcher.Get())
+                    {
+                        string cmd = obj["CommandLine"]?.ToString();
+                        if (!string.IsNullOrEmpty(cmd))
+                        {
+                            // 提取工作目录逻辑：
+                            // 例如 bat 启动时当前目录为 dll 所在目录
+                            var exe = process.MainModule?.FileName;
+                            if (!string.IsNullOrEmpty(exe))
+                            {
+                                // dotnet 启动时 exe 是 dotnet.exe
+                                // 我们通过进程上下文推断
+                                string path = System.IO.Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]);
+                                return path;
+                            }
+                        }
+                    }
+                }
+            }
+            catch { }
+
+            return string.Empty;
+        }
+
         void Excute(List<Process> processes, string searchName)
         {
             foreach (var process in processes)
             {
                 try
                 {
-                   
+
                     // 检查进程名称是否为 dotnet.exe
                     if (string.Equals(process.ProcessName, "dotnet", StringComparison.OrdinalIgnoreCase))
                     {
@@ -318,7 +589,7 @@ namespace TaskManager
                 item.IsSelected = false;
             }
         }
- 
+
         private void lvProcesses_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             // 获取选中的项
@@ -439,7 +710,7 @@ namespace TaskManager
         {
             Dispatcher.Invoke(() => maskBorder.Visibility = Visibility.Collapsed);
         }
-    
+
         #region Windows API 调用
 
         [DllImport("user32.dll")]
@@ -459,8 +730,8 @@ namespace TaskManager
 
         [DllImport("user32.dll", SetLastError = true)]
         private static extern IntPtr GetWindow(IntPtr hWnd, uint uCmd);
- 
-      
+
+
 
         #endregion
 

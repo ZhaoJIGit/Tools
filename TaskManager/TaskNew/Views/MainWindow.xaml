@@ -1,0 +1,496 @@
+﻿<Window x:Class="TaskManagerNew.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TaskManagerNew.Utilities"
+        xmlns:vm="clr-namespace:TaskManagerNew.ViewModels"
+        mc:Ignorable="d"
+        Title="Task Manager Pro - 增强版进程管理器"
+        Width="1200"
+        Height="800"
+        WindowStartupLocation="CenterScreen"
+        Closing="Window_Closing">
+    
+    <!-- DataContext 将通过构造函数设置 -->
+    
+    <Window.Resources>
+        <!-- 数据模板 -->
+        <DataTemplate x:Key="ProcessTemplate">
+            <Border BorderBrush="#444" BorderThickness="0,0,0,1" Padding="5">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="60" />
+                        <ColumnDefinition Width="200" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="100" />
+                        <ColumnDefinition Width="100" />
+                        <ColumnDefinition Width="100" />
+                        <ColumnDefinition Width="80" />
+                    </Grid.ColumnDefinitions>
+                    
+                    <!-- 选择框 -->
+                    <CheckBox Grid.Column="0" 
+                              IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                              VerticalAlignment="Center"
+                              Margin="5,0" />
+                    
+                    <!-- 状态图标 -->
+                    <TextBlock Grid.Column="1"
+                               Text="{Binding StatusIcon}"
+                               FontSize="14"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Center" />
+                    
+                    <!-- 进程ID和名称 -->
+                    <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding ProcessId}" 
+                                   FontWeight="Bold"
+                                   Foreground="{DynamicResource PrimaryTextBrush}" />
+                        <TextBlock Text="{Binding TaskName}" 
+                                   FontSize="11"
+                                   Foreground="{DynamicResource SecondaryTextBrush}"
+                                   TextTrimming="CharacterEllipsis" />
+                    </StackPanel>
+                    
+                    <!-- 命令行 -->
+                    <TextBlock Grid.Column="3"
+                               Text="{Binding CommandLine}"
+                               VerticalAlignment="Center"
+                               Foreground="{DynamicResource SecondaryTextBrush}"
+                               TextTrimming="CharacterEllipsis"
+                               ToolTip="{Binding CommandLine}" />
+                    
+                    <!-- CPU使用率 -->
+                    <TextBlock Grid.Column="4"
+                               Text="{Binding CpuUsageFormatted}"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Center"
+                               Foreground="{DynamicResource AccentBrush}" />
+                    
+                    <!-- 内存使用量 -->
+                    <TextBlock Grid.Column="5"
+                               Text="{Binding MemoryUsageFormatted}"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Center"
+                               Foreground="{DynamicResource AccentBrush}" />
+                    
+                    <!-- 运行时间 -->
+                    <TextBlock Grid.Column="6"
+                               Text="{Binding RunningTimeFormatted}"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Center"
+                               Foreground="{DynamicResource SecondaryTextBrush}" />
+                    
+                    <!-- 优先级图标 -->
+                    <TextBlock Grid.Column="7"
+                               Text="{Binding PriorityIcon}"
+                               FontSize="14"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Center"
+                               ToolTip="{Binding Priority}" />
+                </Grid>
+            </Border>
+        </DataTemplate>
+        
+        <!-- 任务群组模板 -->
+        <DataTemplate x:Key="TaskGroupTemplate">
+            <Border BorderBrush="#444" BorderThickness="0,0,0,1" Padding="5">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    
+                    <!-- 群组图标 -->
+                    <TextBlock Grid.Column="0"
+                               Text="{Binding Icon}"
+                               FontSize="16"
+                               VerticalAlignment="Center"
+                               Margin="0,0,10,0" />
+                    
+                    <!-- 群组信息 -->
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding TaskGroup}" 
+                                   FontWeight="Bold"
+                                   Foreground="{DynamicResource PrimaryTextBrush}" />
+                        <TextBlock Text="{Binding Description}" 
+                                   FontSize="11"
+                                   Foreground="{DynamicResource SecondaryTextBrush}"
+                                   TextTrimming="CharacterEllipsis" />
+                        <TextBlock Text="{Binding ProcessCount, StringFormat='进程数: {0}'}" 
+                                   FontSize="10"
+                                   Foreground="{DynamicResource SecondaryTextBrush}" />
+                    </StackPanel>
+                    
+                    <!-- CPU使用率 -->
+                    <TextBlock Grid.Column="2"
+                               Text="{Binding TotalCpuUsage, StringFormat='CPU: {0:F1}%'}"
+                               VerticalAlignment="Center"
+                               Margin="10,0"
+                               Foreground="{DynamicResource AccentBrush}" />
+                    
+                    <!-- 内存使用量 -->
+                    <TextBlock Grid.Column="3"
+                               Text="{Binding TotalMemoryUsageFormatted, StringFormat='内存: {0}'}"
+                               VerticalAlignment="Center"
+                               Foreground="{DynamicResource AccentBrush}" />
+                </Grid>
+            </Border>
+        </DataTemplate>
+        
+        <!-- 样式 -->
+        <Style TargetType="Button">
+            <Setter Property="Padding" Value="8,4" />
+            <Setter Property="Margin" Value="4" />
+            <Setter Property="Background" Value="{DynamicResource ButtonBackgroundBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource ButtonForegroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Cursor" Value="Hand" />
+        </Style>
+        
+        <Style TargetType="TextBox">
+            <Setter Property="Padding" Value="4" />
+            <Setter Property="Background" Value="{DynamicResource TextBoxBackgroundBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextBoxForegroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource TextBoxBorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+        
+        <Style TargetType="ComboBox">
+            <Setter Property="Padding" Value="4" />
+            <Setter Property="Background" Value="{DynamicResource ComboBoxBackgroundBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource ComboBoxForegroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ComboBoxBorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+        
+        <Style TargetType="CheckBox">
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+            <Setter Property="Margin" Value="4" />
+        </Style>
+        
+        <Style TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+        </Style>
+    </Window.Resources>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        
+        <!-- 顶部工具栏 -->
+        <Border Grid.Row="0" 
+                Background="{DynamicResource ToolbarBackgroundBrush}"
+                BorderBrush="{DynamicResource BorderBrush}"
+                BorderThickness="0,0,0,1"
+                Padding="10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="200" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                
+                <!-- 搜索框 -->
+                <TextBlock Grid.Column="0"
+                           Text="搜索:"
+                           VerticalAlignment="Center"
+                           Margin="0,0,5,0" />
+                
+                <TextBox Grid.Column="1"
+                         Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                         VerticalAlignment="Center"
+                         ToolTip="输入进程名称、PID或路径进行搜索">
+                    <TextBox.InputBindings>
+                        <KeyBinding Key="Enter" Command="{Binding SearchProcessesCommand}" />
+                    </TextBox.InputBindings>
+                </TextBox>
+                
+                <!-- 搜索模式 -->
+                <ComboBox Grid.Column="2"
+                          SelectedItem="{Binding SelectedSearchMode}"
+                          VerticalAlignment="Center"
+                          Margin="10,0"
+                          Width="120">
+                    <ComboBoxItem Content="按名称" Tag="ByName" />
+                    <ComboBoxItem Content="按目录" Tag="ByDirectory" />
+                    <ComboBoxItem Content="按PID" Tag="ByPid" />
+                    <ComboBoxItem Content="全部" Tag="All" />
+                </ComboBox>
+                
+                <!-- 搜索按钮 -->
+                <Button Grid.Column="3"
+                        Command="{Binding SearchProcessesCommand}"
+                        Content="搜索"
+                        Width="80"
+                        IsEnabled="{Binding IsSearching, Converter={StaticResource InverseBooleanConverter}}" />
+                
+                <!-- 状态信息 -->
+                <TextBlock Grid.Column="4"
+                           Text="{Binding StatusMessage}"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Right"
+                           Margin="10,0"
+                           FontStyle="Italic"
+                           Foreground="{DynamicResource SecondaryTextBrush}" />
+                
+                <!-- 刷新按钮 -->
+                <Button Grid.Column="5"
+                        Command="{Binding RefreshProcessesCommand}"
+                        Content="刷新"
+                        Width="80"
+                        Margin="10,0" />
+                
+                <!-- 自动刷新 -->
+                <CheckBox Grid.Column="6"
+                          IsChecked="{Binding AutoRefresh}"
+                          Content="自动刷新"
+                          VerticalAlignment="Center" />
+            </Grid>
+        </Border>
+        
+        <!-- 主内容区域 -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="300" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            
+            <!-- 左侧：任务群组面板 -->
+            <Border Grid.Column="0"
+                    BorderBrush="{DynamicResource BorderBrush}"
+                    BorderThickness="0,0,1,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    
+                    <!-- 群组标题 -->
+                    <Border Grid.Row="0"
+                            Background="{DynamicResource PanelHeaderBackgroundBrush}"
+                            Padding="10">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            
+                            <TextBlock Text="任务群组"
+                                       FontWeight="Bold"
+                                       FontSize="14" />
+                            
+                            <Button Grid.Column="1"
+                                    Command="{Binding CreateTaskGroupCommand}"
+                                    Content="新建"
+                                    Width="60" />
+                        </Grid>
+                    </Border>
+                    
+                    <!-- 群组列表 -->
+                    <ListView Grid.Row="1"
+                              ItemsSource="{Binding TaskGroups}"
+                              SelectedItem="{Binding SelectedTaskGroup}"
+                              ItemTemplate="{StaticResource TaskGroupTemplate}"
+                              ScrollViewer.VerticalScrollBarVisibility="Auto"
+                              Background="Transparent"
+                              BorderThickness="0">
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="Background" Value="Transparent" />
+                                <Setter Property="BorderBrush" Value="Transparent" />
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="ListViewItem">
+                                            <Border Background="{TemplateBinding Background}"
+                                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                                    BorderThickness="{TemplateBinding BorderThickness}">
+                                                <ContentPresenter />
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </ListView.ItemContainerStyle>
+                    </ListView>
+                    
+                    <!-- 群组操作 -->
+                    <Border Grid.Row="2"
+                            Background="{DynamicResource PanelFooterBackgroundBrush}"
+                            Padding="10">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <Button Command="{Binding DeleteTaskGroupCommand}"
+                                    Content="删除"
+                                    Width="60"
+                                    Margin="0,0,5,0" />
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </Border>
+            
+            <!-- 右侧：进程列表面板 -->
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                
+                <!-- 进程标题 -->
+                <Border Grid.Row="0"
+                        Background="{DynamicResource PanelHeaderBackgroundBrush}"
+                        Padding="10">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        
+                        <TextBlock Text="进程列表"
+                                   FontWeight="Bold"
+                                   FontSize="14" />
+                        
+                        <!-- 统计信息 -->
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="10,0">
+                            <TextBlock Text="{Binding TotalProcessCount, StringFormat='总数: {0}'}"
+                                       Margin="5,0" />
+                            <TextBlock Text="{Binding SelectedProcessCount, StringFormat='选中: {0}'}"
+                                       Margin="5,0" />
+                            <TextBlock Text="{Binding TotalCpuUsage, StringFormat='CPU: {0:F1}%'}"
+                                       Margin="5,0"
+                                       Foreground="{DynamicResource AccentBrush}" />
+                            <TextBlock Text="{Binding TotalMemoryUsageFormatted, StringFormat='内存: {0}'}"
+                                       Margin="5,0"
+                                       Foreground="{DynamicResource AccentBrush}" />
+                        </StackPanel>
+                        
+                        <!-- 操作按钮 -->
+                        <StackPanel Grid.Column="2" Orientation="Horizontal">
+                            <Button Command="{Binding SelectAllProcessesCommand}"
+                                    Content="全选"
+                                    Width="60"
+                                    Margin="0,0,5,0" />
+                            <Button Command="{Binding DeselectAllProcessesCommand}"
+                                    Content="取消全选"
+                                    Width="80"
+                                    Margin="0,0,5,0" />
+                            <Button Command="{Binding AddSelectedToGroupCommand}"
+                                    Content="添加到群组"
+                                    Width="100"
+                                    Margin="0,0,5,0" />
+                        </StackPanel>
+                    </Grid>
+                </Border>
+                
+                <!-- 进程列表 -->
+                <ListView Grid.Row="1"
+                          ItemsSource="{Binding Processes}"
+                          SelectedItem="{Binding SelectedProcess}"
+                          ItemTemplate="{StaticResource ProcessTemplate}"
+                          ScrollViewer.VerticalScrollBarVisibility="Auto"
+                          Background="Transparent"
+                          BorderThickness="0">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="Background" Value="Transparent" />
+                            <Setter Property="BorderBrush" Value="Transparent" />
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ListViewItem">
+                                        <Border Background="{TemplateBinding Background}"
+                                                BorderBrush="{TemplateBinding BorderBrush}"
+                                                BorderThickness="{TemplateBinding BorderThickness}">
+                                            <ContentPresenter />
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                </ListView>
+                
+                <!-- 进程操作 -->
+                <Border Grid.Row="2"
+                        Background="{DynamicResource PanelFooterBackgroundBrush}"
+                        Padding="10">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Command="{Binding ClearCacheCommand}"
+                                Content="清除缓存"
+                                Width="80"
+                                Margin="0,0,5,0" />
+                        <Button Command="{Binding CloseSelectedProcessesCommand}"
+                                Content="关闭选中进程"
+                                Width="120"
+                                Background="#C62828"
+                                Foreground="White" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Grid>
+        
+        <!-- 底部状态栏 -->
+        <Border Grid.Row="2"
+                Background="{DynamicResource StatusBarBackgroundBrush}"
+                BorderBrush="{DynamicResource BorderBrush}"
+                BorderThickness="0,1,0,0"
+                Padding="10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                
+                <!-- 加载状态 -->
+                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                    <TextBlock Text="状态:"
+                               Margin="0,0,5,0" />
+                    <TextBlock Text="{Binding StatusMessage}"
+                               FontWeight="Bold" />
+                </StackPanel>
+                
+                <!-- 版本信息 -->
+                <TextBlock Grid.Column="1"
+                           Text="Task Manager Pro v2.0.0"
+                           Foreground="{DynamicResource SecondaryTextBrush}" />
+            </Grid>
+        </Border>
+        
+        <!-- 加载遮罩 -->
+        <Border x:Name="LoadingOverlay"
+                Grid.RowSpan="3"
+                Background="#80000000"
+                Visibility="Collapsed">
+            <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Border Background="{DynamicResource DialogBackgroundBrush}"
+                        Padding="20"
+                        CornerRadius="5">
+                    <StackPanel>
+                        <TextBlock Text="正在处理..."
+                                   FontSize="16"
+                                   FontWeight="Bold"
+                                   Foreground="White"
+                                   HorizontalAlignment="Center"
+                                   Margin="0,0,0,10" />
+                        <ProgressBar IsIndeterminate="True"
+                                     Width="200"
+                                     Height="10" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

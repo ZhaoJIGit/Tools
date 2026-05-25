@@ -81,7 +81,7 @@ namespace BookPro
                 ConvertFileEncoding(filePath, tempFilePath, Encoding.GetEncoding("GB2312"), Encoding.UTF8, ChineseConversionDirection.TraditionalToSimplified);
 
 
-               // File.Copy(filePath, tempFilePath, true);
+                File.Copy(filePath, tempFilePath, true);
 
                 // 将文件名添加到 ListBox 中
                 FileList.Items.Add(fileName);
