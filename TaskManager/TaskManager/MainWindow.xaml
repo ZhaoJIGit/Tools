@@ -1,14 +1,12 @@
-﻿<Window
+<Window
     x:Class="TaskManager.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:av="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    Title="Process Manager"
-    Width="980"
-    Height="517"
+    Title="进程管理器"
+    Width="1100"
+    Height="620"
     Loaded="Window_Loaded"
-    mc:Ignorable="av">
+    WindowStartupLocation="CenterScreen">
 
     <Grid>
         <Grid.RowDefinitions>
@@ -20,153 +18,228 @@
             <ColumnDefinition Width="200" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
-        <!--  加载状态  -->
-        <!--  遮罩层  -->
-        <!--  遮罩层  -->
+
+        <!-- 遮罩层 -->
         <Border
-            x:Name="maskBorder"
             Grid.RowSpan="3"
             Grid.ColumnSpan="2"
             Panel.ZIndex="100"
             Background="#80000000"
             Visibility="Collapsed">
-            <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
-                <TextBlock Foreground="White" Text="正在处理..." />
-            </Grid>
+            <Border.Style>
+                <Style TargetType="Border">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsLoading}" Value="True">
+                            <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+            <TextBlock
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                FontSize="16"
+                Foreground="White"
+                Text="正在处理..." />
         </Border>
-        <StackPanel
+
+        <!-- 搜索栏 -->
+        <Border
             Grid.Row="0"
             Grid.ColumnSpan="2"
             Margin="10"
-            Orientation="Horizontal">
-            <TextBox
-                x:Name="txtSearch"
-                Width="200"
-                Margin="0,0,10,0"
-                VerticalAlignment="Center" />
-            <Button
-                Width="103"
-                Click="btnFindProcesses_Click"
-                Content="查找进程"
-                RenderTransformOrigin="0.5,0.5" />
-            <Button
-                Width="103"
-                Click="btnTest_Click"
-                Content="Test"
-                RenderTransformOrigin="0.5,0.5"
-                Visibility="Hidden" />
-        </StackPanel>
-        <!--  左侧 ListView  -->
-        <ListView
-            x:Name="lvNames"
+            Padding="8"
+            BorderBrush="#ccc"
+            BorderThickness="1"
+            CornerRadius="4">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBox
+                    x:Name="txtSearch"
+                    Grid.Column="0"
+                    Height="28"
+                    VerticalAlignment="Center"
+                    FontSize="13" />
+                <Button
+                    Grid.Column="1"
+                    Width="100"
+                    Height="28"
+                    Margin="10,0,0,0"
+                    Click="btnFindProcesses_Click"
+                    Content="查找进程" />
+            </Grid>
+        </Border>
+
+        <!-- 左侧：群组列表 -->
+        <Border
             Grid.Row="1"
             Grid.Column="0"
-            Margin="10"
-            MouseDoubleClick="lvNames_MouseDoubleClick"
-            ScrollViewer.CanContentScroll="True"
-            ScrollViewer.HorizontalScrollBarVisibility="Auto"
-            SelectionChanged="lvNames_SelectionChanged">
-            <!--  定义右键菜单  -->
-            <ListView.ContextMenu>
-                <ContextMenu>
-                    <MenuItem Click="DeleteMenuItem_Click" Header="删除" />
-                </ContextMenu>
-            </ListView.ContextMenu>
-            <ListView.View>
-
-                <GridView>
-                    <GridViewColumn
-                        Width="160"
-                        DisplayMemberBinding="{Binding TaskGroup}"
-                        Header="群组" />
-                </GridView>
-            </ListView.View>
-        </ListView>
-        <ListView
-            x:Name="lvProcesses"
-            Grid.Row="1"
-            Grid.Column="1"
-            Width="auto"
-            Margin="10"
-            MouseDoubleClick="lvProcesses_MouseDoubleClick"
-            SelectionChanged="lvProcesses_SelectionChanged"
-            SelectionMode="Extended">
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn Width="50">
-                        <GridViewColumn.Header>
-                            <CheckBox
-                                x:Name="chkSelectAll"
-                                Checked="chkSelectAll_Checked"
-                                Content="全选"
-                                Unchecked="chkSelectAll_Unchecked" />
-                        </GridViewColumn.Header>
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}" />
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                    <GridViewColumn
-                        Width="100"
-                        DisplayMemberBinding="{Binding ProcessId}"
-                        Header="进程ID" />
-                    <GridViewColumn
-                        Width="250"
-                        DisplayMemberBinding="{Binding TaskGroup}"
-                        Header="任务群组" />
-                    <GridViewColumn
-                        Width="380"
-                        DisplayMemberBinding="{Binding TaskName}"
-                        Header="任务名称" />
-                </GridView>
-            </ListView.View>
-        </ListView>
-
-        <StackPanel
-            Grid.Row="2"
-            Grid.ColumnSpan="2"
-            Margin="10"
-            HorizontalAlignment="Right"
-            Orientation="Horizontal">
-
+            Margin="10,0,5,10"
+            Padding="8"
+            Background="#f5f5f5"
+            BorderBrush="#ccc"
+            BorderThickness="1"
+            CornerRadius="4">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="80" />
-                    <ColumnDefinition Width="100" />
-                    <ColumnDefinition Width="110" />
-                    <ColumnDefinition Width="110" />
-                    <ColumnDefinition Width="110" />
-                    <ColumnDefinition Width="110" />
-                    <ColumnDefinition Width="110" />
-                    <ColumnDefinition Width="110" />
-                    <ColumnDefinition Width="100" />
+                <TextBlock
+                    Grid.Row="0"
+                    Margin="10,10,10,5"
+                    FontSize="14"
+                    FontWeight="SemiBold"
+                    Foreground="#333"
+                    Text="群组列表" />
+                <ListBox
+                    x:Name="lvNames"
+                    Grid.Row="1"
+                    Margin="5"
+                    MouseDoubleClick="lvNames_MouseDoubleClick"
+                    ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                    SelectionChanged="lvNames_SelectionChanged">
+                    <ListBox.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Click="DeleteMenuItem_Click" Header="删除" />
+                        </ContextMenu>
+                    </ListBox.ContextMenu>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock
+                                Margin="5"
+                                FontSize="13"
+                                Text="{Binding TaskGroup}" />
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Grid>
+        </Border>
 
+        <!-- 右侧：进程列表 -->
+        <Border
+            Grid.Row="1"
+            Grid.Column="1"
+            Margin="5,0,10,10"
+            Padding="8"
+            Background="#f5f5f5"
+            BorderBrush="#ccc"
+            BorderThickness="1"
+            CornerRadius="4">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <TextBlock
+                    Grid.Row="0"
+                    Margin="10,10,10,5"
+                    FontSize="14"
+                    FontWeight="SemiBold"
+                    Foreground="#333"
+                    Text="进程列表" />
+
+                <ListView
+                    x:Name="lvProcesses"
+                    Grid.Row="1"
+                    Margin="5"
+                    MouseDoubleClick="lvProcesses_MouseDoubleClick"
+                    SelectionChanged="lvProcesses_SelectionChanged"
+                    SelectionMode="Extended"
+                    FontSize="13">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Width="50">
+                                <GridViewColumn.Header>
+                                    <CheckBox
+                                        x:Name="chkSelectAll"
+                                        Checked="chkSelectAll_Checked"
+                                        Content="全选"
+                                        Unchecked="chkSelectAll_Unchecked" />
+                                </GridViewColumn.Header>
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <CheckBox
+                                            HorizontalAlignment="Center"
+                                            IsChecked="{Binding IsSelected, Mode=TwoWay}" />
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn
+                                Width="80"
+                                DisplayMemberBinding="{Binding ProcessId}"
+                                Header="进程 ID" />
+                            <GridViewColumn
+                                Width="200"
+                                DisplayMemberBinding="{Binding TaskGroup}"
+                                Header="任务群组" />
+                            <GridViewColumn
+                                Width="500"
+                                DisplayMemberBinding="{Binding TaskName}"
+                                Header="命令行" />
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </Grid>
+        </Border>
+
+        <!-- 底部状态栏 -->
+        <Border
+            Grid.Row="2"
+            Grid.ColumnSpan="2"
+            Margin="10,5"
+            Padding="10,5"
+            Background="#f5f5f5"
+            BorderBrush="#ccc"
+            BorderThickness="1"
+            CornerRadius="4">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
+
                 <TextBlock
                     Grid.Column="0"
-                    Margin="10"
-                    Text="{Binding Items.Count, ElementName=lvNames, StringFormat=群组数：\{0\}}" />
+                    Margin="15,0"
+                    VerticalAlignment="Center"
+                    FontSize="13"
+                    Foreground="#666">
+                    <Run Text="群组数：" /><Run x:Name="txtGroupCount" Text="0" />
+                </TextBlock>
+
                 <TextBlock
-                    Grid.Column="2"
-                    Margin="10"
-                    Text="{Binding Items.Count, ElementName=lvProcesses, StringFormat=总进程数：\{0\}}" />
+                    Grid.Column="1"
+                    Margin="15,0"
+                    VerticalAlignment="Center"
+                    FontSize="13"
+                    Foreground="#666">
+                    <Run Text="总进程数：" /><Run x:Name="txtProcessCount" Text="0" />
+                </TextBlock>
+
                 <TextBlock
                     x:Name="txtExecutionTime"
-                    Grid.Column="3"
-                    Margin="10" />
+                    Grid.Column="2"
+                    Margin="15,0"
+                    VerticalAlignment="Center"
+                    FontSize="13"
+                    Foreground="#666"
+                    Text="{Binding ExecutionTime}" />
 
                 <Button
-                    Grid.Column="8"
-                    Width="80"
-                    Margin="8"
+                    Grid.Column="3"
+                    Width="120"
+                    Height="32"
                     Click="btnCloseProcess_Click"
-                    Content="关闭进程" />
-
+                    Content="关闭选中进程" />
             </Grid>
-        </StackPanel>
+        </Border>
     </Grid>
 </Window>
